@@ -1,18 +1,20 @@
 #pragma once
 
-#include "Time.h"
+#include <TimeLib.h>
+#include <Time.h>
+#include <SIM808.h>
 
 #define GPS_POSITION_SIZE 128
 
 namespace gps {
 
-	char lastPosition[GPS_POSITION_SIZE];
-	SIM808_GPS_STATUS lastStatus;
+	extern char lastPosition[GPS_POSITION_SIZE];
+	extern SIM808_GPS_STATUS lastStatus;
 
 	void powerOn();
 	void powerOff();
 
 	SIM808_GPS_STATUS acquireCurrentPosition();
-	Time getTime();
+	time_t getTime();
 
 }

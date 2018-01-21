@@ -1,8 +1,12 @@
 #include "Gps.h"
+#include "Debug.h"
 
 #define LOGGER_NAME "Gps"
 
 namespace gps {
+
+	char lastPosition[GPS_POSITION_SIZE];
+	SIM808_GPS_STATUS lastStatus;
 
 	void powerOn() {
 
@@ -23,7 +27,7 @@ namespace gps {
 		return currentStatus;
 	}
 
-	Time getTime() {
+	time_t getTime() {
 		
 	}
 }

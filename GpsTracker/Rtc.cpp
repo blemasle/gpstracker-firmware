@@ -1,4 +1,5 @@
 #include "Rtc.h"
+#include "Pins.h"
 
 #include <Wire.h>
 #include <MD_DS3231.h>
@@ -7,6 +8,38 @@
 
 namespace rtc {
 
+	namespace details {
+
+		time_t readTimeFromRegisters() {
+			tmElements_t tmElements = {
+				RTC.s,
+				RTC.m,
+				RTC.h,
+				RTC.dow,
+				RTC.dd,
+				RTC.mm,
+				CalendarYrToTm(RTC.yyyy)
+			};
+
+			return makeTime(tmElements);
+		}
+
+		void writeTimeToRegisters(time_t &time) {
+			tmElements_t tmElements;
+			breakTime(time, tmElements);
+
+			RTC.s = tmElements.Second;
+			RTC.m = tmElements.Minute;
+			RTC.h = tmElements.Hour;
+			RTC.dow = tmElements.Wday;
+			RTC.dd = tmElements.Day;
+			RTC.mm = tmElements.Month;
+			RTC.yyyy = tmYearToCalendar(tmElements.Year);
+		}
+
+	}
+
+	
 	void powerOn() {
 		digitalWrite(RTC_PWR, HIGH);
 		pinMode(RTC_PWR, OUTPUT);
@@ -28,31 +61,32 @@ namespace rtc {
 
 	void setup() {
 		RTC.control(DS3231_12H, DS3231_OFF); //24 hours clock
-		RTC.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN ON
+		RTC.control(DS3231_INT_ENABLE, DS3231_OFF); //INTCN OFF
 	}
 
-	Time getTime() {
+	time_t getTime() {
 		RTC.readTime();
-
-		return {
-			RTC.yyyy,
-			RTC.mm,
-			RTC.dd,
-			RTC.h,
-			RTC.m,
-			RTC.s
-		};
+		return details::readTimeFromRegisters();		
 	}
 
-	void setTime(Time time) {
-		RTC.yyyy = time.yyyy;
-		RTC.mm = time.mm;
-		RTC.dd = time.dd;
-		RTC.h = time.h;
-		RTC.m = time.m;
-		RTC.s = time.s;
-
+	void setTime(time_t &time) {
+		details::writeTimeToRegisters(time);
 		RTC.writeTime();
+	}
+
+	void setAlarm(uint16_t seconds) {
+		time_t t = getTime();
+		t = t + seconds;
+		setAlarm(t);
+	}
+
+	void setAlarm(time_t &time) {
+		details::writeTimeToRegisters(time);
+		RTC.writeAlarm1(DS3231_ALM_S);
+
+		RTC.control(DS3231_A1_FLAG, DS3231_OFF);
+		RTC.control(DS3231_A1_INT_ENABLE, DS3231_ON); //Alarm 1 ON
+		RTC.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN ON
 	}
 
 }

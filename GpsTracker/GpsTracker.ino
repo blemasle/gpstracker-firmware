@@ -21,9 +21,17 @@ void loop() {
 	gps::powerOff();
 
 	if (gpsStatus > SIM808_GPS_STATUS::NO_FIX) {
-		Time time = utils::parseTime();
+		time_t time = gps::getTime();
 		rtc::powerOn();
 		rtc::setTime(time);
 		rtc::powerOff();
+
+		positions::appendLast();
 	}
+
+	if (positions::needsToSend()) {
+		positions::send();
+	}
+
+	mainunit::deepSleep(10);
 }
