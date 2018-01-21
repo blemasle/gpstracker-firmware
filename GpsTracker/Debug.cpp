@@ -1,8 +1,16 @@
 #include "Debug.h"
 
-void waitForSerial() {
-#ifdef _DEBUG
-	while (!Serial);
-	Serial.begin(115200);
-#endif // _DEBUG
+namespace debug {
+
+	void waitForSerial() {
+		while (!Serial);
+		Serial.begin(115200);
+	}
+
+	int freeRam() {
+		extern int __heap_start, *__brkval;
+		int v;
+		return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
+	}
+
 }

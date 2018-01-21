@@ -262,3 +262,6 @@ __pycache__/
 
 #VisualMicro
 __vm/
+
+#Line endings unifier
+.leu
