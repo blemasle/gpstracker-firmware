@@ -33,5 +33,5 @@ void loop() {
 		positions::send();
 	}
 
-	mainunit::deepSleep(10);
+	mainunit::deepSleep(10); //duration TBD
 }
