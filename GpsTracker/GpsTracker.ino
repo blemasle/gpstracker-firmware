@@ -21,7 +21,9 @@ void loop() {
 	gps::powerOff();
 
 	if (gpsStatus > SIM808_GPS_STATUS::NO_FIX) {
-		time_t time = gps::getTime();
+		timestamp_t time = gps::getTime();
+		tmElements_t t;
+		breakTime(time, t);
 		rtc::powerOn();
 		rtc::setTime(time);
 		rtc::powerOff();

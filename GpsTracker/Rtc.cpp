@@ -10,7 +10,7 @@ namespace rtc {
 
 	namespace details {
 
-		time_t readTimeFromRegisters() {
+		timestamp_t readTimeFromRegisters() {
 			tmElements_t tmElements = {
 				RTC.s,
 				RTC.m,
@@ -24,7 +24,7 @@ namespace rtc {
 			return makeTime(tmElements);
 		}
 
-		void writeTimeToRegisters(time_t &time) {
+		void writeTimeToRegisters(timestamp_t &time) {
 			tmElements_t tmElements;
 			breakTime(time, tmElements);
 
@@ -64,23 +64,23 @@ namespace rtc {
 		RTC.control(DS3231_INT_ENABLE, DS3231_OFF); //INTCN OFF
 	}
 
-	time_t getTime() {
+	timestamp_t getTime() {
 		RTC.readTime();
 		return details::readTimeFromRegisters();		
 	}
 
-	void setTime(time_t &time) {
+	void setTime(timestamp_t &time) {
 		details::writeTimeToRegisters(time);
 		RTC.writeTime();
 	}
 
 	void setAlarm(uint16_t seconds) {
-		time_t t = getTime();
+		timestamp_t t = getTime();
 		t = t + seconds;
 		setAlarm(t);
 	}
 
-	void setAlarm(time_t &time) {
+	void setAlarm(timestamp_t &time) {
 		details::writeTimeToRegisters(time);
 		RTC.writeAlarm1(DS3231_ALM_S);
 

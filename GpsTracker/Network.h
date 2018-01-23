@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Hardware.h"
+
 namespace network {
-	void powerOn();
-	void powerOff();
+
+	/*inline */void powerOn();
+	/*inline */void powerOff();
 }

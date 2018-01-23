@@ -1,7 +1,8 @@
 #pragma once
 
-#define SIM_RX		5
-#define SIM_TX		6
+#define SIM_RST		5
+#define SIM_RX		6
+#define SIM_TX		7
 #define SIM_PWR		9
 #define SIM_STATUS	8
 

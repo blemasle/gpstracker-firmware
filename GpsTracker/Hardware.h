@@ -9,6 +9,14 @@ namespace hardware {
 
 		void powerOn();
 		void powerOff();
+
+		void init();
+
+		void gpsPowerOn();
+		void gpsPowerOff();
+
+		void networkPowerOn();
+		void networkPowerOff();
 	}
 
 	namespace rtc {
