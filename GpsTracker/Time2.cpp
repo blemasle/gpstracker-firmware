@@ -128,3 +128,5 @@ timestamp_t makeTime(tmElements_t &tm) {
 }
 /*=====================================================*/
 /* Low level system time functions  */
+
+//TODO : + and - operator between tmElements_t and timestamp_t

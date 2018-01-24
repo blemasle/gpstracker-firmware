@@ -15,7 +15,7 @@ namespace gps {
 	inline void powerOn() { hardware::sim808::gpsPowerOn(); }
 	inline void powerOff() { hardware::sim808::gpsPowerOff(); }
 
-	SIM808_GPS_STATUS acquireCurrentPosition();
-	timestamp_t getTime();
+	SIM808_GPS_STATUS acquireCurrentPosition(uint16_t timeout);
+	void getTime(tmElements_t &time);
 
 }

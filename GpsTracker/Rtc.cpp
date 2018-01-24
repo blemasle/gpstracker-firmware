@@ -10,31 +10,24 @@ namespace rtc {
 
 	namespace details {
 
-		timestamp_t readTimeFromRegisters() {
-			tmElements_t tmElements = {
-				RTC.s,
-				RTC.m,
-				RTC.h,
-				RTC.dow,
-				RTC.dd,
-				RTC.mm,
-				CalendarYrToTm(RTC.yyyy)
-			};
-
-			return makeTime(tmElements);
+		void readTimeFromRegisters(tmElements_t &time) {
+			time.Second = RTC.s;
+			time.Minute = RTC.m;
+			time.Hour = RTC.h;
+			time.Wday = RTC.dow;
+			time.Day = RTC.dd;
+			time.Month = RTC.mm;
+			time.Year = CalendarYrToTm(RTC.yyyy);
 		}
 
-		void writeTimeToRegisters(timestamp_t &time) {
-			tmElements_t tmElements;
-			breakTime(time, tmElements);
-
-			RTC.s = tmElements.Second;
-			RTC.m = tmElements.Minute;
-			RTC.h = tmElements.Hour;
-			RTC.dow = tmElements.Wday;
-			RTC.dd = tmElements.Day;
-			RTC.mm = tmElements.Month;
-			RTC.yyyy = tmYearToCalendar(tmElements.Year);
+		void writeTimeToRegisters(tmElements_t &time) {
+			RTC.s = time.Second;
+			RTC.m = time.Minute;
+			RTC.h = time.Hour;
+			RTC.dow = time.Wday;
+			RTC.dd = time.Day;
+			RTC.mm = time.Month;
+			RTC.yyyy = tmYearToCalendar(time.Year);
 		}
 
 	}
@@ -44,17 +37,17 @@ namespace rtc {
 		RTC.control(DS3231_INT_ENABLE, DS3231_OFF); //INTCN OFF
 	}
 
-	timestamp_t getTime() {
+	void getTime(tmElements_t &time) {
 		RTC.readTime();
-		return details::readTimeFromRegisters();		
+		details::readTimeFromRegisters(time);
 	}
 
-	void setTime(timestamp_t &time) {
+	void setTime(tmElements_t &time) {
 		details::writeTimeToRegisters(time);
 		RTC.writeTime();
 	}
 
-	void setAlarm(timestamp_t &time) {
+	void setAlarm(tmElements_t &time) {
 		details::writeTimeToRegisters(time);
 		RTC.writeAlarm1(DS3231_ALM_S);
 

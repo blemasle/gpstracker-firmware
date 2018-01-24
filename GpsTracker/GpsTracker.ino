@@ -17,13 +17,12 @@ void setup() {
 void loop() {
 
 	gps::powerOn();
-	SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition();
+	SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(30000);
 	gps::powerOff();
 
 	if (gpsStatus > SIM808_GPS_STATUS::NO_FIX) {
-		timestamp_t time = gps::getTime();
-		tmElements_t t;
-		breakTime(time, t);
+		tmElements_t time;
+		gps::getTime(time);
 		rtc::powerOn();
 		rtc::setTime(time);
 		rtc::powerOff();

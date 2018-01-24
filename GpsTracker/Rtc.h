@@ -14,12 +14,14 @@ namespace rtc {
 
 	void setup();
 
-	timestamp_t getTime();
-	void setTime(timestamp_t &time);
+	void getTime(tmElements_t &time);
+	void setTime(tmElements_t &time);
 
 	inline void setAlarm(uint16_t seconds) {
-		setAlarm(getTime() + seconds);
+		tmElements_t time;
+		getTime(time);
+		setAlarm(makeTime(time) + seconds); //TODO : use operator
 	}
 
-	void setAlarm(timestamp_t &time);
+	void setAlarm(tmElements_t &time);
 }
