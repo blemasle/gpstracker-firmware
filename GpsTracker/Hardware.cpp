@@ -73,6 +73,8 @@ namespace hardware {
 		uint8_t powered = 0;
 
 		void powerOn() {
+			if (powered > 0) return;
+
 			digitalWrite(I2C_PWR, HIGH);
 			pinMode(I2C_PWR, OUTPUT);
 

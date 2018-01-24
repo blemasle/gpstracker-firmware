@@ -23,5 +23,17 @@
 	} 	tmElements_t, TimeElements, *tmElementsPtr_t;
 
 	/* low level functions to convert to and from system time                     */
-	void breakTime(timestamp_t time, tmElements_t &tm);  // break timestamp_t into elements
-	timestamp_t makeTime(tmElements_t &tm);  // convert time elements into timestamp_t
+	void breakTime(const timestamp_t time, tmElements_t &tm);  // break timestamp_t into elements
+	timestamp_t makeTime(const tmElements_t &tm);  // convert time elements into timestamp_t
+
+	tmElements_t operator += (const timestamp_t b) {
+
+	}
+
+	tmElements_t operator + (const tmElements_t a, const timestamp_t b) {
+		tmElements_t result;
+		timestamp_t aTimestamp = makeTime(a);
+		breakTime(aTimestamp + b, result);
+
+		return result;
+	}

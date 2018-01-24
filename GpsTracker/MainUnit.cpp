@@ -9,7 +9,9 @@ namespace mainunit {
 	}
 
 	void interruptIn(uint16_t seconds) {
+		rtc::powerOn();
 		rtc::setAlarm(seconds);
+		rtc::powerOff();
 
 		pinMode(RTC_WAKE, INPUT);
 		attachInterrupt(digitalPinToInterrupt(RTC_WAKE), interrupt, FALLING);

@@ -32,5 +32,5 @@ void loop() {
 		positions::send();
 	}
 
-	mainunit::deepSleep(10); //duration TBD
+	mainunit::deepSleep(10); //TODO : duration
 }
