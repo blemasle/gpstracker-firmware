@@ -7,8 +7,6 @@ void setup() {
 	Log.begin(LOG_LEVEL_VERBOSE, &Serial);
 #endif
 
-	core::setCurrentState(GPS_TRACKER_STATES::SETUP);
-
 	rtc::powerOn();
 	rtc::setup();
 	rtc::powerOff();
