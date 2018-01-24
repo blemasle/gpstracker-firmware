@@ -5,20 +5,14 @@
 #include <SIM808.h>
 #include <SIM808_Types.h>
 
+#include <Wire.h>
+ 
 namespace hardware {
 
 	namespace sim808 {
 		SoftwareSerial simSerial = SoftwareSerial(SIM_TX, SIM_RX);
 		SIM808 device = SIM808(SIM_RST, SIM_PWR, SIM_STATUS);
-		//idea : int powered
-		//gps::powerOn() => +1
-		//network::powerOn() => +1
-		//gps::powerOff() => -1
-		//network::powerOff() => -1
 
-		//sim808:powerOff() => force powerOff of both
-		//gps/network::powerOff() => powered == 1 => sim808::powerOff()
-		//idea : gps power on = +1, network power on = +1 => powerOff forces power off of all, powerOff one will lead to actual powerOff if 
 		void powerOn() {
 			bool poweredOn = device.powerOnOff(true);
 			if (!poweredOn) return;
@@ -27,15 +21,7 @@ namespace hardware {
 		}
 
 		void powerOff() {
-			bool poweredOff = device.powerOnOff(false);
-		}
-
-		void init() {
-			device.powerOnOff(true);
-			simSerial.begin(4800);
-
-			device.begin(simSerial);
-			device.init();
+			device.powerOnOff(false);
 		}
 
 		void powerOffIfUnused() {
@@ -45,6 +31,14 @@ namespace hardware {
 				(device.getGprsPowerState(&gprsPowered) && !gprsPowered)) {
 				powerOff();
 			}
+		}
+
+		void init() {
+			device.powerOnOff(true);
+			simSerial.begin(4800);
+
+			device.begin(simSerial);
+			device.init();
 		}
 
 		void gpsPowerOn() {
@@ -71,13 +65,54 @@ namespace hardware {
 		}
 	}
 
-	namespace rtc {
-		void powerOn();
-		void powerOff();
-	}
+	namespace i2c {
 
-	namespace eeprom {
-		void powerOn();
-		void powerOff();
+		#define DEVICE_RTC 1
+		#define DEVICE_EEPROM 2
+
+		uint8_t powered = 0;
+
+		void powerOn() {
+			digitalWrite(I2C_PWR, HIGH);
+			pinMode(I2C_PWR, OUTPUT);
+
+			Wire.begin();
+		}
+
+		void powerOff() {
+			pinMode(I2C_PWR, INPUT);
+			digitalWrite(I2C_PWR, LOW);
+
+			//turn off i2c
+			TWCR &= ~(bit(TWEN) | bit(TWIE) | bit(TWEA));
+
+			//disable i2c internal pull ups
+			digitalWrite(A4, LOW);
+			digitalWrite(A5, LOW);
+		}
+
+		inline void powerOffIfUnused() {
+			if (!powered) powerOff();
+		}
+
+		void rtcPowerOn() {
+			powerOn();
+			powered |= DEVICE_RTC;
+		}
+
+		void rtcPowerOff() {
+			powered &= ~DEVICE_RTC;
+			powerOffIfUnused();
+		}
+
+		void eepromPowerOn() {
+			powerOn();
+			powered |= DEVICE_EEPROM;
+		}
+
+		void eepromPowerOff() {
+			powered &= ~DEVICE_EEPROM;
+			powerOffIfUnused();
+		}
 	}
 }

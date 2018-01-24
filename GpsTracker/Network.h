@@ -4,6 +4,6 @@
 
 namespace network {
 
-	/*inline */void powerOn();
-	/*inline */void powerOff();
+	inline void powerOn() { hardware::sim808::networkPowerOn(); }
+	inline void powerOff() { hardware::sim808::networkPowerOff(); }
 }

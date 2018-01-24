@@ -1,16 +1,25 @@
 #pragma once
 
 #include "Time2.h"
+#include "Hardware.h"
 
 namespace rtc {
-	void powerOn();
-	void powerOff();
+	inline void powerOn() {
+		hardware::i2c::rtcPowerOn();
+	}
+
+	inline void powerOff() {
+		hardware::i2c::rtcPowerOff();
+	}
 
 	void setup();
 
 	timestamp_t getTime();
 	void setTime(timestamp_t &time);
 
-	void setAlarm(uint16_t seconds);
+	inline void setAlarm(uint16_t seconds) {
+		setAlarm(getTime() + seconds);
+	}
+
 	void setAlarm(timestamp_t &time);
 }

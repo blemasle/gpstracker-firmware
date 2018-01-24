@@ -12,9 +12,9 @@ namespace gps {
 	extern char lastPosition[GPS_POSITION_SIZE];
 	extern SIM808_GPS_STATUS lastStatus;
 
-	void powerOn();
-	void powerOff();
-	
+	inline void powerOn() { hardware::sim808::gpsPowerOn(); }
+	inline void powerOff() { hardware::sim808::gpsPowerOff(); }
+
 	SIM808_GPS_STATUS acquireCurrentPosition();
 	timestamp_t getTime();
 

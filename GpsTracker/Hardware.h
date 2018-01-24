@@ -19,13 +19,14 @@ namespace hardware {
 		void networkPowerOff();
 	}
 
-	namespace rtc {
+	namespace i2c {
 		void powerOn();
 		void powerOff();
-	}
 
-	namespace eeprom {
-		void powerOn();
-		void powerOff();
+		void rtcPowerOn();
+		void rtcPowerOff();
+
+		void eepromPowerOn();
+		void eepromPowerOff();
 	}
 }

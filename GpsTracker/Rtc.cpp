@@ -38,27 +38,7 @@ namespace rtc {
 		}
 
 	}
-
 	
-	void powerOn() {
-		digitalWrite(RTC_PWR, HIGH);
-		pinMode(RTC_PWR, OUTPUT);
-
-		Wire.begin();
-	}
-
-	void powerOff() {
-		pinMode(RTC_PWR, INPUT);
-		digitalWrite(RTC_PWR, LOW);
-
-		//turn off i2c
-		TWCR &= ~(bit(TWEN) | bit(TWIE) | bit(TWEA));
-
-		//disable i2c internal pull ups
-		digitalWrite(A4, LOW);
-		digitalWrite(A5, LOW);
-	}
-
 	void setup() {
 		RTC.control(DS3231_12H, DS3231_OFF); //24 hours clock
 		RTC.control(DS3231_INT_ENABLE, DS3231_OFF); //INTCN OFF
@@ -72,12 +52,6 @@ namespace rtc {
 	void setTime(timestamp_t &time) {
 		details::writeTimeToRegisters(time);
 		RTC.writeTime();
-	}
-
-	void setAlarm(uint16_t seconds) {
-		timestamp_t t = getTime();
-		t = t + seconds;
-		setAlarm(t);
 	}
 
 	void setAlarm(timestamp_t &time) {
