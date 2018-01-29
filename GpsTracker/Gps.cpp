@@ -1,10 +1,10 @@
 #include "Gps.h"
+#include "Config.h"
 #include "Debug.h"
 #include "Hardware.h"
 #include "MainUnit.h"
 
 #define LOGGER_NAME "Gps"
-#define WAIT_FOR_FIX_DELAY 10000
 
 #define TIME_YEAR_OFFSET	0
 #define TIME_MONTH_OFFSET	4
@@ -27,8 +27,8 @@ namespace gps {
 			currentStatus = hardware::sim808::device.getGpsStatus();
 			if (currentStatus > SIM808_GPS_STATUS::NO_FIX) break;
 
-			mainunit::deepSleep(WAIT_FOR_FIX_DELAY);
-			timeout -= WAIT_FOR_FIX_DELAY;
+			mainunit::deepSleep(GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS);
+			timeout -= GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
 		} while (timeout > 1);
 
 		if (currentStatus > SIM808_GPS_STATUS::NO_FIX) {
@@ -37,6 +37,10 @@ namespace gps {
 		}
 
 		return currentStatus;
+	}
+
+	void getVelocity(uint8_t &velocity) {
+		hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::SPEED, &velocity);
 	}
 
 	void getTime(tmElements_t &time) {

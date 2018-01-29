@@ -13,9 +13,8 @@ void setup() {
 }
 
 void loop() {
-
 	gps::powerOn();
-	SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(30000);
+	SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
 	gps::powerOff();
 
 	if (gpsStatus > SIM808_GPS_STATUS::NO_FIX) {
@@ -26,11 +25,15 @@ void loop() {
 		rtc::powerOff();
 
 		positions::appendLast();
+
+		uint8_t velocity;
+		gps::getVelocity(velocity);
+		core::setSleepTime(velocity);
 	}
 
 	if (positions::needsToSend()) {
 		positions::send();
 	}
 
-	mainunit::deepSleep(10); //TODO : duration
+	mainunit::deepSleep(core::sleepTime);
 }

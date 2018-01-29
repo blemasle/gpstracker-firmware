@@ -5,6 +5,7 @@
 #include <SIM808.h>
 
 #include "Debug.h"
+#include "Config.h"
 #include "Core.h"
 
 #include "Gps.h"
