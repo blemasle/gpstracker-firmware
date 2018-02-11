@@ -8,9 +8,7 @@ namespace config {
 	Config value;
 
 	void write() {
-		VERBOSE("writeConfig");
 		hardware::i2c::eeprom.writeBlock(CONFIG_ADDR, value);
-
 		VERBOSE_FORMAT("writeConfig", "%s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 	}
 
@@ -28,7 +26,6 @@ namespace config {
 	}
 
 	void read() {
-		VERBOSE("readConfig");
 		hardware::i2c::eeprom.readBlock(CONFIG_ADDR, value);
 		if (!String(CONFIG_SEED).equals(value.seed)) reset();
 

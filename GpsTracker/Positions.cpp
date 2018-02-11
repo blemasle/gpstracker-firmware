@@ -61,10 +61,12 @@ namespace positions {
 
 	void get(uint16_t &index, PositionEntry &entry) {
 		uint16_t entryAddress = getEntryAddress(index);
-
+		VERBOSE_FORMAT("get", "Reading %d @ %d (%X)", index, entryAddress, entryAddress);
 		storage::powerOn();
 		hardware::i2c::eeprom.readBlock(entryAddress, entry);
 		storage::powerOff();
+
+		VERBOSE_FORMAT("get", "Output index : %d", index);
 	}
 
 	bool needsToSend() {

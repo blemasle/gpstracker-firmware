@@ -29,20 +29,24 @@
 namespace debug {
 
 	enum class GPSTRACKER_DEBUG_COMMAND : uint8_t {
-		NONE = 0,
-		ONCE = 1,
-		RAM = 2,
-		BATTERY = 3,
-		GPS_ON = 4,
-		GPS_OFF = 5,
-		GPS_GET = 6,
-		RTC_ON = 7,
-		RTC_OFF = 8,
-		RTC_GET = 9,
-		RTC_SET = 10,
-		SD_WRITE_TEST = 11,
-		EEPROM_GET_CONFIG = 16,
-		EEPROM_GET_ENTRIES = 17
+		NONE =					0,
+		RUN =					1,
+		ONCE =					2,
+		RAM =					3,
+		BATTERY =				4,
+		GPS_ON =				5,
+		GPS_OFF =				6,
+		GPS_GET =				7,
+		GPS_SET =				8,
+		I2C_ON =				9,
+		I2C_OFF =				10,
+		RTC_GET =				11,
+		RTC_SET =				12,
+		SD_WRITE_TEST =			13,
+		EEPROM_GET_CONFIG =		14,
+		EEPROM_RESET_CONFIG =	15,
+		EEPROM_GET_ENTRIES =	16,
+		EEPROM_ADD_ENTRY =		17
 	};
 
 	void waitForSerial();
@@ -52,12 +56,14 @@ namespace debug {
 
 	void getAndDisplayBattery();
 	void getAndDisplayGpsPosition();
+	void setFakeGpsPosition();
 
 	void getAndDisplayRtcTime();
 	void setRtcTime();
 
 	void getAndDisplayEepromConfig();
 	void getAndDisplayEepromPositions();
+	void addLastPositionToEeprom();
 
 	inline void displayFreeRam() { Serial.println(freeRam()); }
 

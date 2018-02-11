@@ -18,13 +18,13 @@ void setup() {
 }
 
 void loop() {
-	debug::GPSTRACKER_DEBUG_COMMAND command = debug::GPSTRACKER_DEBUG_COMMAND::NONE;
+	debug::GPSTRACKER_DEBUG_COMMAND command = debug::GPSTRACKER_DEBUG_COMMAND::RUN;
 	if(!bypassMenu) command = debug::menu();
 
-	bypassMenu = command == debug::GPSTRACKER_DEBUG_COMMAND::NONE;
+	bypassMenu = command == debug::GPSTRACKER_DEBUG_COMMAND::RUN;
 
 	switch (command) {
-		case debug::GPSTRACKER_DEBUG_COMMAND::NONE:
+		case debug::GPSTRACKER_DEBUG_COMMAND::RUN:
 		case debug::GPSTRACKER_DEBUG_COMMAND::ONCE:
 			core::main();
 			break;
@@ -43,10 +43,13 @@ void loop() {
 		case debug::GPSTRACKER_DEBUG_COMMAND::GPS_GET:
 			debug::getAndDisplayGpsPosition();
 			break;
-		case debug::GPSTRACKER_DEBUG_COMMAND::RTC_ON:
+		case debug::GPSTRACKER_DEBUG_COMMAND::GPS_SET:
+			debug::setFakeGpsPosition();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::I2C_ON:
 			rtc::powerOn();
 			break;
-		case debug::GPSTRACKER_DEBUG_COMMAND::RTC_OFF:
+		case debug::GPSTRACKER_DEBUG_COMMAND::I2C_OFF:
 			rtc::powerOff();
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::RTC_GET:
@@ -58,8 +61,14 @@ void loop() {
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONFIG:
 			debug::getAndDisplayEepromConfig();
 			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_RESET_CONFIG:
+			config::reset();
+			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_ENTRIES:
 			debug::getAndDisplayEepromPositions();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY:
+			debug::addLastPositionToEeprom();
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::SD_WRITE_TEST:
 		default:

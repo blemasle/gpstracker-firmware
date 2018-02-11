@@ -4,24 +4,49 @@
 
 #define MENU_ENTRY(name, text) const char MENU_##name[] PROGMEM = text
 
+const char FAKE_GPS_ENTRY[] PROGMEM = "1,1,20170924074842.000,49.454862,1.144537,71.900,67.99,172.6,1,,1.3,2.2,1.8,,11,7,,,37,,";
+
 MENU_ENTRY(HEADER,			"-- Debug Menu --");
 MENU_ENTRY(SEPARATOR,		"----");
 
-MENU_ENTRY(RUN,					"[0] Run");
-MENU_ENTRY(RUN_ONCE,			"[1] Run once");
-MENU_ENTRY(RAM,					"[2] Free RAM");
-MENU_ENTRY(READ_BATTERY,		"[3] Read battery");
-MENU_ENTRY(GPS_ON,				"[4] GPS On");
-MENU_ENTRY(GPS_OFF,				"[5] GPS Off");
-MENU_ENTRY(GPS_GET,				"[6] Get GPS position");
-MENU_ENTRY(RTC_ON,				"[7] RTC On");
-MENU_ENTRY(RTC_OFF,				"[8] RTC Off");
-MENU_ENTRY(RTC_SET,				"[9] Get RTC time");
-MENU_ENTRY(RTC_GET,				"[10] Set RTC time");
-MENU_ENTRY(SD_WRITE_TEST,		"[11] Write to test file");
-MENU_ENTRY(EEPROM_GET_CONFIG,	"[16] Get EEPROM config");
-MENU_ENTRY(EEPROM_GET_ENTRIES,	"[17] Get EEPROM entries");
+MENU_ENTRY(RUN,					"[R] Run");
+MENU_ENTRY(RUN_ONCE,			"[r] Run once");
+MENU_ENTRY(RAM,					"[f] Free RAM");
+MENU_ENTRY(READ_BATTERY,		"[b] Read battery");
+MENU_ENTRY(GPS_ON,				"[G] GPS On");
+MENU_ENTRY(GPS_OFF,				"[g] GPS Off");
+MENU_ENTRY(GPS_GET,				"[L] Get GPS position");
+MENU_ENTRY(GPS_SET,				"[l] Set last GPS position");
+MENU_ENTRY(I2C_ON,				"[I] I2C devices On");
+MENU_ENTRY(I2C_OFF,				"[i] I2C devices Off");
+MENU_ENTRY(RTC_SET,				"[T] Get RTC time");
+MENU_ENTRY(RTC_GET,				"[t] Set RTC time");
+MENU_ENTRY(SD_WRITE_TEST,		"[W] Write to test file");
+MENU_ENTRY(EEPROM_GET_CONFIG,	"[C] Get EEPROM config");
+MENU_ENTRY(EEPROM_RESET_CONFIG, "[c] Reset EEPROM config");
+MENU_ENTRY(EEPROM_GET_ENTRIES,	"[E] Get EEPROM entries");
+MENU_ENTRY(EEPROM_ADD_ENTRY,	"[e] Add last entry to EEPROM");
 MENU_ENTRY(QUESTION,			"?");
+
+const PROGMEM uint8_t commandIdMapping[] = {
+	'R', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RUN),
+	'r', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::ONCE),
+	'f', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RAM),
+	'b', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::BATTERY),
+	'G', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::GPS_ON),
+	'g', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::GPS_OFF),
+	'L', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::GPS_GET),
+	'l', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::GPS_SET),
+	'I', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::I2C_ON),
+	'i', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::I2C_OFF),
+	'T', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RTC_GET),
+	't', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RTC_SET),
+	'W', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SD_WRITE_TEST),
+	'C', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONFIG),
+	'c', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_RESET_CONFIG),
+	'E', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_ENTRIES),
+	'e', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY),
+};
 
 const char * const MENU_ENTRIES[] PROGMEM = {
 	MENU_HEADER,
@@ -38,11 +63,12 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 	MENU_GPS_ON,
 	MENU_GPS_OFF,
 	MENU_GPS_GET,
+	MENU_GPS_SET,
 
 	MENU_SEPARATOR,
 
-	MENU_RTC_ON,
-	MENU_RTC_OFF,
+	MENU_I2C_ON,
+	MENU_I2C_OFF,
 	MENU_RTC_SET,
 	MENU_RTC_GET,
 
@@ -53,7 +79,9 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 	MENU_SEPARATOR,
 
 	MENU_EEPROM_GET_CONFIG,
+	MENU_EEPROM_RESET_CONFIG,
 	MENU_EEPROM_GET_ENTRIES,
+	MENU_EEPROM_ADD_ENTRY,
 
 	MENU_QUESTION
 };
@@ -75,29 +103,45 @@ namespace debug {
 		return freeRam2();
 	}
 
-	GPSTRACKER_DEBUG_COMMAND menu() {
-		if (!Serial) return GPSTRACKER_DEBUG_COMMAND::NONE;
+	GPSTRACKER_DEBUG_COMMAND parseCommand(char id) {
+		size_t mappingArraySize = flash::getArraySize(commandIdMapping);
+		char commandId;
 
-		uint8_t command;
+		for (uint8_t i = 0; i < mappingArraySize; i += 2) {			
+			commandId = pgm_read_byte_near(commandIdMapping + i);
+			if (commandId == id) return static_cast<GPSTRACKER_DEBUG_COMMAND>(pgm_read_byte_near(commandIdMapping + i + 1));
+		}
+
+		return GPSTRACKER_DEBUG_COMMAND::NONE;
+	}
+
+	GPSTRACKER_DEBUG_COMMAND menu() {
+		if (!Serial) return GPSTRACKER_DEBUG_COMMAND::RUN;
+
+		GPSTRACKER_DEBUG_COMMAND command;
 		size_t menuSize = flash::getArraySize(MENU_ENTRIES);
 		
 		do {		
 			for (uint8_t i = 0; i < menuSize; i++) {
-				Serial.println(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word(&MENU_ENTRIES[i])));
+				Serial.println(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word_near(&MENU_ENTRIES[i])));
 			}
 
-			while (!Serial.available());
-			command = static_cast<uint8_t>(Serial.parseInt());
+			while (!Serial.available());		
+			command = parseCommand(Serial.read());
 			while (Serial.available()) Serial.read();
-		} while (command > static_cast<uint8_t>(GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_ENTRIES));
+		} while (command == GPSTRACKER_DEBUG_COMMAND::NONE);
 		
-		return static_cast<GPSTRACKER_DEBUG_COMMAND>(command);
+		return command;
 	}
 
 	void getAndDisplayGpsPosition() {
 		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
 
 		Log.notice(F("%d %s\n"), gpsStatus, gps::lastPosition);
+	}
+
+	void setFakeGpsPosition() {
+		strncpy_P(gps::lastPosition, FAKE_GPS_ENTRY, GPS_POSITION_SIZE);
 	}
 
 	void getAndDisplayBattery() {
@@ -118,9 +162,7 @@ namespace debug {
 	void getAndDisplayEepromConfig() {
 		hardware::i2c::eepromPowerOn();
 		config::read();
-		hardware::i2c::eepromPowerOff(); 
-		
-		Log.notice(F("%s, %s, %d, %d\n"), config::value.seed, config::value.version, config::value.firstEntry, config::value.lastEntry);
+		hardware::i2c::eepromPowerOff(); 	
 	}
 
 	void getAndDisplayEepromPositions() {
@@ -134,6 +176,14 @@ namespace debug {
 
 		} while (currentEntryIndex != config::value.lastEntry);
 		
+	}
+
+	void addLastPositionToEeprom() {
+		hardware::sim808::powerOn();
+		SIM808ChargingStatus status = hardware::sim808::device.getChargingState();
+		hardware::sim808::powerOff();
+
+		positions::appendLast(status, SIM808_GPS_STATUS::OFF);
 	}
 
 	void setRtcTime() {
