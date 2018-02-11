@@ -27,7 +27,7 @@ namespace gps {
 			currentStatus = hardware::sim808::device.getGpsStatus();
 			if (currentStatus > SIM808_GPS_STATUS::NO_FIX) break;
 
-			mainunit::deepSleep(GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS);
+			mainunit::deepSleep(GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS / 1000);
 			timeout -= GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
 		} while (timeout > 1);
 
