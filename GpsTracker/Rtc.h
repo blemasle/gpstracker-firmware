@@ -20,7 +20,7 @@ namespace rtc {
 	inline void setAlarm(uint16_t seconds) {
 		tmElements_t time;
 		getTime(time);
-		setAlarm(makeTime(time) + seconds); //TODO : use operator
+		setAlarm(makeTime(time) + seconds);
 	}
 
 	void setAlarm(tmElements_t &time);

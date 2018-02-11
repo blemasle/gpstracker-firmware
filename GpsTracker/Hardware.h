@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SIM808.h>
+#include <E24.h>
 
 namespace hardware {
 
@@ -20,6 +21,8 @@ namespace hardware {
 	}
 
 	namespace i2c {
+		extern E24 eeprom;
+
 		void powerOn();
 		void powerOff();
 

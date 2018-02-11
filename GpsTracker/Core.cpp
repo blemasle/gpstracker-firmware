@@ -10,6 +10,7 @@ namespace core {
 	void main() {
 		gps::powerOn();
 		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
+		SIM808ChargingStatus battery = hardware::sim808::device.getChargingState();
 		gps::powerOff();
 
 		if (gpsStatus > SIM808_GPS_STATUS::NO_FIX) {
@@ -19,7 +20,7 @@ namespace core {
 			rtc::setTime(time);
 			rtc::powerOff();
 
-			positions::appendLast();
+			positions::appendLast(battery, gpsStatus);
 
 			uint8_t velocity;
 			gps::getVelocity(velocity);

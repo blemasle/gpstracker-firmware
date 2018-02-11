@@ -39,7 +39,10 @@ namespace debug {
 		RTC_ON = 7,
 		RTC_OFF = 8,
 		RTC_GET = 9,
-		RTC_SET = 10
+		RTC_SET = 10,
+		SD_WRITE_TEST = 11,
+		EEPROM_GET_CONFIG = 16,
+		EEPROM_GET_ENTRIES = 17
 	};
 
 	void waitForSerial();
@@ -52,6 +55,10 @@ namespace debug {
 
 	void getAndDisplayRtcTime();
 	void setRtcTime();
+
+	void getAndDisplayEepromConfig();
+	void getAndDisplayEepromPositions();
+
 	inline void displayFreeRam() { Serial.println(freeRam()); }
 
 }

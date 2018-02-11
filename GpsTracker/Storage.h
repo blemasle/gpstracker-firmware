@@ -10,4 +10,6 @@ namespace storage {
 	inline void powerOff() {
 		hardware::i2c::eepromPowerOff();
 	}
+
+
 }

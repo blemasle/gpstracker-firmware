@@ -6,7 +6,8 @@
 #include <SIM808_Types.h>
 
 #include <Wire.h>
- 
+#include <E24.h>
+
 namespace hardware {
 
 	namespace sim808 {
@@ -70,7 +71,11 @@ namespace hardware {
 		#define DEVICE_RTC 1
 		#define DEVICE_EEPROM 2
 
+		E24 eeprom = E24(E24Size_t::E24_512K);
+
 		uint8_t powered = 0;
+
+		//inline void powered() { digitalRead(I2C_PWR) == HIGH; } //TODO = replace enum with just reading the output pin ?
 
 		void powerOn() {
 			if (powered > 0) return;

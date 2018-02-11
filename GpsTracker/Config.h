@@ -1,9 +1,22 @@
 #pragma once
 
+#include <Arduino.h>
+
 struct sleepTimings_t {
 	uint8_t speed;
 	uint16_t seconds;
 };
+
+struct Config {
+	char seed[5];
+	char version[7];
+	uint16_t firstEntry;
+	uint16_t lastEntry;
+};
+
+#define CONFIG_ADDR 0
+#define CONFIG_SEED "UIYA"
+#define VERSION "1.00"
 
 #define SLEEP_DEFAULT_TIME_SECONDS	1800
 
@@ -11,6 +24,8 @@ struct sleepTimings_t {
 #define GPS_DEFAULT_TOTAL_TIMEOUT_MS		30000
 
 namespace config {
+
+	extern Config value;
 
 	static const sleepTimings_t defaultSleepTimings[] PROGMEM = {
 		{ 5, SLEEP_DEFAULT_TIME_SECONDS },
@@ -22,5 +37,8 @@ namespace config {
 		{ 100, 210 },
 		{ 180, 180 },
 	};
+
+	void read();
+	void write();
 
 }

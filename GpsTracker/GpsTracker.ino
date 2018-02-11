@@ -52,6 +52,14 @@ void loop() {
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::RTC_SET:
 			debug::setRtcTime();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONFIG:
+			debug::getAndDisplayEepromConfig();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_ENTRIES:
+			debug::getAndDisplayEepromPositions();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::SD_WRITE_TEST:
 		default:
 			Serial.println(F("Unsupported command !"));
 	}

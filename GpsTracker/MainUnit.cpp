@@ -1,6 +1,9 @@
 #include "MainUnit.h"
 #include "Rtc.h"
 #include "Pins.h"
+#include "Debug.h"
+
+const char WOKE_UP[] PROGMEM = "Woke up from sleep";
 
 namespace mainunit {
 
@@ -18,11 +21,20 @@ namespace mainunit {
 	}
 
 	void sleep(period_t period) {
+		Log.verbose(F("Sleeping for period : %d"), period);
+		
 		LowPower.powerDown(period, ADC_OFF, BOD_OFF);
+		
+		Log.verbose(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word(WOKE_UP)));
+
 	}
 
 	void deepSleep(uint16_t seconds) {
+		Log.verbose(F("Deep sleeping for %d seconds"), seconds);
+
 		interruptIn(seconds);
 		LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
+		
+		Log.verbose(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word(WOKE_UP)));
 	}
 }
