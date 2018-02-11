@@ -5,14 +5,16 @@ bool bypassMenu = false;
 void setup() {
 #ifdef _DEBUG
 	debug::waitForSerial();
-	Log.begin(LOG_LEVEL_VERBOSE, &Serial);
+	Log.begin(LOG_LEVEL_VERBOSE, &Serial);	
 #else
 	if(Serial) Log.begin(LOG_LEVEL_NOTICE, &Serial);
 #endif
  
 	rtc::powerOn();
 	rtc::setup();
-	rtc::powerOff();	
+	rtc::powerOff();
+
+	hardware::sim808::setup();
 }
 
 void loop() {

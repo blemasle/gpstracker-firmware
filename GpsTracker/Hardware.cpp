@@ -34,7 +34,7 @@ namespace hardware {
 			}
 		}
 
-		void init() {
+		void setup() {
 			device.powerOnOff(true);
 			simSerial.begin(4800);
 

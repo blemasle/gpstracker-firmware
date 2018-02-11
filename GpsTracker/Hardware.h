@@ -11,7 +11,7 @@ namespace hardware {
 		void powerOn();
 		void powerOff();
 
-		void init();
+		void setup();
 
 		void gpsPowerOn();
 		void gpsPowerOff();
