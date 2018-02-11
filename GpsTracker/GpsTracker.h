@@ -8,12 +8,4 @@
 #include "Config.h"
 #include "Core.h"
 
-#include "Gps.h"
-#include "MainUnit.h"
-#include "Network.h"
-#include "Rtc.h"
-#include "Pins.h"
-#include "Positions.h"
-
-
 #define LOGGER_NAME "GpsTracker"

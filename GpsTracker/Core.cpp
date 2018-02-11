@@ -1,22 +1,42 @@
 #include "Core.h"
 #include "Config.h"
+#include "Flash.h"
 
 #define LOGGER_NAME "Core"
 
 namespace core {
 	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;;
 
-	namespace details {
-		template<typename T, size_t N> size_t getFlashArraySize(T(&)[N]) { return N; }
-		template<typename T> void readFromFlash(const T *source, T &dest) {
-			memcpy_P(&dest, source, sizeof(T));
+	void main() {
+		gps::powerOn();
+		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
+		gps::powerOff();
+
+		if (gpsStatus > SIM808_GPS_STATUS::NO_FIX) {
+			tmElements_t time;
+			gps::getTime(time);
+			rtc::powerOn();
+			rtc::setTime(time);
+			rtc::powerOff();
+
+			positions::appendLast();
+
+			uint8_t velocity;
+			gps::getVelocity(velocity);
+			core::setSleepTime(velocity);
 		}
+
+		if (positions::needsToSend()) {
+			positions::send();
+		}
+
+		mainunit::deepSleep(core::sleepTime);
 	}
 
 	void setSleepTime(uint8_t velocity) {
-		for (uint8_t i = 0; i < details::getFlashArraySize(config::defaultSleepTimings); i++) {
+		for (uint8_t i = 0; i < flash::getFlashArraySize(config::defaultSleepTimings); i++) {
 			sleepTimings_t timing;
-			details::readFromFlash(&config::defaultSleepTimings[i], timing);
+			flash::readFromFlash(&config::defaultSleepTimings[i], timing);
 
 			if (velocity > timing.speed) continue;
 

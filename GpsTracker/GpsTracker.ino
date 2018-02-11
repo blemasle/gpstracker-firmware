@@ -1,39 +1,58 @@
 #include "GpsTracker.h"
 
+bool bypassMenu = false;
 
 void setup() {
 #ifdef _DEBUG
 	debug::waitForSerial();
 	Log.begin(LOG_LEVEL_VERBOSE, &Serial);
+#else
+	if(Serial) Log.begin(LOG_LEVEL_NOTICE, &Serial);
 #endif
-
+ 
 	rtc::powerOn();
 	rtc::setup();
-	rtc::powerOff();
+	rtc::powerOff();	
 }
 
 void loop() {
-	gps::powerOn();
-	SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
-	gps::powerOff();
+	debug::GPSTRACKER_DEBUG_COMMAND command = debug::GPSTRACKER_DEBUG_COMMAND::NONE;
+	if(!bypassMenu) command = debug::menu();
 
-	if (gpsStatus > SIM808_GPS_STATUS::NO_FIX) {
-		tmElements_t time;
-		gps::getTime(time);
-		rtc::powerOn();
-		rtc::setTime(time);
-		rtc::powerOff();
+	bypassMenu = command == debug::GPSTRACKER_DEBUG_COMMAND::NONE;
 
-		positions::appendLast();
-
-		uint8_t velocity;
-		gps::getVelocity(velocity);
-		core::setSleepTime(velocity);
+	switch (command) {
+		case debug::GPSTRACKER_DEBUG_COMMAND::NONE:
+		case debug::GPSTRACKER_DEBUG_COMMAND::ONCE:
+			core::main();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::RAM:
+			debug::displayFreeRam();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::BATTERY:
+			debug::getAndDisplayBattery();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::GPS_ON:
+			gps::powerOn();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::GPS_OFF:
+			gps::powerOff();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::GPS_GET:
+			debug::getAndDisplayGpsPosition();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::RTC_ON:
+			rtc::powerOn();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::RTC_OFF:
+			rtc::powerOff();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::RTC_GET:
+			debug::getAndDisplayRtcTime();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::RTC_SET:
+			debug::setRtcTime();
+		default:
+			Serial.println(F("Unsupported command !"));
 	}
-
-	if (positions::needsToSend()) {
-		positions::send();
-	}
-
-	mainunit::deepSleep(core::sleepTime);
 }
