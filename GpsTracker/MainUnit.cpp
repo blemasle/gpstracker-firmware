@@ -21,7 +21,7 @@ namespace mainunit {
 	}
 
 	void sleep(period_t period) {
-		Log.verbose(F("Sleeping for period : %d"), period);
+		Log.notice(F("Sleeping for period : %d"), period);
 		
 		LowPower.powerDown(period, ADC_OFF, BOD_OFF);
 		
@@ -30,11 +30,12 @@ namespace mainunit {
 	}
 
 	void deepSleep(uint16_t seconds) {
-		Log.verbose(F("Deep sleeping for %d seconds"), seconds);
+		Log.notice(F("Deep sleeping for %d seconds"), seconds);
 
 		interruptIn(seconds);
+		Log.verbose("interruptIn done !");
 		LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
-		
+		Log.verbose("hola");
 		Log.verbose(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word(WOKE_UP)));
 	}
 }

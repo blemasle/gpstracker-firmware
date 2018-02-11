@@ -4,8 +4,8 @@
 
 namespace flash {
 
-	template<typename T, size_t N> size_t getFlashArraySize(T(&)[N]) { return N; }
-	template<typename T> void readFromFlash(const T *source, T &dest) {
+	template<typename T, size_t N> size_t getArraySize(T(&)[N]) { return N; }
+	template<typename T> void read(const T *source, T &dest) {
 		memcpy_P(&dest, source, sizeof(T));
 	}
 }

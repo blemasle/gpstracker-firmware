@@ -35,9 +35,9 @@ namespace core {
 	}
 
 	void setSleepTime(uint8_t velocity) {
-		for (uint8_t i = 0; i < flash::getFlashArraySize(config::defaultSleepTimings); i++) {
+		for (uint8_t i = 0; i < flash::getArraySize(config::defaultSleepTimings); i++) {
 			sleepTimings_t timing;
-			flash::readFromFlash(&config::defaultSleepTimings[i], timing);
+			flash::read(&config::defaultSleepTimings[i], timing);
 
 			if (velocity > timing.speed) continue;
 

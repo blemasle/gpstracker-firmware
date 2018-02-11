@@ -9,7 +9,7 @@ MENU_ENTRY(SEPARATOR,		"----");
 
 MENU_ENTRY(RUN,					"[0] Run");
 MENU_ENTRY(RUN_ONCE,			"[1] Run once");
-MENU_ENTRY(RAM,					"[2] Read battery");
+MENU_ENTRY(RAM,					"[2] Free RAM");
 MENU_ENTRY(READ_BATTERY,		"[3] Read battery");
 MENU_ENTRY(GPS_ON,				"[4] GPS On");
 MENU_ENTRY(GPS_OFF,				"[5] GPS Off");
@@ -18,7 +18,7 @@ MENU_ENTRY(RTC_ON,				"[7] RTC On");
 MENU_ENTRY(RTC_OFF,				"[8] RTC Off");
 MENU_ENTRY(RTC_SET,				"[9] Get RTC time");
 MENU_ENTRY(RTC_GET,				"[10] Set RTC time");
-MENU_ENTRY(SD_WRITE_TEST		"[11] Write to test file");
+MENU_ENTRY(SD_WRITE_TEST,		"[11] Write to test file");
 MENU_ENTRY(EEPROM_GET_CONFIG,	"[16] Get EEPROM config");
 MENU_ENTRY(EEPROM_GET_ENTRIES,	"[17] Get EEPROM entries");
 MENU_ENTRY(QUESTION,			"?");
@@ -46,9 +46,16 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 	MENU_RTC_SET,
 	MENU_RTC_GET,
 
+	MENU_SEPARATOR,
+
+	MENU_SD_WRITE_TEST,
+
+	MENU_SEPARATOR,
+
+	MENU_EEPROM_GET_CONFIG,
+	MENU_EEPROM_GET_ENTRIES,
+
 	MENU_QUESTION
-
-
 };
 
 int freeRam2() { // dirty hack because putting it in namespace doesn't compile
@@ -61,7 +68,7 @@ namespace debug {
 
 	void waitForSerial() {
 		while (!Serial);
-		Serial.begin(DEBUG_SERIAL_SPEED);
+		Serial.println("Starting !");
 	}
 
 	int freeRam() {
@@ -72,15 +79,17 @@ namespace debug {
 		if (!Serial) return GPSTRACKER_DEBUG_COMMAND::NONE;
 
 		uint8_t command;
-
-		while (command > static_cast<uint8_t>(GPSTRACKER_DEBUG_COMMAND::RTC_SET)) {
-			for (uint8_t i = 0; i < flash::getFlashArraySize(MENU_ENTRIES); i++) {
-				Serial.println(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word(MENU_ENTRIES[i])));
+		size_t menuSize = flash::getArraySize(MENU_ENTRIES);
+		
+		do {		
+			for (uint8_t i = 0; i < menuSize; i++) {
+				Serial.println(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word(&MENU_ENTRIES[i])));
 			}
 
 			while (!Serial.available());
 			command = static_cast<uint8_t>(Serial.parseInt());
-		}
+			while (Serial.available()) Serial.read();
+		} while (command > static_cast<uint8_t>(GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_ENTRIES));
 		
 		return static_cast<GPSTRACKER_DEBUG_COMMAND>(command);
 	}
@@ -88,20 +97,22 @@ namespace debug {
 	void getAndDisplayGpsPosition() {
 		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
 
-		Log.notice(F("%d %s"), gpsStatus, gps::lastPosition);
+		Log.notice(F("%d %s\n"), gpsStatus, gps::lastPosition);
 	}
 
 	void getAndDisplayBattery() {
+		hardware::sim808::powerOn();
 		SIM808ChargingStatus status = hardware::sim808::device.getChargingState();
+		hardware::sim808::powerOff();
 
-		Log.notice(F("%d %d%% %dmV"), status.state, status.level, status.voltage);
+		Log.notice(F("%d %d%% %dmV\n"), status.state, status.level, status.voltage);
 	}
 
 	void getAndDisplayRtcTime() {
 		tmElements_t time;
 		rtc::getTime(time);
 
-		Log.notice(F("%d/%d/%d %d:%d:%d"), time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second);
+		Log.notice(F("%d/%d/%d %d:%d:%d\n"), tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
 
 	void getAndDisplayEepromConfig() {
@@ -109,7 +120,7 @@ namespace debug {
 		config::read();
 		hardware::i2c::eepromPowerOff(); 
 		
-		Log.notice(F("%s, %s, %d, %d"), config::value.seed, config::value.version, config::value.firstEntry, config::value.lastEntry);
+		Log.notice(F("%s, %s, %d, %d\n"), config::value.seed, config::value.version, config::value.firstEntry, config::value.lastEntry);
 	}
 
 	void getAndDisplayEepromPositions() {
@@ -119,7 +130,7 @@ namespace debug {
 
 		do {
 			positions::get(currentEntryIndex, currentEntry);
-			Log.notice(F("%d%%, %dmV, %d, %s"), currentEntry.battery.level, currentEntry.battery.voltage, currentEntry.status, currentEntry.position);
+			Log.notice(F("%d%%, %dmV, %d, %s\n"), currentEntry.battery.level, currentEntry.battery.voltage, currentEntry.status, currentEntry.position);
 
 		} while (currentEntryIndex != config::value.lastEntry);
 		

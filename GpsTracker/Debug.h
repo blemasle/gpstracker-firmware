@@ -24,7 +24,7 @@
 
 #endif
 
-#define DEBUG_SERIAL_SPEED 9600
+#define DEBUG_SERIAL_SPEED 115200
 
 namespace debug {
 
