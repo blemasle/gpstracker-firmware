@@ -24,4 +24,4 @@ typedef struct {
 
 /* low level functions to convert to and from system time                     */
 void breakTime(const timestamp_t time, tmElements_t &tm);  // break timestamp_t into elements
-timestamp_t makeTime(const tmElements_t &tm);  // convert time elements into timestamp_t
+timestamp_t makeTimestamp(const tmElements_t &tm);  // convert time elements into timestamp_t

@@ -95,7 +95,7 @@ void breakTime(const timestamp_t timeInput, tmElements_t &tm) {
 }
 
 __attribute__((__optimize__("O2")))
-timestamp_t makeTime(const tmElements_t &tm) {
+timestamp_t makeTimestamp(const tmElements_t &tm) {
 	// assemble time elements into timestamp_t 
 	// note year argument is offset from 1970 (see macros in time.h to convert to other formats)
 	// previous version used full four digit year (or digits since 2000),i.e. 2009 was 2009 or 9

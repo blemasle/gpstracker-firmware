@@ -47,13 +47,27 @@ namespace rtc {
 		RTC.writeTime();
 	}
 
+	void setAlarm(uint16_t seconds) {
+		tmElements_t currentTime;
+		tmElements_t alarmTime;
+
+		getTime(currentTime);
+
+		breakTime(makeTimestamp(currentTime) + seconds, alarmTime);
+
+		setAlarm(alarmTime);
+	}
+
 	void setAlarm(tmElements_t &time) {
 		tmElements_t currentTime;
+		
 		getTime(currentTime);
 		Log.verbose(F("Current time : %d/%d/%d %d:%d:%d\n"), tmYearToCalendar(currentTime.Year), currentTime.Month, currentTime.Day, currentTime.Hour, currentTime.Minute, currentTime.Second);
-		Log.notice(F("Set alarm to : %d/%d/%d %d:%d:%d\n"), tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
+		
 		details::writeTimeToRegisters(time);
 		RTC.writeAlarm1(DS3231_ALM_DTHMS);
+		getTime(currentTime);
+		Log.notice(F("Set alarm to : %d/%d/%d %d:%d:%d\n"), tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 
 		RTC.control(DS3231_A1_FLAG, DS3231_OFF); //reset Alarm 1 flag
 		RTC.control(DS3231_A1_INT_ENABLE, DS3231_ON); //Alarm 1 ON
