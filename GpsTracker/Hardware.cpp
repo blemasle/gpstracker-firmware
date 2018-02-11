@@ -39,7 +39,7 @@ namespace hardware {
 			simSerial.begin(4800);
 
 			device.begin(simSerial);
-			device.init();
+			device.powerOnOff(false);
 		}
 
 		void gpsPowerOn() {
