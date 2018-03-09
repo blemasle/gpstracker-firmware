@@ -96,6 +96,7 @@ namespace debug {
 
 	void waitForSerial() {
 		while (!Serial);
+		Serial.begin(DEBUG_SERIAL_SPEED);
 		Serial.println("Starting !");
 	}
 
@@ -142,6 +143,7 @@ namespace debug {
 
 	void setFakeGpsPosition() {
 		strncpy_P(gps::lastPosition, FAKE_GPS_ENTRY, GPS_POSITION_SIZE);
+		Log.notice(F("Last position set to : %s\n"), gps::lastPosition);
 	}
 
 	void getAndDisplayBattery() {
@@ -160,9 +162,7 @@ namespace debug {
 	}
 
 	void getAndDisplayEepromConfig() {
-		hardware::i2c::eepromPowerOn();
 		config::read();
-		hardware::i2c::eepromPowerOff(); 	
 	}
 
 	void getAndDisplayEepromPositions() {

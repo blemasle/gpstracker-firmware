@@ -1,5 +1,6 @@
 #include "Hardware.h"
 #include "Pins.h"
+#include "Debug.h"
 
 #include <SoftwareSerial.h>
 #include <SIM808.h>
@@ -8,7 +9,10 @@
 #include <Wire.h>
 #include <E24.h>
 
+
 namespace hardware {
+
+#define LOGGER_NAME "Hardware::sim808"
 
 	namespace sim808 {
 		SoftwareSerial simSerial = SoftwareSerial(SIM_TX, SIM_RX);
@@ -66,6 +70,8 @@ namespace hardware {
 		}
 	}
 
+#define LOGGER_NAME "Hardware::i2c"
+
 	namespace i2c {
 
 		#define DEVICE_RTC 1
@@ -74,12 +80,12 @@ namespace hardware {
 		E24 eeprom = E24(E24Size_t::E24_512K);
 
 		uint8_t powered = 0;
+		uint8_t poweredCount = 0;
 
 		//inline void powered() { digitalRead(I2C_PWR) == HIGH; } //TODO = replace enum with just reading the output pin ?
 
 		void powerOn() {
-			if (powered > 0) return;
-
+			VERBOSE("powerOn");
 			digitalWrite(I2C_PWR, HIGH);
 			pinMode(I2C_PWR, OUTPUT);
 
@@ -87,6 +93,7 @@ namespace hardware {
 		}
 
 		void powerOff() {
+			VERBOSE("powerOff");
 			pinMode(I2C_PWR, INPUT);
 			digitalWrite(I2C_PWR, LOW);
 
@@ -98,12 +105,19 @@ namespace hardware {
 			digitalWrite(A5, LOW);
 		}
 
-		inline void powerOffIfUnused() {
-			if (!powered) powerOff();
+		void powerOnIfPoweredOff() {
+			if (!poweredCount) powerOn();
+			poweredCount++;
+		}
+
+		void powerOffIfUnused() {
+			if (!poweredCount) return;
+			poweredCount--;
+			if (!poweredCount) powerOff();
 		}
 
 		void rtcPowerOn() {
-			powerOn();
+			powerOnIfPoweredOff();
 			powered |= DEVICE_RTC;
 		}
 
@@ -113,7 +127,7 @@ namespace hardware {
 		}
 
 		void eepromPowerOn() {
-			powerOn();
+			powerOnIfPoweredOff();
 			powered |= DEVICE_EEPROM;
 		}
 

@@ -18,6 +18,7 @@ void setup() {
 }
 
 void loop() {
+
 	debug::GPSTRACKER_DEBUG_COMMAND command = debug::GPSTRACKER_DEBUG_COMMAND::RUN;
 	if(!bypassMenu) command = debug::menu();
 

@@ -8,8 +8,10 @@ namespace config {
 	Config value;
 
 	void write() {
-		hardware::i2c::eeprom.writeBlock(CONFIG_ADDR, value);
 		VERBOSE_FORMAT("writeConfig", "%s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+		hardware::i2c::eepromPowerOn();
+		int written = hardware::i2c::eeprom.writeBlock(CONFIG_ADDR, value);
+		hardware::i2c::eepromPowerOff();
 	}
 
 	void reset() {
@@ -23,12 +25,16 @@ namespace config {
 
 		value = config;
 		write();
+
+		VERBOSE_FORMAT("resetConfig", "value : %s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 	}
 
 	void read() {
+		hardware::i2c::eepromPowerOn();
 		hardware::i2c::eeprom.readBlock(CONFIG_ADDR, value);
 		if (!String(CONFIG_SEED).equals(value.seed)) reset();
 
 		VERBOSE_FORMAT("readConfig", "%s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+		hardware::i2c::eepromPowerOff();
 	}	
 }
