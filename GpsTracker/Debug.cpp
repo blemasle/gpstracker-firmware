@@ -142,7 +142,7 @@ namespace debug {
 	}
 
 	void setFakeGpsPosition() {
-		strncpy_P(gps::lastPosition, FAKE_GPS_ENTRY, GPS_POSITION_SIZE);
+		strlcpy_P(gps::lastPosition, FAKE_GPS_ENTRY, GPS_POSITION_SIZE);
 		Log.notice(F("Last position set to : %s\n"), gps::lastPosition);
 	}
 
@@ -191,6 +191,6 @@ namespace debug {
 		gps::getTime(time);
 		rtc::setTime(time);
 
-		Log.notice(F("OK"));
+		Log.notice(F("OK\n"));
 	}
 }

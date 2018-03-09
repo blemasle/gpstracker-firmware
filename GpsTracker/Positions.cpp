@@ -42,7 +42,7 @@ namespace positions {
 		uint16_t entryAddress;
 		
 		PositionEntry entry = { battery, gpsStatus };
-		strncpy(entry.position, gps::lastPosition, POSITION_SIZE);
+		strlcpy(entry.position, gps::lastPosition, POSITION_SIZE);
 
 		storage::powerOn();
 		config::read();
