@@ -47,12 +47,6 @@ void loop() {
 		case debug::GPSTRACKER_DEBUG_COMMAND::GPS_SET:
 			debug::setFakeGpsPosition();
 			break;
-		case debug::GPSTRACKER_DEBUG_COMMAND::I2C_ON:
-			rtc::powerOn();
-			break;
-		case debug::GPSTRACKER_DEBUG_COMMAND::I2C_OFF:
-			rtc::powerOff();
-			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::RTC_GET:
 			debug::getAndDisplayRtcTime();
 			break;

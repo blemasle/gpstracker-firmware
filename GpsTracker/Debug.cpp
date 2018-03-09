@@ -17,8 +17,6 @@ MENU_ENTRY(GPS_ON,				"[G] GPS On");
 MENU_ENTRY(GPS_OFF,				"[g] GPS Off");
 MENU_ENTRY(GPS_GET,				"[L] Get GPS position");
 MENU_ENTRY(GPS_SET,				"[l] Set last GPS position");
-MENU_ENTRY(I2C_ON,				"[I] I2C devices On");
-MENU_ENTRY(I2C_OFF,				"[i] I2C devices Off");
 MENU_ENTRY(RTC_SET,				"[T] Get RTC time");
 MENU_ENTRY(RTC_GET,				"[t] Set RTC time");
 MENU_ENTRY(SD_WRITE_TEST,		"[W] Write to test file");
@@ -37,8 +35,6 @@ const PROGMEM uint8_t commandIdMapping[] = {
 	'g', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::GPS_OFF),
 	'L', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::GPS_GET),
 	'l', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::GPS_SET),
-	'I', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::I2C_ON),
-	'i', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::I2C_OFF),
 	'T', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RTC_GET),
 	't', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RTC_SET),
 	'W', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SD_WRITE_TEST),
@@ -67,8 +63,6 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 
 	MENU_SEPARATOR,
 
-	MENU_I2C_ON,
-	MENU_I2C_OFF,
 	MENU_RTC_SET,
 	MENU_RTC_GET,
 

@@ -35,19 +35,28 @@ namespace rtc {
 	}
 	
 	void setup() {
+		hardware::i2c::rtcPowerOn();
 		RTC.control(DS3231_12H, DS3231_OFF); //24 hours clock
 		RTC.control(DS3231_INT_ENABLE, DS3231_OFF); //INTCN OFF
+		hardware::i2c::rtcPowerOff();
 	}
 
 	void getTime(tmElements_t &time) {
+		hardware::i2c::rtcPowerOn();
 		RTC.readTime();
+		hardware::i2c::rtcPowerOff();
+
 		details::readTimeFromRegisters(time);
+		VERBOSE_FORMAT("getTime", "%d / %d / %d %d:%d : %d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
 
 	void setTime(tmElements_t &time) {
 		VERBOSE_FORMAT("setTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 		details::writeTimeToRegisters(time);
+
+		hardware::i2c::rtcPowerOn();
 		RTC.writeTime();
+		hardware::i2c::rtcPowerOff();
 	}
 
 	void setAlarm(uint16_t seconds) {
@@ -55,26 +64,24 @@ namespace rtc {
 		tmElements_t alarmTime;
 
 		getTime(currentTime);
-
 		breakTime(makeTimestamp(currentTime) + seconds, alarmTime);
 
 		setAlarm(alarmTime);
 	}
 
 	void setAlarm(tmElements_t &time) {
-		tmElements_t currentTime;
-		
-		getTime(currentTime);
-		Log.verbose(F("Current time : %d/%d/%d %d:%d:%d\n"), tmYearToCalendar(currentTime.Year), currentTime.Month, currentTime.Day, currentTime.Hour, currentTime.Minute, currentTime.Second);
-		
 		details::writeTimeToRegisters(time);
+
+		hardware::i2c::rtcPowerOn();
 		RTC.writeAlarm1(DS3231_ALM_DTHMS);
-		getTime(currentTime);
-		Log.notice(F("Set alarm to : %d/%d/%d %d:%d:%d\n"), tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 
 		RTC.control(DS3231_A1_FLAG, DS3231_OFF); //reset Alarm 1 flag
 		RTC.control(DS3231_A1_INT_ENABLE, DS3231_ON); //Alarm 1 ON
 		RTC.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN ON
+		hardware::i2c::rtcPowerOff();
+
+		Log.notice(F("Set alarm to : %d/%d/%d %d:%d:%d\n"), tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
+
 	}
 
 }

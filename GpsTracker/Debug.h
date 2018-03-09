@@ -38,8 +38,6 @@ namespace debug {
 		GPS_OFF =				6,
 		GPS_GET =				7,
 		GPS_SET =				8,
-		I2C_ON =				9,
-		I2C_OFF =				10,
 		RTC_GET =				11,
 		RTC_SET =				12,
 		SD_WRITE_TEST =			13,
