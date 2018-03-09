@@ -1,3 +1,5 @@
+#include "Debug.h"
+
 #include "Rtc.h"
 #include "Pins.h"
 
@@ -43,6 +45,7 @@ namespace rtc {
 	}
 
 	void setTime(tmElements_t &time) {
+		VERBOSE_FORMAT("setTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 		details::writeTimeToRegisters(time);
 		RTC.writeTime();
 	}
