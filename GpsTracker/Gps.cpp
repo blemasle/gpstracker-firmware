@@ -16,7 +16,7 @@
 namespace gps {
 
 	namespace details {
-		uint8_t getTmCompoment(char *buffer, char *start, uint8_t size) {
+		uint8_t parseSubstring(char *buffer, char *start, uint8_t size) {
 			strlcpy(buffer, start, size + 1);
 			return static_cast<uint8_t>(strtoul(buffer, NULL, 10));
 		}
@@ -51,17 +51,16 @@ namespace gps {
 	void getTime(tmElements_t &time) {
 		char *timeStr;
 		char buffer[5];
-		char* end;
 		hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::UTC, &timeStr);
 
 		VERBOSE_FORMAT("getTime", "%s", timeStr);
 
-		time.Year = CalendarYrToTm(details::getTmCompoment(buffer, timeStr + TIME_YEAR_OFFSET, 4));
-		time.Month = details::getTmCompoment(buffer, timeStr + TIME_MONTH_OFFSET, 2);
-		time.Day = details::getTmCompoment(buffer, timeStr + TIME_DAY_OFFSET, 2);
-		time.Hour = details::getTmCompoment(buffer, timeStr + TIME_HOUR_OFFSET, 2);
-		time.Minute = details::getTmCompoment(buffer, timeStr + TIME_MINUTE_OFFSET, 2);
-		time.Second = details::getTmCompoment(buffer, timeStr + TIME_SECOND_OFFSET, 2);
+		time.Year = CalendarYrToTm(details::parseSubstring(buffer, timeStr + TIME_YEAR_OFFSET, 4));
+		time.Month = details::parseSubstring(buffer, timeStr + TIME_MONTH_OFFSET, 2);
+		time.Day = details::parseSubstring(buffer, timeStr + TIME_DAY_OFFSET, 2);
+		time.Hour = details::parseSubstring(buffer, timeStr + TIME_HOUR_OFFSET, 2);
+		time.Minute = details::parseSubstring(buffer, timeStr + TIME_MINUTE_OFFSET, 2);
+		time.Second = details::parseSubstring(buffer, timeStr + TIME_SECOND_OFFSET, 2);
 
 		VERBOSE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
