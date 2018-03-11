@@ -16,9 +16,7 @@ namespace core {
 		if (gpsStatus > SIM808_GPS_STATUS::NO_FIX) {
 			tmElements_t time;
 			gps::getTime(time);
-			rtc::powerOn();
 			rtc::setTime(time);
-			rtc::powerOff();
 
 			positions::appendLast(battery, gpsStatus);
 
