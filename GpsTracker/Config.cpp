@@ -35,7 +35,7 @@ namespace config {
 		};
 
 		value = config;
-		format();
+		//format();
 		write();
 
 		VERBOSE_FORMAT("reset", "value : %s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);

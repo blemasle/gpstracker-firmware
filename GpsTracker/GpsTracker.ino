@@ -10,10 +10,9 @@ void setup() {
 	if(Serial) Log.begin(LOG_LEVEL_NOTICE, &Serial);
 #endif
  
-	rtc::powerOn();
-	rtc::setup();
-	rtc::powerOff();
+	config::read();
 
+	rtc::setup();
 	hardware::sim808::setup();
 }
 
