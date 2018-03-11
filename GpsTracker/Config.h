@@ -10,19 +10,19 @@ struct sleepTimings_t {
 struct Config {
 	char seed[5];
 	char version[5];
+	char apn[20];
 	uint16_t firstEntry;
 	uint16_t lastEntry;
-	char apn[20];
 };
 
 #define CONFIG_ADDR 0
-#define CONFIG_SEED "UIYB"
+#define CONFIG_SEED "UIYA"
 #define VERSION "1.00"
 
 #define SLEEP_DEFAULT_TIME_SECONDS	1800
 
 #define GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS	10000
-#define GPS_DEFAULT_TOTAL_TIMEOUT_MS		30000
+#define GPS_DEFAULT_TOTAL_TIMEOUT_MS		180000
 
 namespace config {
 

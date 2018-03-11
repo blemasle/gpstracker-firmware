@@ -44,9 +44,9 @@ namespace config {
 		Config config = {
 			CONFIG_SEED,
 			VERSION,
+			"Vodafone", //TODO : read from SD
 			0xFFFF,
 			0xFFFF,
-			"Vodafone" //TODO : read from SD
 		};
 
 		value = config;
