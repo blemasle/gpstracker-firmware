@@ -11,19 +11,19 @@ namespace config {
 
 		void read() {
 			VERBOSE("read");
-			hardware::i2c::eepromPowerOn();
+			hardware::i2c::powerOn();
 			hardware::i2c::eeprom.readBlock(CONFIG_ADDR, value);
 			if (!String(CONFIG_SEED).equals(value.seed)) reset();
-			hardware::i2c::eepromPowerOff();
+			hardware::i2c::powerOff();
 
 		}
 
 		void write() {
 			VERBOSE_FORMAT("write", "%s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 
-			hardware::i2c::eepromPowerOn();
+			hardware::i2c::powerOn();
 			int written = hardware::i2c::eeprom.writeBlock(CONFIG_ADDR, value);
-			hardware::i2c::eepromPowerOff();
+			hardware::i2c::powerOff();
 		}
 	}
 
@@ -45,7 +45,8 @@ namespace config {
 			CONFIG_SEED,
 			VERSION,
 			0xFFFF,
-			0xFFFF
+			0xFFFF,
+			"2degrees Internet" //TODO : read from SD
 		};
 
 		value = config;

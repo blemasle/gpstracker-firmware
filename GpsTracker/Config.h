@@ -9,9 +9,10 @@ struct sleepTimings_t {
 
 struct Config {
 	char seed[5];
-	char version[7];
+	char version[5];
 	uint16_t firstEntry;
 	uint16_t lastEntry;
+	char apn[20];
 };
 
 #define CONFIG_ADDR 0
