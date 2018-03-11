@@ -38,7 +38,8 @@ namespace rtc {
 		VERBOSE("setup");
 		hardware::i2c::powerOn();
 		RTC.control(DS3231_12H, DS3231_OFF); //24 hours clock
-		RTC.control(DS3231_INT_ENABLE, DS3231_OFF); //INTCN OFF
+		RTC.control(DS3231_A1_INT_ENABLE, DS3231_OFF); //Alarm 1 OFF
+		RTC.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN OFF
 		hardware::i2c::powerOff();
 	}
 
@@ -81,8 +82,7 @@ namespace rtc {
 		RTC.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN ON
 		hardware::i2c::powerOff();
 
-		Log.notice(F("Set alarm to : %d/%d/%d %d:%d:%d\n"), tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
-
+		NOTICE_FORMAT("setAlarm", "Next alarm : %d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
 
 }
