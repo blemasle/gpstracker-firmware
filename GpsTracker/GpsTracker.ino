@@ -1,5 +1,5 @@
 #include "GpsTracker.h"
-
+#include "Positions.h"
 bool bypassMenu = false;
 
 void setup() {
@@ -9,7 +9,9 @@ void setup() {
 #else
 	if(Serial) Log.begin(LOG_LEVEL_NOTICE, &Serial);
 #endif
- 
+
+	Serial.println(sizeof(PositionEntry));
+	Serial.println(sizeof(PositionEntryMetadata));
 	rtc::setup();
 	hardware::sim808::setup();
 }

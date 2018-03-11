@@ -15,4 +15,5 @@ namespace core {
 
 	void main();
 	void setSleepTime(uint8_t velocity);
+	void updateSleepTime();
 }

@@ -7,9 +7,11 @@ namespace rtc {
 	void setup();
 
 	float getTemperature();
+	timestamp_t getTime();
 	void getTime(tmElements_t &time);
-	void setTime(tmElements_t &time);
+	void setTime(timestamp_t time);
+	void setTime(const tmElements_t &time);
 
 	void setAlarm(uint16_t seconds);
-	void setAlarm(tmElements_t &time);
+	void setAlarm(const tmElements_t &time);
 }

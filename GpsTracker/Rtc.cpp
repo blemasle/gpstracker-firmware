@@ -22,7 +22,7 @@ namespace rtc {
 			time.Year = CalendarYrToTm(RTC.yyyy);
 		}
 
-		void writeTimeToRegisters(tmElements_t &time) {
+		void writeTimeToRegisters(const tmElements_t &time) {
 			RTC.s = time.Second;
 			RTC.m = time.Minute;
 			RTC.h = time.Hour;
@@ -51,6 +51,12 @@ namespace rtc {
 		return temperature;
 	}
 
+	timestamp_t getTime() {
+		tmElements_t time;
+		getTime(time);
+		return makeTimestamp(time);
+	}
+
 	void getTime(tmElements_t &time) {
 		hardware::i2c::powerOn();
 		RTC.readTime();
@@ -60,7 +66,13 @@ namespace rtc {
 		VERBOSE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
 
-	void setTime(tmElements_t &time) {
+	void setTime(const timestamp_t timestamp) {
+		tmElements_t time;
+		breakTime(timestamp, time);
+		setTime(time);
+	}
+
+	void setTime(const tmElements_t &time) {
 		VERBOSE_FORMAT("setTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 		details::writeTimeToRegisters(time);
 
@@ -79,7 +91,7 @@ namespace rtc {
 		setAlarm(alarmTime);
 	}
 
-	void setAlarm(tmElements_t &time) {
+	void setAlarm(const tmElements_t &time) {
 		details::writeTimeToRegisters(time);
 
 		hardware::i2c::powerOn();

@@ -107,7 +107,7 @@ namespace debug {
 
 	namespace details {
 		inline void displayPosition(PositionEntry entry) {
-			Log.notice(F("%d%%, %dmV, %f°C, %d, %s\n"), entry.battery.level, entry.battery.voltage, entry.temperature, entry.status, entry.position);
+			Log.notice(F("%d%%, %dmV, %f°C, %ds %d, %s\n"), entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
 		}
 	}
 
@@ -223,7 +223,15 @@ namespace debug {
 		SIM808ChargingStatus status = hardware::sim808::device.getChargingState();
 		hardware::sim808::powerOff();
 
-		positions::appendLast(status, SIM808_GPS_STATUS::OFF, rtc::getTemperature());
+		PositionEntryMetadata metadata = {
+			status.level,
+			status.voltage,
+			rtc::getTemperature(),
+			0,
+			SIM808_GPS_STATUS::OFF
+		};
+
+		positions::appendLast(metadata);
 	}
 
 	void setRtcTime() {

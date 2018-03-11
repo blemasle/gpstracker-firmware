@@ -10,28 +10,22 @@ namespace core {
 	void main() {
 		VERBOSE("main");
 
-		gps::powerOn();
-		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
-		SIM808ChargingStatus battery = hardware::sim808::device.getChargingState();
-		gps::powerOff();
-
-		if (gpsStatus > SIM808_GPS_STATUS::NO_FIX) {
-			tmElements_t time;
-			gps::getTime(time);
-			rtc::setTime(time);
-
-			positions::appendLast(battery, gpsStatus, rtc::getTemperature());
-
-			uint8_t velocity;
-			gps::getVelocity(velocity);
-			core::setSleepTime(velocity);
+		PositionEntryMetadata metadata;
+		if (positions::acquire(metadata)) {
+			positions::appendLast(metadata);
+			updateSleepTime();
 		}
 
 		if (positions::needsToSend()) {
 			positions::send();
 		}
+	}
 
-		mainunit::deepSleep(core::sleepTime);
+	void updateSleepTime() {
+		VERBOSE("updateSleepTime");
+		uint8_t velocity;
+		gps::getVelocity(velocity);
+		setSleepTime(velocity);
 	}
 
 	void setSleepTime(uint8_t velocity) {

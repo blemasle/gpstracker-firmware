@@ -19,16 +19,46 @@ namespace positions {
 		return ENTRIES_ADDR + (ENTRY_RESERVED_SIZE * index);
 	}
 
-	void appendLast(const SIM808ChargingStatus battery, const SIM808_GPS_STATUS gpsStatus, const float temperature) {
+	bool acquire(PositionEntryMetadata &metadata) {
+		VERBOSE("acquire");
+
+		timestamp_t before;
+
+		gps::powerOn();
+		before = rtc::getTime();
+		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
+		SIM808ChargingStatus battery = hardware::sim808::device.getChargingState();
+		gps::powerOff();
+
+		if (gpsStatus < SIM808_GPS_STATUS::FIX) return false;
+
+		uint16_t timeToFix = rtc::getTime() - before;
+
+		tmElements_t time;
+		gps::getTime(time);
+		rtc::setTime(time);
+
+		metadata = {
+			battery.level,
+			battery.voltage,
+			rtc::getTemperature(),
+			timeToFix,
+			gpsStatus
+		};
+
+		return true;
+	}
+
+	void appendLast(const PositionEntryMetadata &metadata) {
 		VERBOSE("appendLast");
 
 		uint16_t entryAddress;
-		PositionEntry entry = { battery, temperature, gpsStatus };
+		PositionEntry entry = { metadata };
 		strlcpy(entry.position, gps::lastPosition, POSITION_SIZE);
 
 		hardware::i2c::powerOn();
 		Config config = config::get();
-		
+
 		config.lastEntry++;
 		if (config.lastEntry > _maxEntryIndex) config.lastEntry = 0;
 		if (config.lastEntry == config.firstEntry) config.firstEntry++;
@@ -37,8 +67,8 @@ namespace positions {
 		entryAddress = getEntryAddress(config.lastEntry);
 		hardware::i2c::eeprom.writeBlock(entryAddress, entry);
 
-		VERBOSE_FORMAT("appendLast", "Written to EEPROM @ %X : [%d%% @ %dmV] [%f°C] [%d, %s]", entryAddress, entry.battery.level, entry.battery.voltage, entry.temperature, entry.status, entry.position);
-			
+		VERBOSE_FORMAT("appendLast", "Written to EEPROM @ %X : [%d%% @ %dmV] [%f°C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
+
 		config::set(config);
 		hardware::i2c::powerOff();
 	}
@@ -53,7 +83,7 @@ namespace positions {
 		hardware::i2c::eeprom.readBlock(entryAddress, entry);
 		hardware::i2c::powerOff();
 
-		VERBOSE_FORMAT("get", "Read from EEPROM @ %X : [%d%% @ %dmV] [%f°C] [%d, %s]", entryAddress, entry.battery.level, entry.battery.voltage, entry.temperature, entry.status, entry.position);
+		VERBOSE_FORMAT("get", "Read from EEPROM @ %X : [%d%% @ %dmV] [%f°C] [%d, %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
 		return true;
 	}
 
