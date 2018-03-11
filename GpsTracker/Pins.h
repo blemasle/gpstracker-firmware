@@ -7,7 +7,6 @@
 #define SIM_STATUS	8
 
 #define I2C_PWR		A0
-#define EEPROM_PWR	A0
 #define SD_SS		SS
 
 #define SIM_RI		2

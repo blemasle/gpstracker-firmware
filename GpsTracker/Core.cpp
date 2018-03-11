@@ -8,6 +8,8 @@ namespace core {
 	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;;
 
 	void main() {
+		VERBOSE("main");
+
 		gps::powerOn();
 		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
 		SIM808ChargingStatus battery = hardware::sim808::device.getChargingState();
@@ -33,6 +35,8 @@ namespace core {
 	}
 
 	void setSleepTime(uint8_t velocity) {
+		sleepTime = SLEEP_DEFAULT_TIME_SECONDS;
+
 		for (uint8_t i = 0; i < flash::getArraySize(config::defaultSleepTimings); i++) {
 			sleepTimings_t timing;
 			flash::read(&config::defaultSleepTimings[i], timing);
@@ -40,9 +44,9 @@ namespace core {
 			if (velocity > timing.speed) continue;
 
 			sleepTime = timing.seconds;
-			return;
+			break;
 		}
 
-		sleepTime = SLEEP_DEFAULT_TIME_SECONDS;
+		VERBOSE_FORMAT("setSleepTime", "%d", sleepTime);
 	}
 }

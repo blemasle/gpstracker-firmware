@@ -2,6 +2,8 @@
 #include "Flash.h"
 #include "Positions.h"
 
+#define LOGGER_NAME "Debug"
+
 #define MENU_ENTRY(name, text) const char MENU_##name[] PROGMEM = text
 
 const char FAKE_GPS_ENTRY[] PROGMEM = "1,1,20170924074842.000,49.454862,1.144537,71.900,67.99,172.6,1,,1.3,2.2,1.8,,11,7,,,37,,";
@@ -20,12 +22,14 @@ MENU_ENTRY(GPS_SET,					"[l] Set last GPS position");
 MENU_ENTRY(RTC_SET,					"[T] Get RTC time");
 MENU_ENTRY(RTC_GET,					"[t] Set RTC time");
 MENU_ENTRY(SD_WRITE_TEST,			"[W] Write to test file");
-MENU_ENTRY(EEPROM_GET_CONFIG,		"[S] Get EEPROM config");
-MENU_ENTRY(EEPROM_RESET_CONFIG,		"[s] Reset EEPROM config");
-MENU_ENTRY(EEPROM_GET_CONTENT,		"[C] Get EEPROM content");
+MENU_ENTRY(EEPROM_GET_CONFIG,		"[C] Get EEPROM config");
+MENU_ENTRY(EEPROM_RESET_CONFIG,		"[c] Reset EEPROM config");
+MENU_ENTRY(EEPROM_GET_CONTENT,		"[E] Get EEPROM content");
 MENU_ENTRY(EEPROM_GET_ENTRIES,		"[P] Get EEPROM entries");
 MENU_ENTRY(EEPROM_GET_LAST_ENTRY,	"[p] Get EEPROM last entry");
 MENU_ENTRY(EEPROM_ADD_ENTRY,		"[a] Add last entry to EEPROM");
+MENU_ENTRY(SLEEP,					"[S] Sleep for 8s");
+MENU_ENTRY(SLEEP_DEEP,				"[s] Deep sleep for 10s");
 MENU_ENTRY(QUESTION,				"?");
 
 const PROGMEM uint8_t commandIdMapping[] = {
@@ -40,12 +44,14 @@ const PROGMEM uint8_t commandIdMapping[] = {
 	'T', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RTC_GET),
 	't', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RTC_SET),
 	'W', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SD_WRITE_TEST),
-	'S', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONFIG),
-	's', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_RESET_CONFIG),
-	'C', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONTENT),
+	'C', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONFIG),
+	'c', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_RESET_CONFIG),
+	'E', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONTENT),
 	'P', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_ENTRIES),
 	'p', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_LAST_ENTRY),
 	'a', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY),
+	'S', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP),
+	's', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP_DEEP),
 };
 
 const char * const MENU_ENTRIES[] PROGMEM = {
@@ -82,6 +88,11 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 	MENU_EEPROM_GET_ENTRIES,
 	MENU_EEPROM_GET_LAST_ENTRY,
 	MENU_EEPROM_ADD_ENTRY,
+
+	MENU_SEPARATOR,
+
+	MENU_SLEEP,
+	MENU_SLEEP_DEEP,
 
 	MENU_QUESTION
 };
@@ -144,12 +155,12 @@ namespace debug {
 	void getAndDisplayGpsPosition() {
 		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
 
-		Log.notice(F("%d %s\n"), gpsStatus, gps::lastPosition);
+		NOTICE_FORMAT("getAndDisplayGpsPosition", "%d %s", gpsStatus, gps::lastPosition);
 	}
 
 	void setFakeGpsPosition() {
 		strlcpy_P(gps::lastPosition, FAKE_GPS_ENTRY, GPS_POSITION_SIZE);
-		Log.notice(F("Last position set to : %s\n"), gps::lastPosition);
+		NOTICE_FORMAT("setFakeGpsPosition", "Last position set to : %s", gps::lastPosition);
 	}
 
 	void getAndDisplayBattery() {
@@ -157,14 +168,14 @@ namespace debug {
 		SIM808ChargingStatus status = hardware::sim808::device.getChargingState();
 		hardware::sim808::powerOff();
 
-		Log.notice(F("%d %d%% %dmV\n"), status.state, status.level, status.voltage);
+		NOTICE_FORMAT("getAndDisplayBattery", "%d %d%% %dmV", status.state, status.level, status.voltage);
 	}
 
 	void getAndDisplayRtcTime() {
 		tmElements_t time;
 		rtc::getTime(time);
 
-		Log.notice(F("%d/%d/%d %d:%d:%d\n"), tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
+		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
 
 	void getAndDisplayEepromConfig() {
@@ -183,7 +194,8 @@ namespace debug {
 		}
 		Serial.println();
 		hardware::i2c::powerOff();
-		Log.notice(F("Done\n"));
+
+		NOTICE_MSG("getAndDisplayEepromContent", "Done");
 	}
 
 	void getAndDisplayEepromPositions() {
@@ -219,6 +231,6 @@ namespace debug {
 		gps::getTime(time);
 		rtc::setTime(time);
 
-		Log.notice(F("OK\n"));
+		NOTICE_MSG("setRtcTime", "Done");
 	}
 }

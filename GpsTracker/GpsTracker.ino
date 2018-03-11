@@ -68,6 +68,12 @@ void loop() {
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY:
 			debug::addLastPositionToEeprom();
 			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::SLEEP:
+			mainunit::sleep(period_t::SLEEP_8S);
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::SLEEP_DEEP:
+			mainunit::deepSleep(10);
+			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::SD_WRITE_TEST:
 		default:
 			Serial.println(F("Unsupported command !"));
