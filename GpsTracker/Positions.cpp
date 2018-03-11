@@ -4,7 +4,6 @@
 #include "Config.h"
 #include "Gps.h"
 #include "Network.h"
-#include "Storage.h"
 
 #define LOGGER_NAME "Positions"
 
@@ -27,7 +26,7 @@ namespace positions {
 		PositionEntry entry = { battery, gpsStatus };
 		strlcpy(entry.position, gps::lastPosition, POSITION_SIZE);
 
-		storage::powerOn();
+		hardware::i2c::powerOn();
 		Config config = config::get();
 		
 		config.lastEntry++;
@@ -41,7 +40,7 @@ namespace positions {
 		VERBOSE_FORMAT("appendLast", "Written to EEPROM @ %X : [%d%% @ %dmV] [%d, %s]", entryAddress, battery.level, battery.voltage, gpsStatus, entry.position);
 			
 		config::set(config);
-		storage::powerOff();
+		hardware::i2c::powerOff();
 	}
 
 	bool get(uint16_t index, PositionEntry &entry) {
@@ -50,9 +49,9 @@ namespace positions {
 
 		VERBOSE_FORMAT("get", "Reading entry n°%d @ %X", index, entryAddress);
 
-		storage::powerOn();
+		hardware::i2c::powerOn();
 		hardware::i2c::eeprom.readBlock(entryAddress, entry);
-		storage::powerOff();
+		hardware::i2c::powerOff();
 
 		VERBOSE_FORMAT("get", "Read from EEPROM @ %X : [%d%% @ %dmV] [%d, %s]", entryAddress, entry.battery.level, entry.battery.voltage, entry.status, entry.position);
 		return true;
