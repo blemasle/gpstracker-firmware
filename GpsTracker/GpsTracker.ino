@@ -10,8 +10,6 @@ void setup() {
 	if(Serial) Log.begin(LOG_LEVEL_NOTICE, &Serial);
 #endif
  
-	config::read();
-
 	rtc::setup();
 	hardware::sim808::setup();
 }

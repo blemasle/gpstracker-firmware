@@ -25,8 +25,6 @@ struct Config {
 
 namespace config {
 
-	extern Config value;
-
 	static const sleepTimings_t defaultSleepTimings[] PROGMEM = {
 		{ 5, SLEEP_DEFAULT_TIME_SECONDS },
 		{ 10, 1200 },
@@ -38,8 +36,9 @@ namespace config {
 		{ 180, 180 },
 	};
 
-	void read();
+	Config get();
+	void set(Config config);
+
 	void reset();
-	void write();
 
 }

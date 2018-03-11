@@ -23,32 +23,24 @@ namespace positions {
 	void appendLast(const SIM808ChargingStatus battery, const SIM808_GPS_STATUS gpsStatus) {
 		VERBOSE("appendLast");
 
-		uint16_t lastEntryIndex;
-		uint16_t firstEntryIndex;
 		uint16_t entryAddress;
 		PositionEntry entry = { battery, gpsStatus };
 		strlcpy(entry.position, gps::lastPosition, POSITION_SIZE);
 
 		storage::powerOn();
-		config::read();
+		Config config = config::get();
 		
-		firstEntryIndex = config::value.firstEntry;
-		lastEntryIndex = config::value.lastEntry;
+		config.lastEntry++;
+		if (config.lastEntry > _maxEntryIndex) config.lastEntry = 0;
+		if (config.lastEntry == config.firstEntry) config.firstEntry++;
+		if (config.firstEntry > _maxEntryIndex) config.firstEntry = 0;
 
-		lastEntryIndex++;
-		if (lastEntryIndex > _maxEntryIndex) lastEntryIndex = 0;
-		if (lastEntryIndex == firstEntryIndex) firstEntryIndex++;
-		if (firstEntryIndex > _maxEntryIndex) firstEntryIndex = 0;
-
-		entryAddress = getEntryAddress(lastEntryIndex);
+		entryAddress = getEntryAddress(config.lastEntry);
 		hardware::i2c::eeprom.writeBlock(entryAddress, entry);
 		
 		VERBOSE_FORMAT("appendLast", "Written to EEPROM @ %X : [%d%% @ %dmV] [%d, %s]", entryAddress, battery.level, battery.voltage, gpsStatus, entry.position);
 			
-		config::value.firstEntry = firstEntryIndex;
-		config::value.lastEntry = lastEntryIndex;
-		config::write();
-
+		config::set(config);
 		storage::powerOff();
 	}
 
@@ -67,8 +59,7 @@ namespace positions {
 	}
 
 	bool moveNext(uint16_t &index) {
-		config::read();
-		if (index == config::value.lastEntry) return false;
+		if (index == config::get().lastEntry) return false;
 		
 		if (index == _maxEntryIndex) index = 0; //could use a modulo but easier to understand that way
 		else index++;

@@ -168,7 +168,7 @@ namespace debug {
 	}
 
 	void getAndDisplayEepromConfig() {
-		config::read();
+		config::get();
 	}
 
 	void getAndDisplayEepromContent() {
@@ -183,21 +183,23 @@ namespace debug {
 		}
 		Serial.println();
 		hardware::i2c::eepromPowerOff();
-		Log.notice("Done\n");
+		Log.notice(F("Done\n"));
 	}
 
 	void getAndDisplayEepromPositions() {
-		uint16_t currentEntryIndex = config::value.firstEntry;
+		uint16_t currentEntryIndex = config::get().firstEntry;
 		PositionEntry currentEntry;
 
+		hardware::i2c::eepromPowerOn();
 		do {
 			if (!positions::get(currentEntryIndex, currentEntry)) break;
 			details::displayPosition(currentEntry);
 		} while (positions::moveNext(currentEntryIndex));
+		hardware::i2c::eepromPowerOff();
 	}
 
 	void getAndDisplayEepromLastPosition() {
-		uint16_t lastEntryIndex = config::value.lastEntry;
+		uint16_t lastEntryIndex = config::get().lastEntry;
 		PositionEntry lastEntry;
 
 		positions::get(lastEntryIndex, lastEntry);
