@@ -24,12 +24,6 @@ namespace hardware {
 		extern E24 eeprom;
 
 		void powerOn();
-		void powerOff();
-
-		void rtcPowerOn();
-		void rtcPowerOff();
-
-		void eepromPowerOn();
-		void eepromPowerOff();
+		void powerOff(bool forced = false);
 	}
 }

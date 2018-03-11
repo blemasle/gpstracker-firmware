@@ -5,11 +5,11 @@
 
 namespace rtc {
 	inline void powerOn() {
-		hardware::i2c::rtcPowerOn();
+		hardware::i2c::powerOn();
 	}
 
 	inline void powerOff() {
-		hardware::i2c::rtcPowerOff();
+		hardware::i2c::powerOff();
 	}
 
 	void setup();

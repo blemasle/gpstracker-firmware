@@ -35,6 +35,7 @@ namespace rtc {
 	}
 	
 	void setup() {
+		VERBOSE("setup");
 		powerOn();
 		RTC.control(DS3231_12H, DS3231_OFF); //24 hours clock
 		RTC.control(DS3231_INT_ENABLE, DS3231_OFF); //INTCN OFF
@@ -72,13 +73,13 @@ namespace rtc {
 	void setAlarm(tmElements_t &time) {
 		details::writeTimeToRegisters(time);
 
-		hardware::i2c::rtcPowerOn();
+		powerOn();
 		RTC.writeAlarm1(DS3231_ALM_DTHMS);
 
 		RTC.control(DS3231_A1_FLAG, DS3231_OFF); //reset Alarm 1 flag
 		RTC.control(DS3231_A1_INT_ENABLE, DS3231_ON); //Alarm 1 ON
 		RTC.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN ON
-		hardware::i2c::rtcPowerOff();
+		powerOff();
 
 		Log.notice(F("Set alarm to : %d/%d/%d %d:%d:%d\n"), tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 

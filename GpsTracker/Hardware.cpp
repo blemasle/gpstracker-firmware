@@ -19,6 +19,7 @@ namespace hardware {
 		SIM808 device = SIM808(SIM_RST, SIM_PWR, SIM_STATUS);
 
 		void powerOn() {
+			VERBOSE("powerOn");
 			bool poweredOn = device.powerOnOff(true);
 			if (!poweredOn) return;
 
@@ -26,6 +27,7 @@ namespace hardware {
 		}
 
 		void powerOff() {
+			VERBOSE("powerOff");
 			device.powerOnOff(false);
 		}
 
@@ -39,6 +41,7 @@ namespace hardware {
 		}
 
 		void setup() {
+			VERBOSE("setup");
 			device.powerOnOff(true);
 			simSerial.begin(4800);
 
@@ -47,22 +50,26 @@ namespace hardware {
 		}
 
 		void gpsPowerOn() {
+			VERBOSE("gpsPowerOn");
 			powerOn();
 			device.enableGps();
 		}
 
 		void gpsPowerOff() {
+			VERBOSE("gpsPowerOff");
 			device.disableGps();
 			powerOffIfUnused();
 		}
 
 		void networkPowerOn() {
+			VERBOSE("networkPowerOn");
 			powerOn();
 			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::FULL);
-			device.enableGprs("Free"); //TODO : configure
+			device.enableGprs(config::get().apn);
 		}
 
 		void networkPowerOff() {
+			VERBOSE("networkPowerOff");
 			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
 			device.disableGprs();
 
@@ -74,66 +81,39 @@ namespace hardware {
 
 	namespace i2c {
 
-		#define DEVICE_RTC 1
-		#define DEVICE_EEPROM 2
-
 		E24 eeprom = E24(E24Size_t::E24_512K);
 
-		uint8_t powered = 0;
 		uint8_t poweredCount = 0;
 
 		//inline void powered() { digitalRead(I2C_PWR) == HIGH; } //TODO = replace enum with just reading the output pin ?
 
 		void powerOn() {
-			VERBOSE("powerOn");
-			digitalWrite(I2C_PWR, HIGH);
-			pinMode(I2C_PWR, OUTPUT);
+			if (!poweredCount) {
+				VERBOSE("powerOn");
+				digitalWrite(I2C_PWR, HIGH);
+				pinMode(I2C_PWR, OUTPUT);
 
-			Wire.begin();
-		}
+				Wire.begin();
+			}
 
-		void powerOff() {
-			VERBOSE("powerOff");
-			pinMode(I2C_PWR, INPUT);
-			digitalWrite(I2C_PWR, LOW);
-
-			//turn off i2c
-			TWCR &= ~(bit(TWEN) | bit(TWIE) | bit(TWEA));
-
-			//disable i2c internal pull ups
-			digitalWrite(A4, LOW);
-			digitalWrite(A5, LOW);
-		}
-
-		void powerOnIfPoweredOff() {
-			if (!poweredCount) powerOn();
 			poweredCount++;
 		}
 
-		void powerOffIfUnused() {
-			if (!poweredCount) return;
+		void powerOff(bool forced = false) {
+			if (poweredCount == 1 || forced) {
+				VERBOSE("powerOff");
+				pinMode(I2C_PWR, INPUT);
+				digitalWrite(I2C_PWR, LOW);
+
+				//turn off i2c
+				TWCR &= ~(bit(TWEN) | bit(TWIE) | bit(TWEA));
+
+				//disable i2c internal pull ups
+				digitalWrite(A4, LOW);
+				digitalWrite(A5, LOW);
+			}
+
 			poweredCount--;
-			if (!poweredCount) powerOff();
-		}
-
-		void rtcPowerOn() {
-			powerOnIfPoweredOff();
-			powered |= DEVICE_RTC;
-		}
-
-		void rtcPowerOff() {
-			powered &= ~DEVICE_RTC;
-			powerOffIfUnused();
-		}
-
-		void eepromPowerOn() {
-			powerOnIfPoweredOff();
-			powered |= DEVICE_EEPROM;
-		}
-
-		void eepromPowerOff() {
-			powered &= ~DEVICE_EEPROM;
-			powerOffIfUnused();
 		}
 	}
 }
