@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Time2.h"
-#include "Hardware.h"
 
 namespace rtc {
 	void setup();
 
 	float getTemperature();
+
 	timestamp_t getTime();
 	void getTime(tmElements_t &time);
 	void setTime(timestamp_t time);

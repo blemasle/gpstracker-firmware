@@ -17,10 +17,6 @@
 #define VERBOSE(f) LOG(verbose, f)
 #define VERBOSE_MSG(f, msg) LOG_MSG(verbose, f, msg)
 #define VERBOSE_FORMAT(f, msg, ...) LOG_FORMAT(verbose, f, msg, __VA_ARGS__)
-//#define VERBOSE(f) Log.verbose(F("[" LOGGER_NAME "::" f "]\n"))
-//#define VERBOSE_MSG(f, msg) Log.verbose(F("[" LOGGER_NAME "::" f "] " msg "\n"))
-//#define VERBOSE_FORMAT(f, msg, ...) Log.verbose(F("[" LOGGER_NAME "::" f "] " msg "\n"), __VA_ARGS__)
-
 #else
 
 #define DISABLE_LOGGING 1

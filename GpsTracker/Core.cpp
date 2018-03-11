@@ -23,6 +23,7 @@ namespace core {
 
 	void updateSleepTime() {
 		VERBOSE("updateSleepTime");
+
 		uint8_t velocity;
 		gps::getVelocity(velocity);
 		setSleepTime(velocity);

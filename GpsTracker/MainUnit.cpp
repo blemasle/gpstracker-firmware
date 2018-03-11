@@ -4,7 +4,6 @@
 #include "Debug.h"
 
 #define LOGGER_NAME "MainUnit"
-const char WOKE_UP[] PROGMEM = "Woke up from sleep\n";
 
 namespace mainunit {
 

@@ -160,6 +160,7 @@ namespace debug {
 
 	void setFakeGpsPosition() {
 		strlcpy_P(gps::lastPosition, FAKE_GPS_ENTRY, GPS_POSITION_SIZE);
+
 		NOTICE_FORMAT("setFakeGpsPosition", "Last position set to : %s", gps::lastPosition);
 	}
 

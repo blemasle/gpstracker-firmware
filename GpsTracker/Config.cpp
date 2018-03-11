@@ -19,7 +19,7 @@ namespace config {
 		}
 
 		void write() {
-			VERBOSE_FORMAT("write", "%s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+			VERBOSE_FORMAT("write", "%s, %s, %s, %d, %d", value.seed, value.version, value.apn, value.firstEntry, value.lastEntry);
 
 			hardware::i2c::powerOn();
 			int written = hardware::i2c::eeprom.writeBlock(CONFIG_ADDR, value);
@@ -30,7 +30,7 @@ namespace config {
 	Config get() {
 		if (value.seed[0] == '\0') details::read();
 
-		VERBOSE_FORMAT("get", "%s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+		VERBOSE_FORMAT("get", "%s, %s, %s, %d, %d", value.seed, value.version, value.apn, value.firstEntry, value.lastEntry);
 		return value;
 	}
 
@@ -51,8 +51,6 @@ namespace config {
 
 		value = config;
 		details::write();
-
-		VERBOSE_FORMAT("reset", "value : %s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 	}
 
 	
