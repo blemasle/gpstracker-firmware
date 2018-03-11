@@ -43,8 +43,10 @@ namespace debug {
 		SD_WRITE_TEST =			13,
 		EEPROM_GET_CONFIG =		14,
 		EEPROM_RESET_CONFIG =	15,
-		EEPROM_GET_ENTRIES =	16,
-		EEPROM_ADD_ENTRY =		17
+		EEPROM_GET_CONTENT =	16,
+		EEPROM_GET_LAST_ENTRY =	17,
+		EEPROM_GET_ENTRIES =	18,
+		EEPROM_ADD_ENTRY =		19
 	};
 
 	void waitForSerial();
@@ -60,7 +62,9 @@ namespace debug {
 	void setRtcTime();
 
 	void getAndDisplayEepromConfig();
+	void getAndDisplayEepromContent();
 	void getAndDisplayEepromPositions();
+	void getAndDisplayEepromLastPosition();
 	void addLastPositionToEeprom();
 
 	inline void displayFreeRam() { Serial.println(freeRam()); }

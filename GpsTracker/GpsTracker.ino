@@ -59,8 +59,14 @@ void loop() {
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_RESET_CONFIG:
 			config::reset();
 			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONTENT:
+			debug::getAndDisplayEepromContent();
+			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_ENTRIES:
 			debug::getAndDisplayEepromPositions();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_LAST_ENTRY:
+			debug::getAndDisplayEepromLastPosition();
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY:
 			debug::addLastPositionToEeprom();

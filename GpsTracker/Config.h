@@ -15,7 +15,7 @@ struct Config {
 };
 
 #define CONFIG_ADDR 0
-#define CONFIG_SEED "UIYA"
+#define CONFIG_SEED "UIYB"
 #define VERSION "1.00"
 
 #define SLEEP_DEFAULT_TIME_SECONDS	1800

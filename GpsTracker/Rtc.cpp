@@ -47,7 +47,7 @@ namespace rtc {
 		hardware::i2c::rtcPowerOff();
 
 		details::readTimeFromRegisters(time);
-		VERBOSE_FORMAT("getTime", "%d / %d / %d %d:%d : %d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
+		VERBOSE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
 
 	void setTime(tmElements_t &time) {

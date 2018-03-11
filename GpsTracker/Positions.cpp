@@ -13,60 +13,67 @@
 
 namespace positions {
 
-	uint16_t getEntryAddress(uint16_t &index) {
-		uint16_t address = ENTRIES_ADDR + (ENTRY_RESERVED_SIZE * index);
-		if (address + ENTRY_RESERVED_SIZE > E24_MAX_ADDRESS(hardware::i2c::eeprom.getSize())) {
-			address = ENTRIES_ADDR;
-			index = 0;
-		}
+	uint16_t _maxEntryIndex = (E24_MAX_ADDRESS(hardware::i2c::eeprom.getSize()) - ENTRIES_ADDR) / ENTRY_RESERVED_SIZE;
 
-		return address;
-	}
-
-	void setEntriesIndexes(uint16_t lastEntry) {
-		uint16_t firstEntry = config::value.firstEntry;
-
-		while (config::value.lastEntry < config::value.firstEntry) {
-			config::value.firstEntry++;
-			getEntryAddress(firstEntry);
-		}
-
-		config::value.lastEntry = lastEntry;
-		config::value.firstEntry = firstEntry;
+	uint16_t getEntryAddress(uint16_t index) {
+		if (index > _maxEntryIndex) return -1;
+		return ENTRIES_ADDR + (ENTRY_RESERVED_SIZE * index);
 	}
 
 	void appendLast(const SIM808ChargingStatus battery, const SIM808_GPS_STATUS gpsStatus) {
 		VERBOSE("appendLast");
 
-		uint16_t entryIndex;
+		uint16_t lastEntryIndex;
+		uint16_t firstEntryIndex;
 		uint16_t entryAddress;
-		
 		PositionEntry entry = { battery, gpsStatus };
 		strlcpy(entry.position, gps::lastPosition, POSITION_SIZE);
 
 		storage::powerOn();
 		config::read();
-		entryIndex = config::value.lastEntry + 1;
-		entryAddress = getEntryAddress(entryIndex);
-		bool success = hardware::i2c::eeprom.writeBlock(entryAddress, entry);
+		
+		firstEntryIndex = config::value.firstEntry;
+		lastEntryIndex = config::value.lastEntry;
 
+		lastEntryIndex++;
+		if (lastEntryIndex > _maxEntryIndex) lastEntryIndex = 0;
+		if (lastEntryIndex == firstEntryIndex) firstEntryIndex++;
+		if (firstEntryIndex > _maxEntryIndex) firstEntryIndex = 0;
+
+		entryAddress = getEntryAddress(lastEntryIndex);
+		bool success = hardware::i2c::eeprom.writeBlock(entryAddress, entry);
 		if (success) {
-			VERBOSE_MSG("appendLast", "written to EEPROM");
-			setEntriesIndexes(entryIndex);
+			VERBOSE_FORMAT("appendLast", "Written to EEPROM @ %X : [%d%% @ %dmV] [%d, %s]", entryAddress, battery.level, battery.voltage, gpsStatus, entry.position);
+			
+			config::value.firstEntry = firstEntryIndex;
+			config::value.lastEntry = lastEntryIndex;
 			config::write();
 		}
 
 		storage::powerOff();
 	}
 
-	void get(uint16_t &index, PositionEntry &entry) {
+	void get(uint16_t index, PositionEntry &entry) {
 		uint16_t entryAddress = getEntryAddress(index);
-		VERBOSE_FORMAT("get", "Reading %d @ %d (%X)", index, entryAddress, entryAddress);
+		if (entryAddress == -1) return;
+
+		VERBOSE_FORMAT("get", "Reading entry n°%d @ %X", index, entryAddress);
+
 		storage::powerOn();
 		hardware::i2c::eeprom.readBlock(entryAddress, entry);
 		storage::powerOff();
 
-		VERBOSE_FORMAT("get", "Output index : %d", index);
+		VERBOSE_FORMAT("get", "Read from EEPROM @ %X : [%d%% @ %dmV] [%d, %s]", entryAddress, entry.battery.level, entry.battery.voltage, entry.status, entry.position);
+	}
+
+	bool moveNext(uint16_t &index) {
+		config::read();
+		if (index == config::value.lastEntry) return false;
+		
+		if (index == _maxEntryIndex) index = 0; //could use a modulo but easier to understand that way
+		else index++;
+
+		return true;
 	}
 
 	bool needsToSend() {

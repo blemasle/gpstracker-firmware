@@ -9,22 +9,24 @@ const char FAKE_GPS_ENTRY[] PROGMEM = "1,1,20170924074842.000,49.454862,1.144537
 MENU_ENTRY(HEADER,			"-- Debug Menu --");
 MENU_ENTRY(SEPARATOR,		"----");
 
-MENU_ENTRY(RUN,					"[R] Run");
-MENU_ENTRY(RUN_ONCE,			"[r] Run once");
-MENU_ENTRY(RAM,					"[f] Free RAM");
-MENU_ENTRY(READ_BATTERY,		"[b] Read battery");
-MENU_ENTRY(GPS_ON,				"[G] GPS On");
-MENU_ENTRY(GPS_OFF,				"[g] GPS Off");
-MENU_ENTRY(GPS_GET,				"[L] Get GPS position");
-MENU_ENTRY(GPS_SET,				"[l] Set last GPS position");
-MENU_ENTRY(RTC_SET,				"[T] Get RTC time");
-MENU_ENTRY(RTC_GET,				"[t] Set RTC time");
-MENU_ENTRY(SD_WRITE_TEST,		"[W] Write to test file");
-MENU_ENTRY(EEPROM_GET_CONFIG,	"[C] Get EEPROM config");
-MENU_ENTRY(EEPROM_RESET_CONFIG, "[c] Reset EEPROM config");
-MENU_ENTRY(EEPROM_GET_ENTRIES,	"[E] Get EEPROM entries");
-MENU_ENTRY(EEPROM_ADD_ENTRY,	"[e] Add last entry to EEPROM");
-MENU_ENTRY(QUESTION,			"?");
+MENU_ENTRY(RUN,						"[R] Run");
+MENU_ENTRY(RUN_ONCE,				"[r] Run once");
+MENU_ENTRY(RAM,						"[f] Free RAM");
+MENU_ENTRY(READ_BATTERY,			"[b] Read battery");
+MENU_ENTRY(GPS_ON,					"[G] GPS On");
+MENU_ENTRY(GPS_OFF,					"[g] GPS Off");
+MENU_ENTRY(GPS_GET,					"[L] Get GPS position");
+MENU_ENTRY(GPS_SET,					"[l] Set last GPS position");
+MENU_ENTRY(RTC_SET,					"[T] Get RTC time");
+MENU_ENTRY(RTC_GET,					"[t] Set RTC time");
+MENU_ENTRY(SD_WRITE_TEST,			"[W] Write to test file");
+MENU_ENTRY(EEPROM_GET_CONFIG,		"[S] Get EEPROM config");
+MENU_ENTRY(EEPROM_RESET_CONFIG,		"[s] Reset EEPROM config");
+MENU_ENTRY(EEPROM_GET_CONTENT,		"[C] Get EEPROM content");
+MENU_ENTRY(EEPROM_GET_ENTRIES,		"[P] Get EEPROM entries");
+MENU_ENTRY(EEPROM_GET_LAST_ENTRY,	"[p] Get EEPROM last entry");
+MENU_ENTRY(EEPROM_ADD_ENTRY,		"[a] Add last entry to EEPROM");
+MENU_ENTRY(QUESTION,				"?");
 
 const PROGMEM uint8_t commandIdMapping[] = {
 	'R', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RUN),
@@ -38,10 +40,12 @@ const PROGMEM uint8_t commandIdMapping[] = {
 	'T', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RTC_GET),
 	't', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RTC_SET),
 	'W', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SD_WRITE_TEST),
-	'C', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONFIG),
-	'c', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_RESET_CONFIG),
-	'E', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_ENTRIES),
-	'e', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY),
+	'S', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONFIG),
+	's', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_RESET_CONFIG),
+	'C', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONTENT),
+	'P', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_ENTRIES),
+	'p', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_LAST_ENTRY),
+	'a', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY),
 };
 
 const char * const MENU_ENTRIES[] PROGMEM = {
@@ -74,7 +78,9 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 
 	MENU_EEPROM_GET_CONFIG,
 	MENU_EEPROM_RESET_CONFIG,
+	MENU_EEPROM_GET_CONTENT,
 	MENU_EEPROM_GET_ENTRIES,
+	MENU_EEPROM_GET_LAST_ENTRY,
 	MENU_EEPROM_ADD_ENTRY,
 
 	MENU_QUESTION
@@ -87,6 +93,12 @@ int freeRam2() { // dirty hack because putting it in namespace doesn't compile
 }
 
 namespace debug {
+
+	namespace details {
+		inline void displayPosition(PositionEntry entry) {
+			Log.notice(F("%d%%, %dmV, %d, %s\n"), entry.battery.level, entry.battery.voltage, entry.status, entry.position);
+		}
+	}
 
 	void waitForSerial() {
 		while (!Serial);
@@ -159,17 +171,41 @@ namespace debug {
 		config::read();
 	}
 
+	void getAndDisplayEepromContent() {
+		char buffer[128];
+		hardware::i2c::eepromPowerOn();
+
+		//Serial.print('[');
+		for (int i = 0; i < 8; i++) {
+			hardware::i2c::eeprom.read(128 * i, buffer, 128);
+			for (int i = 0; i < 128; i++) {
+				//if (buffer[i] == 0) Serial.print(' ');
+				//else 
+					Serial.print(buffer[i], HEX);
+			}
+		}
+		//Serial.println(']');
+		Serial.println();
+		hardware::i2c::eepromPowerOff();
+		Log.notice("Done\n");
+	}
+
 	void getAndDisplayEepromPositions() {
-		uint16_t firstEntryIndex = config::value.firstEntry;
-		uint16_t currentEntryIndex = firstEntryIndex;
+		uint16_t currentEntryIndex = config::value.firstEntry;
 		PositionEntry currentEntry;
 
-		do {
+		while(positions::moveNext(currentEntryIndex)) {
 			positions::get(currentEntryIndex, currentEntry);
-			Log.notice(F("%d%%, %dmV, %d, %s\n"), currentEntry.battery.level, currentEntry.battery.voltage, currentEntry.status, currentEntry.position);
+			details::displayPosition(currentEntry);
+		}
+	}
 
-		} while (currentEntryIndex != config::value.lastEntry);
-		
+	void getAndDisplayEepromLastPosition() {
+		uint16_t lastEntryIndex = config::value.lastEntry;
+		PositionEntry lastEntry;
+
+		positions::get(lastEntryIndex, lastEntry);
+		details::displayPosition(lastEntry);
 	}
 
 	void addLastPositionToEeprom() {

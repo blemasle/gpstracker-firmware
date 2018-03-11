@@ -7,8 +7,18 @@
 namespace config {
 	Config value;
 
+	void format() {
+		VERBOSE("format");
+		hardware::i2c::eepromPowerOn();
+		for (int i = 0; i < 1024; i++)
+		{
+			hardware::i2c::eeprom.write(i, 0);
+		}
+		hardware::i2c::eepromPowerOff();
+	}
+
 	void write() {
-		VERBOSE_FORMAT("writeConfig", "%s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+		VERBOSE_FORMAT("write", "%s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 
 		hardware::i2c::eepromPowerOn();
 		int written = hardware::i2c::eeprom.writeBlock(CONFIG_ADDR, value);
@@ -16,18 +26,19 @@ namespace config {
 	}
 
 	void reset() {
-		VERBOSE("resetConfig");
+		VERBOSE("reset");
 		Config config = {
 			CONFIG_SEED,
 			VERSION,
-			0,
-			0
+			0xFFFF,
+			0xFFFF
 		};
 
 		value = config;
+		format();
 		write();
 
-		VERBOSE_FORMAT("resetConfig", "value : %s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+		VERBOSE_FORMAT("reset", "value : %s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 	}
 
 	void read() {
@@ -36,7 +47,7 @@ namespace config {
 		if (!String(CONFIG_SEED).equals(value.seed)) reset();
 		hardware::i2c::eepromPowerOff();
 
-		VERBOSE_FORMAT("readConfig", "%s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+		VERBOSE_FORMAT("read", "%s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 
 	}	
 }
