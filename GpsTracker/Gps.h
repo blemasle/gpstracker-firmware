@@ -17,6 +17,6 @@ namespace gps {
 
 	SIM808_GPS_STATUS acquireCurrentPosition(uint16_t timeout);
 
-	void getVelocity(uint8_t &velocity);
+	uint8_t getVelocity();
 	void getTime(tmElements_t &time);
 }

@@ -44,10 +44,13 @@ namespace gps {
 		return currentStatus;
 	}
 
-	void getVelocity(uint8_t &velocity) {
+	uint8_t getVelocity() {
+		uint8_t velocity;
 		hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::SPEED, &velocity);
 
 		VERBOSE_FORMAT("getVelocity", "%d", velocity);
+
+		return velocity;
 	}
 
 	void getTime(tmElements_t &time) {

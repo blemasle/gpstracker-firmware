@@ -13,7 +13,7 @@ namespace core {
 		PositionEntryMetadata metadata;
 		if (positions::acquire(metadata)) {
 			positions::appendLast(metadata);
-			updateSleepTime();
+			setSleepTime();
 		}
 
 		if (positions::needsToSend()) {
@@ -21,12 +21,8 @@ namespace core {
 		}
 	}
 
-	void updateSleepTime() {
-		VERBOSE("updateSleepTime");
-
-		uint8_t velocity;
-		gps::getVelocity(velocity);
-		setSleepTime(velocity);
+	void setSleepTime() {
+		setSleepTime(gps::getVelocity());
 	}
 
 	void setSleepTime(uint8_t velocity) {
