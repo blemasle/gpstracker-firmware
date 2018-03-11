@@ -175,16 +175,12 @@ namespace debug {
 		char buffer[128];
 		hardware::i2c::eepromPowerOn();
 
-		//Serial.print('[');
 		for (int i = 0; i < 8; i++) {
 			hardware::i2c::eeprom.read(128 * i, buffer, 128);
 			for (int i = 0; i < 128; i++) {
-				//if (buffer[i] == 0) Serial.print(' ');
-				//else 
-					Serial.print(buffer[i], HEX);
+				Serial.print(buffer[i], HEX);
 			}
 		}
-		//Serial.println(']');
 		Serial.println();
 		hardware::i2c::eepromPowerOff();
 		Log.notice("Done\n");
@@ -194,10 +190,10 @@ namespace debug {
 		uint16_t currentEntryIndex = config::value.firstEntry;
 		PositionEntry currentEntry;
 
-		while(positions::moveNext(currentEntryIndex)) {
-			positions::get(currentEntryIndex, currentEntry);
+		do {
+			if (!positions::get(currentEntryIndex, currentEntry)) break;
 			details::displayPosition(currentEntry);
-		}
+		} while (positions::moveNext(currentEntryIndex));
 	}
 
 	void getAndDisplayEepromLastPosition() {
