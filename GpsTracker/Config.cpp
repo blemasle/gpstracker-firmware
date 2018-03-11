@@ -46,7 +46,7 @@ namespace config {
 			VERSION,
 			0xFFFF,
 			0xFFFF,
-			"2degrees Internet" //TODO : read from SD
+			"Vodafone" //TODO : read from SD
 		};
 
 		value = config;
