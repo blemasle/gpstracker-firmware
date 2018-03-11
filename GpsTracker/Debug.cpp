@@ -6,7 +6,7 @@
 
 #define MENU_ENTRY(name, text) const char MENU_##name[] PROGMEM = text
 
-const char FAKE_GPS_ENTRY[] PROGMEM = "1,1,20170924074842.000,49.454862,1.144537,71.900,67.99,172.6,1,,1.3,2.2,1.8,,11,7,,,37,,";
+const char FAKE_GPS_ENTRY[] PROGMEM = "1,1,20170924184842.000,49.454862,1.144537,71.900,67.99,172.6,1,,1.3,2.2,1.8,,11,7,,,37,,";
 
 MENU_ENTRY(HEADER,			"-- Debug Menu --");
 MENU_ENTRY(SEPARATOR,		"----");
@@ -107,7 +107,7 @@ namespace debug {
 
 	namespace details {
 		inline void displayPosition(PositionEntry entry) {
-			Log.notice(F("%d%%, %dmV, %d, %s\n"), entry.battery.level, entry.battery.voltage, entry.status, entry.position);
+			Log.notice(F("%d%%, %dmV, %f°C, %d, %s\n"), entry.battery.level, entry.battery.voltage, entry.temperature, entry.status, entry.position);
 		}
 	}
 
@@ -223,7 +223,7 @@ namespace debug {
 		SIM808ChargingStatus status = hardware::sim808::device.getChargingState();
 		hardware::sim808::powerOff();
 
-		positions::appendLast(status, SIM808_GPS_STATUS::OFF);
+		positions::appendLast(status, SIM808_GPS_STATUS::OFF, rtc::getTemperature());
 	}
 
 	void setRtcTime() {

@@ -43,6 +43,14 @@ namespace rtc {
 		hardware::i2c::powerOff();
 	}
 
+	float getTemperature() {
+		hardware::i2c::powerOn();
+		float temperature = RTC.readTempRegister();
+		hardware::i2c::powerOff();
+
+		return temperature;
+	}
+
 	void getTime(tmElements_t &time) {
 		hardware::i2c::powerOn();
 		RTC.readTime();

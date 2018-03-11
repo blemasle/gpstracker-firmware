@@ -6,6 +6,7 @@
 namespace rtc {
 	void setup();
 
+	float getTemperature();
 	void getTime(tmElements_t &time);
 	void setTime(tmElements_t &time);
 

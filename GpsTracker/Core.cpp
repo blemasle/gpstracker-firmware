@@ -20,7 +20,7 @@ namespace core {
 			gps::getTime(time);
 			rtc::setTime(time);
 
-			positions::appendLast(battery, gpsStatus);
+			positions::appendLast(battery, gpsStatus, rtc::getTemperature());
 
 			uint8_t velocity;
 			gps::getVelocity(velocity);
