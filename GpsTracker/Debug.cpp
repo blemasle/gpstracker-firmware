@@ -180,7 +180,7 @@ namespace debug {
 	}
 
 	void getAndDisplayEepromConfig() {
-		config::get();
+		config::main::get();
 	}
 
 	void getAndDisplayEepromContent() {
@@ -200,7 +200,7 @@ namespace debug {
 	}
 
 	void getAndDisplayEepromPositions() {
-		uint16_t currentEntryIndex = config::get().firstEntry;
+		uint16_t currentEntryIndex = config::main::get().firstEntry;
 		PositionEntry currentEntry;
 
 		hardware::i2c::powerOn();
@@ -212,7 +212,7 @@ namespace debug {
 	}
 
 	void getAndDisplayEepromLastPosition() {
-		uint16_t lastEntryIndex = config::get().lastEntry;
+		uint16_t lastEntryIndex = config::main::get().lastEntry;
 		PositionEntry lastEntry;
 
 		positions::get(lastEntryIndex, lastEntry);

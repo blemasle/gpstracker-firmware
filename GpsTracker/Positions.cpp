@@ -29,7 +29,7 @@ namespace positions {
 		//TODO : enable/disable based on config
 		_backupLength = 1;
 		_backups = new backup::PositionsBackup*[_backupLength];
-		_backups[0] = new backup::SdPositionsbackup();
+		_backups[0] = new backup::sd::SdPositionsBackup();
 	}
 
 	bool acquire(PositionEntryMetadata &metadata) {
@@ -70,7 +70,7 @@ namespace positions {
 		strlcpy(entry.position, gps::lastPosition, POSITION_SIZE);
 
 		hardware::i2c::powerOn();
-		Config config = config::get();
+		Config config = config::main::get();
 
 		config.lastEntry++;
 		if (config.lastEntry > details::maxEntryIndex) config.lastEntry = 0;
@@ -82,7 +82,7 @@ namespace positions {
 
 		VERBOSE_FORMAT("appendLast", "Written to EEPROM @ %X : [%d%% @ %dmV] [%f°C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
 
-		config::set(config);
+		config::main::set(config);
 		hardware::i2c::powerOff();
 	}
 
@@ -101,7 +101,7 @@ namespace positions {
 	}
 
 	bool moveNext(uint16_t &index) {
-		if (index == config::get().lastEntry) return false;
+		if (index == config::main::get().lastEntry) return false;
 		
 		if (index == details::maxEntryIndex) index = 0; //could use a modulo but easier to understand that way
 		else index++;

@@ -65,7 +65,7 @@ namespace hardware {
 			VERBOSE("networkPowerOn");
 			powerOn();
 			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::FULL);
-			device.enableGprs(config::get().apn);
+			device.enableGprs(config::main::get().apn);
 		}
 
 		void networkPowerOff() {

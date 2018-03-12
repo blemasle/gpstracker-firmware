@@ -28,18 +28,19 @@ namespace config {
 
 	static const sleepTimings_t defaultSleepTimings[] PROGMEM = {
 		{ 5, SLEEP_DEFAULT_TIME_SECONDS },
-		{ 10, 1200 },
-		{ 20, 600 },
-		{ 30, 540 },
-		{ 50, 480 },
-		{ 80, 240 },
-		{ 100, 210 },
-		{ 180, 180 },
+	{ 10, 1200 },
+	{ 20, 600 },
+	{ 30, 540 },
+	{ 50, 480 },
+	{ 80, 240 },
+	{ 100, 210 },
+	{ 180, 180 },
 	};
 
-	Config get();
-	void set(Config config);
+	namespace main {	
+		Config get();
+		void set(const Config config);
 
-	void reset();
-
+		void reset();
+	}
 }

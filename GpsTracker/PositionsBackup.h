@@ -5,6 +5,7 @@ namespace positions {
 
 		class PositionsBackup {
 		public:
+			virtual void setup();
 			virtual void backup();
 		};
 

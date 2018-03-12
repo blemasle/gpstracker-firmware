@@ -7,5 +7,6 @@
 #include "Debug.h"
 #include "Config.h"
 #include "Core.h"
+#include "SdCard.h"
 
 #define LOGGER_NAME "GpsTracker"

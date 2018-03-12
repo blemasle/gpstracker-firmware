@@ -12,6 +12,7 @@ void setup() {
 #endif
 
 	rtc::setup();
+	hardware::sdcard::setup();
 	hardware::sim808::setup();
 }
 
@@ -55,7 +56,7 @@ void loop() {
 			debug::getAndDisplayEepromConfig();
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_RESET_CONFIG:
-			config::reset();
+			config::main::reset();
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONTENT:
 			debug::getAndDisplayEepromContent();
