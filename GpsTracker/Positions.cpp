@@ -1,4 +1,5 @@
 #include "Positions.h"
+#include "SdPositionsBackup.h"
 
 #include "Debug.h"
 #include "Config.h"
@@ -12,11 +13,23 @@
 
 namespace positions {
 
-	uint16_t _maxEntryIndex = (E24_MAX_ADDRESS(hardware::i2c::eeprom.getSize()) - ENTRIES_ADDR) / ENTRY_RESERVED_SIZE;
+	backup::PositionsBackup **_backups;
+	size_t _backupLength;
 
-	uint16_t getEntryAddress(uint16_t index) {
-		if (index > _maxEntryIndex) return -1;
-		return ENTRIES_ADDR + (ENTRY_RESERVED_SIZE * index);
+	namespace details {
+		uint16_t maxEntryIndex = (E24_MAX_ADDRESS(hardware::i2c::eeprom.getSize()) - ENTRIES_ADDR) / ENTRY_RESERVED_SIZE;
+
+		uint16_t getEntryAddress(uint16_t index) {
+			if (index > maxEntryIndex) return -1;
+			return ENTRIES_ADDR + (ENTRY_RESERVED_SIZE * index);
+		}
+	}
+
+	void setup() {
+		//TODO : enable/disable based on config
+		_backupLength = 1;
+		_backups = new backup::PositionsBackup*[_backupLength];
+		_backups[0] = new backup::SdPositionsbackup();
 	}
 
 	bool acquire(PositionEntryMetadata &metadata) {
@@ -60,11 +73,11 @@ namespace positions {
 		Config config = config::get();
 
 		config.lastEntry++;
-		if (config.lastEntry > _maxEntryIndex) config.lastEntry = 0;
+		if (config.lastEntry > details::maxEntryIndex) config.lastEntry = 0;
 		if (config.lastEntry == config.firstEntry) config.firstEntry++;
-		if (config.firstEntry > _maxEntryIndex) config.firstEntry = 0;
+		if (config.firstEntry > details::maxEntryIndex) config.firstEntry = 0;
 
-		entryAddress = getEntryAddress(config.lastEntry);
+		entryAddress = details::getEntryAddress(config.lastEntry);
 		hardware::i2c::eeprom.writeBlock(entryAddress, entry);
 
 		VERBOSE_FORMAT("appendLast", "Written to EEPROM @ %X : [%d%% @ %dmV] [%f°C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
@@ -74,7 +87,7 @@ namespace positions {
 	}
 
 	bool get(uint16_t index, PositionEntry &entry) {
-		uint16_t entryAddress = getEntryAddress(index);
+		uint16_t entryAddress = details::getEntryAddress(index);
 		if (entryAddress == -1) return false;
 
 		VERBOSE_FORMAT("get", "Reading entry n°%d @ %X", index, entryAddress);
@@ -90,17 +103,15 @@ namespace positions {
 	bool moveNext(uint16_t &index) {
 		if (index == config::get().lastEntry) return false;
 		
-		if (index == _maxEntryIndex) index = 0; //could use a modulo but easier to understand that way
+		if (index == details::maxEntryIndex) index = 0; //could use a modulo but easier to understand that way
 		else index++;
 
 		return true;
 	}
 
-	bool needsToSend() {
-		return false;
-	}
-
-	void send() {
-
+	void doBackup() {
+		for (int i = 0; i < _backupLength; i++) {
+			_backups[i]->backup();
+		}
 	}
 }

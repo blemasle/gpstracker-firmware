@@ -16,9 +16,7 @@ namespace core {
 			setSleepTime();
 		}
 
-		if (positions::needsToSend()) {
-			positions::send();
-		}
+		positions::doBackup();		
 	}
 
 	void setSleepTime() {

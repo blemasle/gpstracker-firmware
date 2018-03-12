@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SIM808_Types.h>
+#include "PositionsBackup.h"
 
 #define POSITION_SIZE 115
 
@@ -18,12 +19,13 @@ struct PositionEntry {
 };									//sizeof = 125
 
 namespace positions {
+
+	void setup();
 	bool acquire(PositionEntryMetadata &metadata);
 	void appendLast(const PositionEntryMetadata &metadata);
 
 	bool get(uint16_t index, PositionEntry &entry);
 	bool moveNext(uint16_t &index);
 
-	bool needsToSend();
-	void send();
+	void doBackup();
 }
