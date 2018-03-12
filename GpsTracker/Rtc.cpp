@@ -4,7 +4,7 @@
 #include "Pins.h"
 
 #include <Wire.h>
-#include <MD_DS3231.h>
+#include <uDS3231.h>
 
 #define LOGGER_NAME "Rtc"
 
