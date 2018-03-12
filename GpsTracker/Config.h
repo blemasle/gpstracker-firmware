@@ -7,7 +7,7 @@ struct sleepTimings_t {
 	uint16_t seconds;
 };
 
-struct Config {
+struct Config_t {
 	char seed[5];
 	char version[5];
 	char apn[20];
@@ -38,8 +38,8 @@ namespace config {
 	};
 
 	namespace main {	
-		Config get();
-		void set(const Config config);
+		Config_t get();
+		void set(const Config_t config);
 
 		void reset();
 	}

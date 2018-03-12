@@ -7,7 +7,7 @@
 namespace config {
 	namespace main {
 
-		Config value;
+		Config_t value;
 
 		namespace details {
 
@@ -17,7 +17,6 @@ namespace config {
 				hardware::i2c::eeprom.readBlock(CONFIG_ADDR, value);
 				if (!String(CONFIG_SEED).equals(value.seed)) reset();
 				hardware::i2c::powerOff();
-
 			}
 
 			void write() {
@@ -29,21 +28,21 @@ namespace config {
 			}
 		}
 
-		Config get() {
+		Config_t get() {
 			if (value.seed[0] == '\0') details::read();
 
 			VERBOSE_FORMAT("get", "%s, %s, %s, %d, %d", value.seed, value.version, value.apn, value.firstEntry, value.lastEntry);
 			return value;
 		}
 
-		void set(const Config config) {
+		void set(const Config_t config) {
 			value = config;
 			details::write();
 		}
 
 		void reset() {
 			VERBOSE("reset");
-			Config config = {
+			Config_t config = {
 				CONFIG_SEED,
 				VERSION,
 				"Vodafone", //TODO : read from SD
