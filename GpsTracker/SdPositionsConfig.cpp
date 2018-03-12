@@ -40,8 +40,6 @@ namespace config {
 
 				}
 
-				void setup() { }
-
 				SdPositionConfig_t get() {
 					if (value.seed != POSITIONS_CONFIG_SEED) details::read();
 
@@ -57,7 +55,8 @@ namespace config {
 					VERBOSE("reset");
 					SdPositionConfig_t config = {
 						POSITIONS_CONFIG_SEED,
-						POSITIONS_CONFIG_DeFAULT_SAVE_THRESHOLD,
+						POSITIONS_CONFIG_DEFAULT_SAVE_THRESHOLD,
+						POSITIONS_CONFIG_DEFAULT_MAX_RECORDS_PER_FILE,
 						0xFFFF,
 						0,
 						0,

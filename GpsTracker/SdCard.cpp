@@ -4,9 +4,10 @@ namespace hardware {
 	namespace sdcard {
 
 		SdFat filesystem;
+		bool available = false;
 
 		void setup() {
-			filesystem.begin(SD_SS);
+			available = filesystem.begin(SD_SS);
 		}
 
 	}

@@ -29,7 +29,9 @@ namespace positions {
 		//TODO : enable/disable based on config
 		_backupLength = 1;
 		_backups = new backup::PositionsBackup*[_backupLength];
+		
 		_backups[0] = new backup::sd::SdPositionsBackup();
+		_backups[0]->setup();
 	}
 
 	bool acquire(PositionEntryMetadata &metadata) {

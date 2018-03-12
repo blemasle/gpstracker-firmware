@@ -14,6 +14,8 @@ void setup() {
 	rtc::setup();
 	hardware::sdcard::setup();
 	hardware::sim808::setup();
+
+	positions::setup();
 }
 
 void loop() {
