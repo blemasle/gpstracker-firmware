@@ -114,7 +114,6 @@ namespace debug {
 	void waitForSerial() {
 		while (!Serial);
 		Serial.begin(DEBUG_SERIAL_SPEED);
-		Serial.println("Starting !");
 	}
 
 	int freeRam() {

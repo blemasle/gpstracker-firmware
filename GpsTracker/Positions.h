@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SIM808_Types.h>
-#include "PositionsBackup.h"
 
 #define POSITION_SIZE 115
 

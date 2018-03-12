@@ -80,6 +80,6 @@ void loop() {
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::SD_WRITE_TEST:
 		default:
-			Serial.println(F("Unsupported command !"));
+			NOTICE_MSG("loop", "Unsupported");
 	}
 }
