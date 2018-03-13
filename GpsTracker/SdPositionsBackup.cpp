@@ -8,7 +8,7 @@
 
 #define LOGGER_NAME "Positions::backup::sd"
 
-#ifdef BACKUP_ENABLE_SDCARD
+#if BACKUP_ENABLE_SDCARD
 namespace positions {
 	namespace backup {
 		namespace sd {

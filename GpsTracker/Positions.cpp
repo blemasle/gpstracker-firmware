@@ -1,22 +1,24 @@
 #include "Config.h"
+#include "Debug.h"
 #include "Positions.h"
+#include "Gps.h"
 
-#if defined(BACKUP_ENABLE_SDCARD)
-#define BACKUPS_ENABLED BACKUP_ENABLE_SDCARD
+#if BACKUP_ENABLE_SDCARD || BACKUP_ENABLE_NETWORK
+#define BACKUPS_ENABLED BACKUP_ENABLE_SDCARD + BACKUP_ENABLE_NETWORK
 #endif
 
-#ifdef BACKUP_ENABLE_SDCARD
+#if BACKUP_ENABLE_SDCARD
 #include "SdPositionsBackup.h"
 #endif
 
-#include "Debug.h"
-#include "Gps.h"
-#include "Network.h"
+#if BACKUP_ENABLE_NETWORK
+#include "NetworkPositionsBackup.h"
+#endif
 
 #define LOGGER_NAME "Positions"
 
 #define ENTRY_RESERVED_SIZE	128
-#define ENTRIES_ADDR		ENTRY_RESERVED_SIZE
+#define ENTRIES_ADDR		CONFIG_RESERVED_SIZE
 
 namespace positions {
 #ifdef BACKUPS_ENABLED
@@ -33,12 +35,11 @@ namespace positions {
 	}
 
 	void setup() {
-		//TODO : enable/disable based on config
 #ifdef BACKUPS_ENABLED
 		uint8_t backupIdx = 0;
 		_backups = new backup::PositionsBackup*[BACKUPS_ENABLED];
 
-#ifdef BACKUP_ENABLE_SDCARD
+#if BACKUP_ENABLE_SDCARD
 		_backups[backupIdx] = new backup::sd::SdPositionsBackup();
 		_backups[backupIdx++]->setup();
 #endif

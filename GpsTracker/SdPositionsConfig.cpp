@@ -4,7 +4,7 @@
 
 #define LOGGER_NAME "Config::backup::sd"
 
-#ifdef BACKUP_ENABLE_SDCARD
+#if BACKUP_ENABLE_SDCARD
 namespace config {
 	namespace backup {
 		namespace sd {

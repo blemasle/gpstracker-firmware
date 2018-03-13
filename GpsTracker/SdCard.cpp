@@ -1,6 +1,6 @@
 #include "Config.h"
 
-#ifdef BACKUP_ENABLE_SDCARD
+#if BACKUP_ENABLE_SDCARD
 #include "SdCard.h"
 
 namespace hardware {

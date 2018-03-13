@@ -2,7 +2,18 @@
 
 #include <Arduino.h>
 
-//#define BACKUP_ENABLE_SDCARD 1
+#define BACKUP_ENABLE_SDCARD 0
+#define BACKUP_ENABLE_NETWORK 0
+
+#define CONFIG_ADDR 0
+#define CONFIG_RESERVED_SIZE 128
+#define CONFIG_SEED "UIYA"
+#define VERSION "1.00"
+
+#define SLEEP_DEFAULT_TIME_SECONDS	1800
+
+#define GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS	10000
+#define GPS_DEFAULT_TOTAL_TIMEOUT_MS		180000
 
 struct sleepTimings_t {
 	uint8_t speed;
@@ -17,19 +28,10 @@ struct Config_t {
 	uint16_t lastEntry;
 };
 
-#define CONFIG_ADDR 0
-#define CONFIG_SEED "UIYA"
-#define VERSION "1.00"
-
-#define SLEEP_DEFAULT_TIME_SECONDS	1800
-
-#define GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS	10000
-#define GPS_DEFAULT_TOTAL_TIMEOUT_MS		180000
-
 namespace config {
 
 	static const sleepTimings_t defaultSleepTimings[] PROGMEM = {
-		{ 5, SLEEP_DEFAULT_TIME_SECONDS },
+	{ 5, SLEEP_DEFAULT_TIME_SECONDS },
 	{ 10, 1200 },
 	{ 20, 600 },
 	{ 30, 540 },
