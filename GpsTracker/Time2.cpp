@@ -15,7 +15,7 @@
 #define numberOfMinutes(_time_) ((_time_ / SECS_PER_MIN) % SECS_PER_MIN) 
 #define numberOfHours(_time_) (( _time_% SECS_PER_DAY) / SECS_PER_HOUR)
 #define dayOfWeek(_time_)  ((( _time_ / SECS_PER_DAY + 4)  % DAYS_PER_WEEK)+1) // 1 = Sunday
-#define elapsedDays(_time_) ( _time_ / SECS_PER_DAY)  // this is number of days since Jan 1 1970
+#define elapsedDays(_time_) ( _time_ / SECS_PER_DAY)  // this is number of days since Jan 1 2000
 #define elapsedSecsToday(_time_)  (_time_ % SECS_PER_DAY)   // the number of seconds since last midnight 
 // The following macros are used in calculating alarms and assume the clock is set to a date later than Jan 1 1971
 // Always set the correct time before settting alarms
@@ -32,8 +32,8 @@
 #define daysTotimestamp_t    ((D)) ( (D) * SECS_PER_DAY) // fixed on Jul 22 2011
 #define weeksTotimestamp_t   ((W)) ( (W) * SECS_PER_WEEK)
 
-// leap year calulator expects year argument as years offset from 1970
-#define LEAP_YEAR(Y)     ( ((1970+Y)>0) && !((1970+Y)%4) && ( ((1970+Y)%100) || !((1970+Y)%400) ) )
+// leap year calulator expects year argument as years offset from 2000
+#define LEAP_YEAR(Y)     ( ((2000+Y)>0) && !((2000+Y)%4) && ( ((2000+Y)%100) || !((2000+Y)%400) ) )
 
 static  const uint8_t monthDays[] = { 31,28,31,30,31,30,31,31,30,31,30,31 }; // API starts months from 1, this array starts from 0
 
@@ -41,7 +41,7 @@ __attribute__((__optimize__("O2")))
 void breakTime(const timestamp_t timeInput, tmElements_t &tm) {
 		// break the given timestamp_t into time components
 		// this is a more compact version of the C library localtime function
-		// note that year is offset from 1970 !!!
+		// note that year is offset from 2000 !!!
 
 		uint8_t year;
 		uint8_t month, monthLength;
@@ -62,7 +62,7 @@ void breakTime(const timestamp_t timeInput, tmElements_t &tm) {
 		while ((unsigned)(days += (LEAP_YEAR(year) ? 366 : 365)) <= time) {
 			year++;
 		}
-		tm.Year = year; // year is offset from 1970 
+		tm.Year = year; // year is offset from 2000 
 
 		days -= LEAP_YEAR(year) ? 366 : 365;
 		time -= days; // now it is days in this year, starting at 0
@@ -97,13 +97,13 @@ void breakTime(const timestamp_t timeInput, tmElements_t &tm) {
 __attribute__((__optimize__("O2")))
 timestamp_t makeTimestamp(const tmElements_t &tm) {
 	// assemble time elements into timestamp_t 
-	// note year argument is offset from 1970 (see macros in time.h to convert to other formats)
+	// note year argument is offset from 2000 (see macros in time.h to convert to other formats)
 	// previous version used full four digit year (or digits since 2000),i.e. 2009 was 2009 or 9
 
 	int i;
 	uint32_t seconds;
 
-	// seconds from 1970 till 1 jan 00:00:00 of the given year
+	// seconds from 2000 till 1 jan 00:00:00 of the given year
 	seconds = tm.Year*(SECS_PER_DAY * 365);
 	for (i = 0; i < tm.Year; i++) {
 		if (LEAP_YEAR(i)) {

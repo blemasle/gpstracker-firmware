@@ -61,10 +61,10 @@ namespace rtc {
 
 	void getTime(tmElements_t &time) {
 		hardware::i2c::powerOn();
-		RTC.readTime();
+		RTC.readTime(time);
 		hardware::i2c::powerOff();
 
-		details::readTimeFromRegisters(time);
+		//details::readTimeFromRegisters(time);
 		VERBOSE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
 
@@ -76,10 +76,10 @@ namespace rtc {
 
 	void setTime(const tmElements_t &time) {
 		VERBOSE_FORMAT("setTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
-		details::writeTimeToRegisters(time);
+		//details::writeTimeToRegisters(time);
 
 		hardware::i2c::powerOn();
-		RTC.writeTime();
+		RTC.writeTime(time);
 		hardware::i2c::powerOff();
 	}
 
