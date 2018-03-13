@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
-#include <Time3.h>
+#include <uDS3231.h>
 
 namespace utils {
 	namespace time {
