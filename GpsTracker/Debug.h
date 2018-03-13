@@ -19,7 +19,7 @@
 #define VERBOSE_FORMAT(f, msg, ...) LOG_FORMAT(verbose, f, msg, __VA_ARGS__)
 #else
 
-#define DISABLE_LOGGING 1
+#define DISABLE_LOGGING 1 //TODO : does nothing if not included before ArduinoLog.h
 
 #define VERBOSE(f)
 #define VERBOSE_MSG(f, msg)

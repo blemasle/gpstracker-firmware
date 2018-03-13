@@ -16,7 +16,7 @@ namespace rtc {
 			time.Second = RTC.s;
 			time.Minute = RTC.m;
 			time.Hour = RTC.h;
-			time.Wday = RTC.dow;
+			//time.Wday = RTC.dow;
 			time.Day = RTC.dd;
 			time.Month = RTC.mm;
 			time.Year = CalendarYrToTm(RTC.yyyy);
@@ -26,7 +26,7 @@ namespace rtc {
 			RTC.s = time.Second;
 			RTC.m = time.Minute;
 			RTC.h = time.Hour;
-			RTC.dow = time.Wday;
+			//RTC.dow = time.Wday;
 			RTC.dd = time.Day;
 			RTC.mm = time.Month;
 			RTC.yyyy = tmYearToCalendar(time.Year);
