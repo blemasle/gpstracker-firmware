@@ -1,0 +1,4 @@
+#pragma once
+
+
+#define POSITIONS_CONFIG_DEFAULT_SAVE_THRESHOLD 10

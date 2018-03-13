@@ -15,12 +15,12 @@ namespace config {
 				VERBOSE("read");
 				hardware::i2c::powerOn();
 				hardware::i2c::eeprom.readBlock(CONFIG_ADDR, value);
-				if (!String(CONFIG_SEED).equals(value.seed)) reset();
+				if (CONFIG_SEED != value.seed) reset();
 				hardware::i2c::powerOff();
 			}
 
 			void write() {
-				VERBOSE_FORMAT("write", "%s, %s, %s, %d, %d", value.seed, value.version, value.apn, value.firstEntry, value.lastEntry);
+				VERBOSE_FORMAT("write", "%d, %s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 
 				hardware::i2c::powerOn();
 				int written = hardware::i2c::eeprom.writeBlock(CONFIG_ADDR, value);
@@ -29,9 +29,9 @@ namespace config {
 		}
 
 		Config_t get() {
-			if (value.seed[0] == '\0') details::read();
+			if (value.seed == 0) details::read();
 
-			VERBOSE_FORMAT("get", "%s, %s, %s, %d, %d", value.seed, value.version, value.apn, value.firstEntry, value.lastEntry);
+			VERBOSE_FORMAT("get", "%d, %s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 			return value;
 		}
 
@@ -45,7 +45,6 @@ namespace config {
 			Config_t config = {
 				CONFIG_SEED,
 				VERSION,
-				"Vodafone", //TODO : read from SD
 				0xFFFF,
 				0xFFFF,
 			};
