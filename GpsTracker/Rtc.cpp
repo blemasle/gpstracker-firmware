@@ -8,6 +8,8 @@
 
 #define LOGGER_NAME "Rtc"
 
+using namespace utils;
+
 namespace rtc {
 	
 	void setup() {
@@ -32,7 +34,7 @@ namespace rtc {
 	timestamp_t getTime() {
 		tmElements_t time;
 		getTime(time);
-		return makeTimestamp(time);
+		return time::makeTimestamp(time);
 	}
 
 	void getTime(tmElements_t &time) {
@@ -41,12 +43,6 @@ namespace rtc {
 		hardware::i2c::powerOff();
 
 		VERBOSE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
-	}
-
-	void setTime(const timestamp_t timestamp) {
-		tmElements_t time;
-		breakTime(timestamp, time);
-		setTime(time);
 	}
 
 	void setTime(const tmElements_t &time) {
@@ -62,21 +58,22 @@ namespace rtc {
 		tmElements_t alarmTime;
 
 		getTime(currentTime);
-		breakTime(makeTimestamp(currentTime) + seconds, alarmTime);
+		time::breakTime(time::makeTimestamp(currentTime) + seconds, alarmTime);
 
 		setAlarm(alarmTime);
 	}
 
 	void setAlarm(const tmElements_t &time) {
 		hardware::i2c::powerOn();
-		RTC.writeAlarm1(DS3231_ALM_DTHMS, time);
+		RTC.writeAlarm1(DS3231_ALM_HMS, time);
 
 		RTC.control(DS3231_A1_FLAG, DS3231_OFF); //reset Alarm 1 flag
 		RTC.control(DS3231_A1_INT_ENABLE, DS3231_ON); //Alarm 1 ON
 		RTC.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN ON
-		hardware::i2c::powerOff();
 
-		NOTICE_FORMAT("setAlarm", "Next alarm : %d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
+		NOTICE_FORMAT("setAlarm", "Next alarm : %d:%d:%d", time.Hour, time.Minute, time.Second);
+
+		hardware::i2c::powerOff();
 	}
 
 }
