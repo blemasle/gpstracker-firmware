@@ -9,30 +9,6 @@
 #define LOGGER_NAME "Rtc"
 
 namespace rtc {
-
-	namespace details {
-
-		void readTimeFromRegisters(tmElements_t &time) {
-			time.Second = RTC.s;
-			time.Minute = RTC.m;
-			time.Hour = RTC.h;
-			//time.Wday = RTC.dow;
-			time.Day = RTC.dd;
-			time.Month = RTC.mm;
-			time.Year = CalendarYrToTm(RTC.yyyy);
-		}
-
-		void writeTimeToRegisters(const tmElements_t &time) {
-			RTC.s = time.Second;
-			RTC.m = time.Minute;
-			RTC.h = time.Hour;
-			//RTC.dow = time.Wday;
-			RTC.dd = time.Day;
-			RTC.mm = time.Month;
-			RTC.yyyy = tmYearToCalendar(time.Year);
-		}
-
-	}
 	
 	void setup() {
 		VERBOSE("setup");
@@ -64,7 +40,6 @@ namespace rtc {
 		RTC.readTime(time);
 		hardware::i2c::powerOff();
 
-		//details::readTimeFromRegisters(time);
 		VERBOSE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
 
@@ -76,7 +51,6 @@ namespace rtc {
 
 	void setTime(const tmElements_t &time) {
 		VERBOSE_FORMAT("setTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
-		//details::writeTimeToRegisters(time);
 
 		hardware::i2c::powerOn();
 		RTC.writeTime(time);
@@ -94,10 +68,8 @@ namespace rtc {
 	}
 
 	void setAlarm(const tmElements_t &time) {
-		details::writeTimeToRegisters(time);
-
 		hardware::i2c::powerOn();
-		RTC.writeAlarm1(DS3231_ALM_DTHMS);
+		RTC.writeAlarm1(DS3231_ALM_DTHMS, time);
 
 		RTC.control(DS3231_A1_FLAG, DS3231_OFF); //reset Alarm 1 flag
 		RTC.control(DS3231_A1_INT_ENABLE, DS3231_ON); //Alarm 1 ON
