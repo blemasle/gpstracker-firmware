@@ -43,11 +43,8 @@ namespace hardware {
 
 		void setup() {
 			VERBOSE("setup");
-			device.powerOnOff(true);
 			simSerial.begin(4800);
-
 			device.begin(simSerial);
-			device.powerOnOff(false);
 		}
 
 		void gpsPowerOn() {
