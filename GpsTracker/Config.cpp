@@ -20,8 +20,10 @@ namespace config {
 			}
 
 			void write() {
-				VERBOSE_FORMAT("write", "%d, %s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
-
+				VERBOSE_FORMAT("write", "%d, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+#if BACKUP_ENABLE_NETWORK
+				VERBOSE_FORMAT("write", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
+#endif
 				hardware::i2c::powerOn();
 				int written = hardware::i2c::eeprom.writeBlock(CONFIG_ADDR, value);
 				hardware::i2c::powerOff();
@@ -31,7 +33,10 @@ namespace config {
 		config_t get() {
 			if (value.seed == 0) details::read();
 
-			VERBOSE_FORMAT("get", "%d, %s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+			VERBOSE_FORMAT("get", "%d, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+#if BACKUP_ENABLE_NETWORK
+			VERBOSE_FORMAT("get", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
+#endif
 			return value;
 		}
 
@@ -49,10 +54,10 @@ namespace config {
 				0xFFFF,
 #if BACKUP_ENABLE_NETWORK
 				{
-					POSITIONS_CONFIG_DEFAULT_SAVE_THRESHOLD,
+					POSITIONS_CONFIG_NET_DEFAULT_SAVE_THRESHOLD,
 					0xFFFF,
-					POSITIONS_CONFIG_DEFAULT_APN,
-					POSITIONS_CONFIG_DEFAULT_URL,
+					POSITIONS_CONFIG_NET_DEFAULT_APN,
+					POSITIONS_CONFIG_NET_DEFAULT_URL,
 				},
 #endif
 			};

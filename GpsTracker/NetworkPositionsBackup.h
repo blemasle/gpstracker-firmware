@@ -4,7 +4,7 @@
 
 namespace positions {
 	namespace backup {
-		namespace network {
+		namespace net {
 
 			class NetworkPositionsBackup : public PositionsBackup {
 			private:

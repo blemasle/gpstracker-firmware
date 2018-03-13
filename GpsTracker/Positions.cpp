@@ -43,6 +43,13 @@ namespace positions {
 		_backups[backupIdx] = new backup::sd::SdPositionsBackup();
 		_backups[backupIdx++]->setup();
 #endif
+#if BACKUP_ENABLE_NETWORK
+		_backups[backupIdx] = new backup::net::NetworkPositionsBackup();
+		_backups[backupIdx]->setup();
+		//_backups[backupIdx]->backup();
+		backupIdx++;
+
+#endif
 #endif
 	}
 
@@ -132,9 +139,15 @@ namespace positions {
 
 	void doBackup() {
 #ifdef BACKUPS_ENABLED
-		for (int i = 0; i < BACKUPS_ENABLED; i++) {
+		VERBOSE_FORMAT("doBackup", "%d backups enabled", BACKUPS_ENABLED);
+
+		_backups[0]->backup();
+
+		/*for (int i = 0; i < BACKUPS_ENABLED; i++) {
+			VERBOSE_FORMAT("doBackup", "calling backup %d", i);
+			delay(1000);
 			_backups[i]->backup();
-		}
+		}*/
 #endif
 	}
 }

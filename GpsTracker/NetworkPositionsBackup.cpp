@@ -5,14 +5,14 @@
 #include "Positions.h"
 #include "Config.h"
 #include "Hardware.h"
+#include "Network.h"
 
 #define LOGGER_NAME "Positions::backup::network"
 #define BUFFER_SIZE 160
-#define EXPECTED_HTTP_RESPONSE_CODE 201
 
 namespace positions {
 	namespace backup {
-		namespace network {
+		namespace net {
 
 			namespace details {
 
@@ -38,7 +38,7 @@ namespace positions {
 						buffer,
 						buffer,
 						BUFFER_SIZE
-					) == EXPECTED_HTTP_RESPONSE_CODE;
+					) == POSITIONS_CONFIG_NET_DEFAULT_EXPECTED_RESPONSE;
 				}
 
 				void appendPositions(config_t &config) {
@@ -46,9 +46,22 @@ namespace positions {
 
 					uint16_t currentEntryIndex = config.network.lastSavedEntry + 1;
 					PositionEntry currentEntry;
+					SIM808RegistrationStatus networkStatus;
 
 					hardware::i2c::powerOn();
-					hardware::sim808::networkPowerOn();
+					network::powerOn();
+					networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
+
+					if (!network::isAvailable(networkStatus.stat)) {
+						VERBOSE_MSG("appendPositions", "network unavailable");
+						return;
+					}
+
+					if (!network::enableGprs()) {
+						VERBOSE_MSG("appendPositions", "gprs unavailable");
+						return;
+					}
+
 					do {
 						if (!positions::get(currentEntryIndex, currentEntry)) break;
 						if (!appendPosition(config, currentEntry)) break;
@@ -57,14 +70,14 @@ namespace positions {
 						config::main::set(config);
 
 					} while (positions::moveNext(currentEntryIndex));
-					hardware::sim808::networkPowerOff();
+					network::powerOff();
 					hardware::i2c::powerOff();
 				}
 
 			}
 
 			void NetworkPositionsBackup::setup() {
-				VERBOSE("backup");
+				VERBOSE("setup");
 			}
 
 			void NetworkPositionsBackup::backup() {
