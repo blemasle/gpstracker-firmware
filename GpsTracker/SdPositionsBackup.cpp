@@ -3,12 +3,12 @@
 #include "SdCard.h"
 #include "Hardware.h"
 #include "Config.h"
-#include "SdFat.h"
 #include "Positions.h"
 #include "Debug.h"
 
 #define LOGGER_NAME "Positions::backup::sd"
 
+#ifdef BACKUP_ENABLE_SDCARD
 namespace positions {
 	namespace backup {
 		namespace sd {
@@ -95,7 +95,9 @@ namespace positions {
 				}
 			}
 
-			void SdPositionsBackup::setup() { }
+			void SdPositionsBackup::setup() {
+				hardware::sdcard::setup();
+			}
 
 			void SdPositionsBackup::backup() {
 				VERBOSE("backup");
@@ -114,3 +116,4 @@ namespace positions {
 		}
 	}
 }
+#endif

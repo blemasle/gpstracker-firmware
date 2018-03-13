@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+//#define BACKUP_ENABLE_SDCARD 1
+
 struct sleepTimings_t {
 	uint8_t speed;
 	uint16_t seconds;

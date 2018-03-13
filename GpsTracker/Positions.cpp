@@ -1,8 +1,15 @@
+#include "Config.h"
 #include "Positions.h"
+
+#if defined(BACKUP_ENABLE_SDCARD)
+#define BACKUPS_ENABLED BACKUP_ENABLE_SDCARD
+#endif
+
+#ifdef BACKUP_ENABLE_SDCARD
 #include "SdPositionsBackup.h"
+#endif
 
 #include "Debug.h"
-#include "Config.h"
 #include "Gps.h"
 #include "Network.h"
 
@@ -12,9 +19,9 @@
 #define ENTRIES_ADDR		ENTRY_RESERVED_SIZE
 
 namespace positions {
-
+#ifdef BACKUPS_ENABLED
 	backup::PositionsBackup **_backups;
-	size_t _backupLength;
+#endif
 
 	namespace details {
 		uint16_t maxEntryIndex = (E24_MAX_ADDRESS(hardware::i2c::eeprom.getSize()) - ENTRIES_ADDR) / ENTRY_RESERVED_SIZE;
@@ -27,11 +34,15 @@ namespace positions {
 
 	void setup() {
 		//TODO : enable/disable based on config
-		_backupLength = 1;
-		_backups = new backup::PositionsBackup*[_backupLength];
-		
-		_backups[0] = new backup::sd::SdPositionsBackup();
-		_backups[0]->setup();
+#ifdef BACKUPS_ENABLED
+		uint8_t backupIdx = 0;
+		_backups = new backup::PositionsBackup*[BACKUPS_ENABLED];
+
+#ifdef BACKUP_ENABLE_SDCARD
+		_backups[backupIdx] = new backup::sd::SdPositionsBackup();
+		_backups[backupIdx++]->setup();
+#endif
+#endif
 	}
 
 	bool acquire(PositionEntryMetadata &metadata) {
@@ -119,8 +130,10 @@ namespace positions {
 	}
 
 	void doBackup() {
-		for (int i = 0; i < _backupLength; i++) {
+#ifdef BACKUPS_ENABLED
+		for (int i = 0; i < BACKUPS_ENABLED; i++) {
 			_backups[i]->backup();
 		}
+#endif
 	}
 }
