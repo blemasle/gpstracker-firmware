@@ -5,6 +5,10 @@
 #define BACKUP_ENABLE_SDCARD 0
 #define BACKUP_ENABLE_NETWORK 1
 
+#if BACKUP_ENABLE_NETWORK
+#include "NetworkPositionsConfig.h"
+#endif
+
 #define CONFIG_ADDR 0
 #define CONFIG_RESERVED_SIZE 128
 #define CONFIG_SEED 13
@@ -20,11 +24,14 @@ struct sleepTimings_t {
 	uint16_t seconds;
 };
 
-struct Config_t {
+struct config_t {
 	uint8_t seed;
 	char version[5];
 	uint16_t firstEntry;
 	uint16_t lastEntry;
+#if BACKUP_ENABLE_NETWORK
+	networkConfig_t network;
+#endif
 };
 
 namespace config {
@@ -41,8 +48,8 @@ namespace config {
 	};
 
 	namespace main {	
-		Config_t get();
-		void set(const Config_t config);
+		config_t get();
+		void set(const config_t config);
 
 		void reset();
 	}

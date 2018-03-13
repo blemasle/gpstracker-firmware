@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "Hardware.h"
 #include "Pins.h"
 #include "Debug.h"
@@ -65,7 +66,7 @@ namespace hardware {
 			VERBOSE("networkPowerOn");
 			powerOn();
 			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::FULL);
-			device.enableGprs("Vodafone"); //TODO : get from config
+			device.enableGprs(config::main::get().network.apn);
 		}
 
 		void networkPowerOff() {

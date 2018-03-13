@@ -84,7 +84,7 @@ namespace positions {
 		strlcpy(entry.position, gps::lastPosition, POSITION_SIZE);
 
 		hardware::i2c::powerOn();
-		Config_t config = config::main::get();
+		config_t config = config::main::get();
 
 		config.lastEntry++;
 		if (config.lastEntry > details::maxEntryIndex) config.lastEntry = 0;
@@ -124,7 +124,7 @@ namespace positions {
 	}
 
 	uint16_t count(uint16_t fromIndex) {
-		Config_t config = config::main::get();
+		config_t config = config::main::get();
 		if (config.lastEntry < config.firstEntry) { config.lastEntry += details::maxEntryIndex; }
 
 		return config.lastEntry - fromIndex;

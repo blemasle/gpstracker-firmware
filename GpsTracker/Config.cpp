@@ -7,7 +7,7 @@
 namespace config {
 	namespace main {
 
-		Config_t value;
+		config_t value;
 
 		namespace details {
 
@@ -15,7 +15,7 @@ namespace config {
 				VERBOSE("read");
 				hardware::i2c::powerOn();
 				hardware::i2c::eeprom.readBlock(CONFIG_ADDR, value);
-				if (CONFIG_SEED != value.seed) reset();
+				if (CONFIG_SEED != value.seed) reset(); //todo : reset network if seed for network is not right
 				hardware::i2c::powerOff();
 			}
 
@@ -28,25 +28,33 @@ namespace config {
 			}
 		}
 
-		Config_t get() {
+		config_t get() {
 			if (value.seed == 0) details::read();
 
 			VERBOSE_FORMAT("get", "%d, %s, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 			return value;
 		}
 
-		void set(const Config_t config) {
+		void set(const config_t config) {
 			value = config;
 			details::write();
 		}
 
 		void reset() {
 			VERBOSE("reset");
-			Config_t config = {
+			config_t config = {
 				CONFIG_SEED,
 				VERSION,
 				0xFFFF,
 				0xFFFF,
+#if BACKUP_ENABLE_NETWORK
+				{
+					POSITIONS_CONFIG_DEFAULT_SAVE_THRESHOLD,
+					0xFFFF,
+					POSITIONS_CONFIG_DEFAULT_APN,
+					POSITIONS_CONFIG_DEFAULT_URL,
+				},
+#endif
 			};
 
 			value = config;
