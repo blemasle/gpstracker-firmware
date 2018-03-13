@@ -103,6 +103,8 @@ int freeRam2() { // dirty hack because putting it in namespace doesn't compile
 	return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
 }
 
+using namespace utils;
+
 namespace debug {
 
 	namespace details {

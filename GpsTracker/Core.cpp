@@ -4,6 +4,8 @@
 
 #define LOGGER_NAME "Core"
 
+using namespace utils;
+
 namespace core {
 	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;;
 

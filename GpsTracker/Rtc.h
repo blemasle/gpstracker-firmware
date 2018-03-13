@@ -9,7 +9,6 @@ namespace rtc {
 
 	timestamp_t getTime();
 	void getTime(tmElements_t &time);
-	void setTime(timestamp_t time);
 	void setTime(const tmElements_t &time);
 
 	void setAlarm(uint16_t seconds);
