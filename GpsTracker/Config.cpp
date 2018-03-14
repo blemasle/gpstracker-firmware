@@ -17,6 +17,11 @@ namespace config {
 				hardware::i2c::eeprom.readBlock(CONFIG_ADDR, value);
 				if (CONFIG_SEED != value.seed) reset(); //todo : reset network if seed for network is not right
 				hardware::i2c::powerOff();
+
+				VERBOSE_FORMAT("read", "%d, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+#if BACKUP_ENABLE_NETWORK
+				VERBOSE_FORMAT("read", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
+#endif
 			}
 
 			void write() {
@@ -30,18 +35,11 @@ namespace config {
 			}
 		}
 
-		config_t get() {
-			if (value.seed == 0) details::read();
-
-			VERBOSE_FORMAT("get", "%d, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
-#if BACKUP_ENABLE_NETWORK
-			VERBOSE_FORMAT("get", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
-#endif
-			return value;
+		void setup() {
+			details::read();
 		}
 
-		void set(const config_t config) {
-			value = config;
+		void save() {
 			details::write();
 		}
 
@@ -63,7 +61,7 @@ namespace config {
 			};
 
 			value = config;
-			details::write();
+			save();
 		}
 
 	}

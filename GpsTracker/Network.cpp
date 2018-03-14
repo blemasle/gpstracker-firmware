@@ -30,7 +30,7 @@ namespace network {
 	}
 
 	bool enableGprs() {
-		return hardware::sim808::device.enableGprs(config::main::get().network.apn);
+		return hardware::sim808::device.enableGprs(config::main::value.network.apn);
 	}
 	
 	

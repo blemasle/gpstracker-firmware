@@ -52,9 +52,11 @@ namespace config {
 	{ 180, 180 },
 	};
 
-	namespace main {	
-		config_t get();
-		void set(const config_t config);
+	namespace main {
+		extern config_t value;
+
+		void setup();
+		void save();
 
 		void reset();
 	}

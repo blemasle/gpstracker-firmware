@@ -16,7 +16,7 @@ namespace positions {
 			namespace details {
 
 				bool isBackupNeeded(SdPositionConfig_t &sdConfig) {
-					Config_t referenceConfig = config::main::get();
+					Config_t referenceConfig = config::main::value;
 					sdConfig = config::backup::sd::get();
 
 					return sdConfig.lastSavedEntry == 0xFFFF ||

@@ -61,6 +61,7 @@ namespace debug {
 
 	void waitForSerial();
 	int freeRam();
+	void displayFreeRam();
 
 	GPSTRACKER_DEBUG_COMMAND menu();
 
@@ -77,6 +78,5 @@ namespace debug {
 	void getAndDisplayEepromLastPosition();
 	void addLastPositionToEeprom();
 
-	inline void displayFreeRam() { Serial.println(freeRam()); }
 
 }

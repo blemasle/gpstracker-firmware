@@ -85,24 +85,27 @@ namespace positions {
 	void appendLast(const PositionEntryMetadata &metadata) {
 		VERBOSE("appendLast");
 
+		uint16_t entryIndex;
 		uint16_t entryAddress;
 		PositionEntry entry = { metadata };
 		strlcpy(entry.position, gps::lastPosition, POSITION_SIZE);
 
+		config_t* config = &config::main::value;
+		entryIndex = config->lastEntry + 1;
+
+		entryAddress = details::getEntryAddress(entryIndex);
+
 		hardware::i2c::powerOn();
-		config_t config = config::main::get();
-
-		config.lastEntry++;
-		if (config.lastEntry > details::maxEntryIndex) config.lastEntry = 0;
-		if (config.lastEntry == config.firstEntry) config.firstEntry++;
-		if (config.firstEntry > details::maxEntryIndex) config.firstEntry = 0;
-
-		entryAddress = details::getEntryAddress(config.lastEntry);
 		hardware::i2c::eeprom.writeBlock(entryAddress, entry);
 
 		VERBOSE_FORMAT("appendLast", "Written to EEPROM @ %X : [%d%% @ %dmV] [%f°C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
 
-		config::main::set(config);
+		config->lastEntry++;
+		if (config->lastEntry > details::maxEntryIndex) config->lastEntry = 0;
+		if (config->lastEntry == config->firstEntry) config->firstEntry++;
+		if (config->firstEntry > details::maxEntryIndex) config->firstEntry = 0;
+
+		config::main::save();
 		hardware::i2c::powerOff();
 	}
 
@@ -121,7 +124,7 @@ namespace positions {
 	}
 
 	bool moveNext(uint16_t &index) {
-		if (index == config::main::get().lastEntry) return false;
+		if (index == config::main::value.lastEntry) return false;
 		
 		if (index == details::maxEntryIndex) index = 0; //could use a modulo but easier to understand that way
 		else index++;
@@ -130,18 +133,18 @@ namespace positions {
 	}
 
 	uint16_t count(uint16_t fromIndex) {
-		config_t config = config::main::get();
-		if (config.lastEntry < config.firstEntry) { config.lastEntry += details::maxEntryIndex; }
+		config_t *config = &config::main::value;
+		if (config->lastEntry < config->firstEntry) { config->lastEntry += details::maxEntryIndex; }
 
-		return config.lastEntry - fromIndex;
+		return config->lastEntry - fromIndex;
 	}
 
 	void doBackup() {
 #ifdef BACKUPS_ENABLED
+		debug::displayFreeRam();
 		VERBOSE_FORMAT("doBackup", "%d backups enabled", BACKUPS_ENABLED);
-		Serial.println((unsigned int)_backups[0], HEX);
 		_backups[0]->backup();
-
+		debug::displayFreeRam();
 		/*for (int i = 0; i < BACKUPS_ENABLED; i++) {
 			VERBOSE_FORMAT("doBackup", "calling backup %d", i);
 			delay(1000);

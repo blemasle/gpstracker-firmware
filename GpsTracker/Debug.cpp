@@ -124,6 +124,10 @@ namespace debug {
 		return freeRam2();
 	}
 
+	void displayFreeRam() {
+		Log.notice(F("RAM: %d\n"), freeRam());
+	}
+
 	GPSTRACKER_DEBUG_COMMAND parseCommand(char id) {
 		size_t mappingArraySize = flash::getArraySize(commandIdMapping);
 		char commandId;
@@ -183,7 +187,7 @@ namespace debug {
 	}
 
 	void getAndDisplayEepromConfig() {
-		config::main::get();
+		config::main::setup(); //forcing read again
 	}
 
 	void getAndDisplayEepromContent() {
@@ -203,7 +207,7 @@ namespace debug {
 	}
 
 	void getAndDisplayEepromPositions() {
-		uint16_t currentEntryIndex = config::main::get().firstEntry;
+		uint16_t currentEntryIndex = config::main::value.firstEntry;
 		PositionEntry currentEntry;
 
 		hardware::i2c::powerOn();
@@ -215,7 +219,7 @@ namespace debug {
 	}
 
 	void getAndDisplayEepromLastPosition() {
-		uint16_t lastEntryIndex = config::main::get().lastEntry;
+		uint16_t lastEntryIndex = config::main::value.lastEntry;
 		PositionEntry lastEntry;
 
 		positions::get(lastEntryIndex, lastEntry);

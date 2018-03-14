@@ -11,6 +11,8 @@ void setup() {
 	if(Serial) Log.begin(LOG_LEVEL_NOTICE, &Serial);
 #endif
 
+	if (Serial) Serial.println(F("============================="));
+	config::main::setup();
 	rtc::setup();
 	hardware::sim808::setup();
 	positions::setup();
