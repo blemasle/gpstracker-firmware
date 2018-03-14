@@ -8,7 +8,7 @@
 
 namespace network {
 
-	SIM808RegistrationStatus waitForRegistered(uint16_t timeout) {
+	SIM808RegistrationStatus waitForRegistered(uint32_t timeout) {
 		SIM808RegistrationStatus currentStatus;
 
 		do {

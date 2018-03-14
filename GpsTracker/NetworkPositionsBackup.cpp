@@ -24,7 +24,9 @@ namespace positions {
 				}
 
 				bool appendPosition(config_t &config, PositionEntry &entry) {
-					char buffer[BUFFER_SIZE];
+					debug::displayFreeRam();
+					return false;
+					/*char buffer[BUFFER_SIZE];
 					snprintf_P(buffer, BUFFER_SIZE, PSTR("%d,%d,%.2f,%d,%s,%d"),
 						entry.metadata.batteryLevel,
 						entry.metadata.batteryVoltage,
@@ -38,7 +40,7 @@ namespace positions {
 						buffer,
 						buffer,
 						BUFFER_SIZE
-					) == POSITIONS_CONFIG_NET_DEFAULT_EXPECTED_RESPONSE;
+					) == POSITIONS_CONFIG_NET_DEFAULT_EXPECTED_RESPONSE;*/
 				}
 
 				void appendPositions(config_t &config) {
@@ -54,7 +56,7 @@ namespace positions {
 					if (!network::isAvailable(networkStatus.stat)) VERBOSE_MSG("appendPositions", "network unavailable");
 					else if (!network::enableGprs()) VERBOSE_MSG("appendPositions", "gprs unavailable");
 					else {
-						/*hardware::i2c::powerOn();
+						hardware::i2c::powerOn();
 						do {
 							if (!positions::get(currentEntryIndex, currentEntry)) break;
 							if (!appendPosition(config, currentEntry)) break;
@@ -63,7 +65,7 @@ namespace positions {
 							config::main::set(config);
 
 						} while (positions::moveNext(currentEntryIndex));
-						hardware::i2c::powerOff(); */						
+						hardware::i2c::powerOff();
 					}
 
 					network::powerOff();
