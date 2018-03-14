@@ -45,6 +45,7 @@ namespace hardware {
 			VERBOSE("setup");
 			simSerial.begin(SIM808_BAUDRATE);
 			device.begin(simSerial);
+			powerOff(); //ensure powerOff on start
 		}
 
 		void gpsPowerOn() {
@@ -67,8 +68,8 @@ namespace hardware {
 
 		void networkPowerOff() {
 			VERBOSE("networkPowerOff");
-			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
 			device.disableGprs();
+			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
 
 			powerOffIfUnused();
 		}
