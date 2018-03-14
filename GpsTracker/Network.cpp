@@ -15,7 +15,8 @@ namespace network {
 			currentStatus = hardware::sim808::device.getNetworkRegistrationStatus();
 			if (isAvailable(currentStatus.stat)) break;
 
-			VERBOSE_FORMAT("waitForRegistered", "%d", currentStatus.stat);
+			SIM808SignalQualityReport report = hardware::sim808::device.getSignalQuality();
+			VERBOSE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
 			mainunit::deepSleep(NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS / 1000);
 			timeout -= NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
 		} while (timeout > 1);
