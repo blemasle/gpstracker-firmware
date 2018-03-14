@@ -41,14 +41,13 @@ namespace positions {
 
 #if BACKUP_ENABLE_SDCARD
 		_backups[backupIdx] = new backup::sd::SdPositionsBackup();
-		_backups[backupIdx++]->setup();
+		_backups[backupIdx]->setup();
+		backupIdx++;
 #endif
 #if BACKUP_ENABLE_NETWORK
 		_backups[backupIdx] = new backup::net::NetworkPositionsBackup();
 		_backups[backupIdx]->setup();
-		//_backups[backupIdx]->backup();
 		backupIdx++;
-
 #endif
 #endif
 	}
@@ -140,7 +139,7 @@ namespace positions {
 	void doBackup() {
 #ifdef BACKUPS_ENABLED
 		VERBOSE_FORMAT("doBackup", "%d backups enabled", BACKUPS_ENABLED);
-
+		Serial.println((unsigned int)_backups[0], HEX);
 		_backups[0]->backup();
 
 		/*for (int i = 0; i < BACKUPS_ENABLED; i++) {

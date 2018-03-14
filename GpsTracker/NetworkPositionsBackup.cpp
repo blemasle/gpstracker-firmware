@@ -48,30 +48,25 @@ namespace positions {
 					PositionEntry currentEntry;
 					SIM808RegistrationStatus networkStatus;
 
-					hardware::i2c::powerOn();
 					network::powerOn();
 					networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
 
-					if (!network::isAvailable(networkStatus.stat)) {
-						VERBOSE_MSG("appendPositions", "network unavailable");
-						return;
+					if (!network::isAvailable(networkStatus.stat)) VERBOSE_MSG("appendPositions", "network unavailable");
+					else if (!network::enableGprs()) VERBOSE_MSG("appendPositions", "gprs unavailable");
+					else {
+						/*hardware::i2c::powerOn();
+						do {
+							if (!positions::get(currentEntryIndex, currentEntry)) break;
+							if (!appendPosition(config, currentEntry)) break;
+
+							config.network.lastSavedEntry = currentEntryIndex;
+							config::main::set(config);
+
+						} while (positions::moveNext(currentEntryIndex));
+						hardware::i2c::powerOff(); */						
 					}
 
-					if (!network::enableGprs()) {
-						VERBOSE_MSG("appendPositions", "gprs unavailable");
-						return;
-					}
-
-					do {
-						if (!positions::get(currentEntryIndex, currentEntry)) break;
-						if (!appendPosition(config, currentEntry)) break;
-
-						config.network.lastSavedEntry = currentEntryIndex;
-						config::main::set(config);
-
-					} while (positions::moveNext(currentEntryIndex));
 					network::powerOff();
-					hardware::i2c::powerOff();
 				}
 
 			}
