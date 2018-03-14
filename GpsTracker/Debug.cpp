@@ -28,6 +28,7 @@ MENU_ENTRY(EEPROM_GET_CONTENT,		"[E] Get EEPROM content");
 MENU_ENTRY(EEPROM_GET_ENTRIES,		"[P] Get EEPROM entries");
 MENU_ENTRY(EEPROM_GET_LAST_ENTRY,	"[p] Get EEPROM last entry");
 MENU_ENTRY(EEPROM_ADD_ENTRY,		"[a] Add last entry to EEPROM");
+MENU_ENTRY(EEPROM_BACKUP_ENTRIES,	"[B] Backup EEPROM entries");
 MENU_ENTRY(SLEEP,					"[S] Sleep for 8s");
 MENU_ENTRY(SLEEP_DEEP,				"[s] Deep sleep for 10s");
 MENU_ENTRY(QUESTION,				"?");
@@ -50,6 +51,7 @@ const PROGMEM uint8_t commandIdMapping[] = {
 	'P', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_ENTRIES),
 	'p', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_LAST_ENTRY),
 	'a', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY),
+	'B', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_BACKUP_ENTRIES),
 	'S', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP),
 	's', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP_DEEP),
 };
@@ -88,7 +90,7 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 	MENU_EEPROM_GET_ENTRIES,
 	MENU_EEPROM_GET_LAST_ENTRY,
 	MENU_EEPROM_ADD_ENTRY,
-
+	MENU_EEPROM_BACKUP_ENTRIES,
 	MENU_SEPARATOR,
 
 	MENU_SLEEP,

@@ -54,8 +54,9 @@ namespace debug {
 		EEPROM_GET_LAST_ENTRY =	17,
 		EEPROM_GET_ENTRIES =	18,
 		EEPROM_ADD_ENTRY =		19,
-		SLEEP =					20,
-		SLEEP_DEEP =			21
+		EEPROM_BACKUP_ENTRIES =	20,
+		SLEEP =					21,
+		SLEEP_DEEP =			22
 	};
 
 	void waitForSerial();

@@ -1,4 +1,5 @@
 #include "Config.h"
+#include "Debug.h"
 #include "Network.h"
 #include "Hardware.h"
 #include "MainUnit.h"
@@ -14,6 +15,7 @@ namespace network {
 			currentStatus = hardware::sim808::device.getNetworkRegistrationStatus();
 			if (isAvailable(currentStatus.stat)) break;
 
+			VERBOSE_FORMAT("waitForRegistered", "%d", currentStatus.stat);
 			mainunit::deepSleep(NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS / 1000);
 			timeout -= NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
 		} while (timeout > 1);

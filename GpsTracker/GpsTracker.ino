@@ -69,6 +69,8 @@ void loop() {
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY:
 			debug::addLastPositionToEeprom();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_BACKUP_ENTRIES:
 			positions::doBackup();
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::SLEEP:
