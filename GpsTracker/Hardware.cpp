@@ -43,7 +43,7 @@ namespace hardware {
 
 		void setup() {
 			VERBOSE("setup");
-			simSerial.begin(4800);
+			simSerial.begin(SIM808_BAUDRATE);
 			device.begin(simSerial);
 		}
 
