@@ -67,7 +67,7 @@ namespace positions {
 							if (!appendPosition(currentEntry)) break;
 
 							config::main::value.network.lastSavedEntry = currentEntryIndex;
-							//config::main::save();
+							config::main::save();
 
 						} while (positions::moveNext(currentEntryIndex));
 						debug::displayFreeRam();

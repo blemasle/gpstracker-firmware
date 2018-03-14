@@ -239,7 +239,7 @@ namespace debug {
 			SIM808_GPS_STATUS::OFF
 		};
 
-		positions::appendLast(metadata);
+		for(int i = 0; i < 3; i++) positions::appendLast(metadata);
 	}
 
 	void setRtcTime() {
