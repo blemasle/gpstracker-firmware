@@ -1,6 +1,7 @@
 #include "Debug.h"
 #include "Flash.h"
 #include "Positions.h"
+#include "Core.h"
 
 #define LOGGER_NAME "Debug"
 
@@ -186,6 +187,24 @@ namespace debug {
 		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
 
+	void setRtcTime() {
+		tmElements_t time;
+		gps::getTime(time);
+		rtc::setTime(time);
+	}
+
+	void getAndDisplaySleepTimes() {
+		size_t arraySize = flash::getArraySize(config::defaultSleepTimings);
+		sleepTimings_t maxSpeedTiming;
+		utils::flash::read(&config::defaultSleepTimings[arraySize - 1], maxSpeedTiming);
+
+		for (int i = 0; i <= maxSpeedTiming.speed; i++) {
+			core::computeSleepTime(i);
+		}
+
+		NOTICE_MSG("getAndDisplaySleepTimes", "Done");
+	}
+
 	void getAndDisplayEepromConfig() {
 		config::main::setup(); //forcing read again
 	}
@@ -240,13 +259,5 @@ namespace debug {
 		};
 
 		for(int i = 0; i < 3; i++) positions::appendLast(metadata);
-	}
-
-	void setRtcTime() {
-		tmElements_t time;
-		gps::getTime(time);
-		rtc::setTime(time);
-
-		NOTICE_MSG("setRtcTime", "Done");
 	}
 }

@@ -72,6 +72,8 @@ namespace debug {
 	void getAndDisplayRtcTime();
 	void setRtcTime();
 
+	void getAndDisplaySleepTimes();
+
 	void getAndDisplayEepromConfig();
 	void getAndDisplayEepromContent();
 	void getAndDisplayEepromPositions();
