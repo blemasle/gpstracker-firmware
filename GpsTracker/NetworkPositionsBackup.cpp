@@ -18,7 +18,7 @@ namespace positions {
 
 				bool isBackupNeeded() {
 					config_t *config = &config::main::value;
-					return config->network.lastSavedEntry == 0xFFFF ||
+					return (config->network.lastSavedEntry == 0xFFFF && config ->lastEntry != 0xFFFF) ||
 						positions::count(config->network.lastSavedEntry) > config->network.saveThreshold;
 				}
 
