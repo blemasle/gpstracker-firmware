@@ -3,7 +3,7 @@
 #include <Arduino.h>
 
 #define BACKUP_ENABLE_SDCARD 0
-#define BACKUP_ENABLE_NETWORK 1
+#define BACKUP_ENABLE_NETWORK 0
 
 #if BACKUP_ENABLE_NETWORK
 #include "NetworkPositionsConfig.h"
@@ -16,13 +16,24 @@
 
 #define SIM808_BAUDRATE 4800
 
-#define SLEEP_DEFAULT_TIME_SECONDS	1800
+#pragma region Default configuration values
 
-#define GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS	10000
-#define GPS_DEFAULT_TOTAL_TIMEOUT_MS		180000
+#define MENU_TIMEOUT	10000
+/**
+ \def SLEEP_DEFAULT_TIME_SECONDS
+ Hard coded value for default sleep time between position acquisitions.
+ Exprimed in seconds
+*/
+#define SLEEP_DEFAULT_TIME_SECONDS				1800
+#define SLEEP_DEFAULT_INCREASE_THRESHOLD		3
+
+#define GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS		10000
+#define GPS_DEFAULT_TOTAL_TIMEOUT_MS			180000
 
 #define NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS 6000
 #define NETWORK_DEFAULT_TOTAL_TIMEOUT_MS		180000
+
+#pragma endregion
 
 struct sleepTimings_t {
 	uint8_t speed;
