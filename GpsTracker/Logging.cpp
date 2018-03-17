@@ -9,8 +9,6 @@ namespace logging {
 
 		if (Serial) {
 			Serial.begin(LOG_SERIAL_SPEED);
-			Serial.println(F("============================="));
-
 			Log.begin(LOG_LEVEL, &Serial);
 		}
 	}

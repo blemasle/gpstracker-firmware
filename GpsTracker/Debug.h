@@ -39,7 +39,7 @@ namespace debug {
 	int freeRam();
 	void displayFreeRam();
 
-	GPSTRACKER_DEBUG_COMMAND menu(uint16_t timeout);
+	GPSTRACKER_DEBUG_COMMAND menu();
 
 	void getAndDisplayBattery();
 	void getAndDisplayGpsPosition();

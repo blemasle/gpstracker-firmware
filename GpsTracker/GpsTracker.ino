@@ -4,7 +4,7 @@
 #if _DEBUG
 #define MENU_TIMEOUT 0
 #else
-#define MENU_TIMEOUT 10000
+#define MENU_TIMEOUT 0
 
 #endif
 bool bypassMenu = false;
@@ -22,7 +22,7 @@ void setup() {
 void loop() {
 
 	debug::GPSTRACKER_DEBUG_COMMAND command = debug::GPSTRACKER_DEBUG_COMMAND::RUN;
-	if (Serial && !bypassMenu) command = debug::menu(MENU_TIMEOUT);
+	if (Serial && !bypassMenu) command = debug::menu();
 
 	bypassMenu = command == debug::GPSTRACKER_DEBUG_COMMAND::RUN;
 

@@ -9,7 +9,7 @@
 
 const char FAKE_GPS_ENTRY[] PROGMEM = "1,1,20170924184842.000,49.454862,1.144537,71.900,67.99,172.6,1,,1.3,2.2,1.8,,11,7,,,37,,";
 
-MENU_ENTRY(HEADER,					"-- Menu --");
+MENU_ENTRY(HEADER,					"========================\n-- Menu --");
 MENU_ENTRY(SEPARATOR,				"----");
 
 MENU_ENTRY(RUN,						"[R] Run");
@@ -136,26 +136,16 @@ namespace debug {
 		return GPSTRACKER_DEBUG_COMMAND::NONE;
 	}
 
-	GPSTRACKER_DEBUG_COMMAND menu(uint16_t timeout) {
+	GPSTRACKER_DEBUG_COMMAND menu() {
 		GPSTRACKER_DEBUG_COMMAND command;
 		size_t menuSize = flash::getArraySize(MENU_ENTRIES);
-		uint8_t intermediate_timeout = 50;
 
 		do {		
 			for (uint8_t i = 0; i < menuSize; i++) {
 				Serial.println(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word_near(&MENU_ENTRIES[i])));
 			}
 
-			while (!Serial.available()) {
-				if (timeout > 0) {
-					delay(intermediate_timeout);
-					timeout -= intermediate_timeout;
-					if (timeout <= 0) {
-						NOTICE_MSG("menu", "Timeout expired.");
-						return GPSTRACKER_DEBUG_COMMAND::RUN;
-					}
-				}
-			}
+			while (!Serial.available()); delay(50);
 			command = parseCommand(Serial.read());
 			while (Serial.available()) Serial.read(); //flushing input
 		} while (command == GPSTRACKER_DEBUG_COMMAND::NONE);
@@ -261,6 +251,6 @@ namespace debug {
 			SIM808_GPS_STATUS::OFF
 		};
 
-		for(int i = 0; i < 3; i++) positions::appendLast(metadata);
+		for(int i = 0; i < 10; i++) positions::appendLast(metadata);
 	}
 }

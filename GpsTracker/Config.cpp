@@ -18,14 +18,14 @@ namespace config {
 				if (CONFIG_SEED != value.seed) reset(); //todo : reset network if seed for network is not right
 				hardware::i2c::powerOff();
 
-				VERBOSE_FORMAT("read", "%d, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+				NOTICE_FORMAT("read", "%d, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 #if BACKUP_ENABLE_NETWORK
 				VERBOSE_FORMAT("read", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
 #endif
 			}
 
 			void write() {
-				VERBOSE_FORMAT("write", "%d, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
+				NOTICE_FORMAT("write", "%d, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 #if BACKUP_ENABLE_NETWORK
 				VERBOSE_FORMAT("write", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
 #endif
