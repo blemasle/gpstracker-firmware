@@ -26,7 +26,7 @@ namespace positions {
 #endif
 
 	namespace details {
-		uint16_t maxEntryIndex = (E24_MAX_ADDRESS(hardware::i2c::eeprom.getSize()) - ENTRIES_ADDR) / ENTRY_RESERVED_SIZE;
+		uint16_t maxEntryIndex = 0;
 
 		uint16_t getEntryAddress(uint16_t index) {
 			if (index > maxEntryIndex) return -1;
@@ -35,6 +35,7 @@ namespace positions {
 	}
 
 	void setup() {
+		details::maxEntryIndex = (E24_MAX_ADDRESS(hardware::i2c::eeprom.getSize()) - ENTRIES_ADDR) / ENTRY_RESERVED_SIZE;
 #ifdef BACKUPS_ENABLED
 		uint8_t backupIdx = 0;
 		_backups = new backup::PositionsBackup*[BACKUPS_ENABLED];
