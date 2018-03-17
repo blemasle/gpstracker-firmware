@@ -136,16 +136,26 @@ namespace debug {
 		return GPSTRACKER_DEBUG_COMMAND::NONE;
 	}
 
-	GPSTRACKER_DEBUG_COMMAND menu() {
+	GPSTRACKER_DEBUG_COMMAND menu(uint16_t timeout) {
 		GPSTRACKER_DEBUG_COMMAND command;
 		size_t menuSize = flash::getArraySize(MENU_ENTRIES);
+		uint8_t intermediate_timeout = 50;
 
 		do {		
 			for (uint8_t i = 0; i < menuSize; i++) {
 				Serial.println(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word_near(&MENU_ENTRIES[i])));
 			}
 
-			while (!Serial.available()); delay(50);
+			while (!Serial.available()) {
+				if (timeout > 0) {
+					delay(intermediate_timeout);
+					timeout -= intermediate_timeout;
+					if (timeout <= 0) {
+						NOTICE_MSG("menu", "Timeout expired.");
+						return GPSTRACKER_DEBUG_COMMAND::RUN;
+					}
+				}
+			}
 			command = parseCommand(Serial.read());
 			while (Serial.available()) Serial.read(); //flushing input
 		} while (command == GPSTRACKER_DEBUG_COMMAND::NONE);

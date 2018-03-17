@@ -22,7 +22,7 @@ void setup() {
 void loop() {
 
 	debug::GPSTRACKER_DEBUG_COMMAND command = debug::GPSTRACKER_DEBUG_COMMAND::RUN;
-	if (Serial && !bypassMenu) command = debug::menu();
+	if (Serial && !bypassMenu) command = debug::menu(MENU_TIMEOUT);
 
 	bypassMenu = command == debug::GPSTRACKER_DEBUG_COMMAND::RUN;
 
