@@ -143,7 +143,7 @@ namespace positions {
 #ifdef BACKUPS_ENABLED
 		debug::displayFreeRam();
 		VERBOSE_FORMAT("doBackup", "%d backups enabled", BACKUPS_ENABLED);
-		_backups[0]->backup();
+		//_backups[0]->backup(); //disabled for first real running test
 		debug::displayFreeRam();
 		/*for (int i = 0; i < BACKUPS_ENABLED; i++) {
 			VERBOSE_FORMAT("doBackup", "calling backup %d", i);

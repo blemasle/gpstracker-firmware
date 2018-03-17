@@ -1,4 +1,6 @@
 #include "Config.h"
+
+#if BACKUP_ENABLE_NETWORK
 #include "Debug.h"
 #include "Network.h"
 #include "Hardware.h"
@@ -35,3 +37,4 @@ namespace network {
 	
 	
 }
+#endif

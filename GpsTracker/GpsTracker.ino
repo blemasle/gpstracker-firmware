@@ -4,11 +4,14 @@
 bool bypassMenu = false;
 
 void setup() {
-#ifdef _DEBUG
+#if _DEBUG
 	debug::waitForSerial();
 	Log.begin(LOG_LEVEL_VERBOSE, &Serial);	
 #else
-	if(Serial) Log.begin(LOG_LEVEL_NOTICE, &Serial);
+	if (Serial) {
+		Serial.begin(DEBUG_SERIAL_SPEED);
+		Log.begin(LOG_LEVEL_NOTICE, &Serial);
+	}
 #endif
 
 	if (Serial) Serial.println(F("============================="));

@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Config.h"
+
+#if BACKUP_ENABLE_NETWORK
 #include "NetworkPositionsBackup.h"
 #include "Debug.h"
 #include "Positions.h"
-#include "Config.h"
 #include "Hardware.h"
 #include "Network.h"
 
@@ -96,3 +98,4 @@ namespace positions {
 		}
 	}
 }
+#endif

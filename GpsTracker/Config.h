@@ -9,12 +9,12 @@
 #include "NetworkPositionsConfig.h"
 #endif
 
+#define SIM808_BAUDRATE 4800
+
 #define CONFIG_ADDR 0
 #define CONFIG_RESERVED_SIZE 128
 #define CONFIG_SEED 13
 #define VERSION "1.00"
-
-#define SIM808_BAUDRATE 4800
 
 #pragma region Default configuration values
 
