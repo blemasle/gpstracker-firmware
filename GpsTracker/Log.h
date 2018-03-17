@@ -3,6 +3,8 @@
 #define DISABLE_LOGGING 1
 #include <ArduinoLog.h>
 
+#include "Config.h"
+
 #define LOG(level, f) Log.level(F("[" LOGGER_NAME "::" f "]\n"))
 #define LOG_MSG(level, f, msg) Log.level(F("[" LOGGER_NAME "::" f "] " msg "\n"))
 #define LOG_FORMAT(level, f, msg, ...) Log.level(F("[" LOGGER_NAME "::" f "] " msg "\n"), __VA_ARGS__)
@@ -20,3 +22,8 @@
 #define NOTICE(f) LOG(notice, f)
 #define NOTICE_MSG(f, msg) LOG_MSG(notice, f, msg)
 #define NOTICE_FORMAT(f, msg, ...) LOG_FORMAT(notice, f, msg, __VA_ARGS__)
+
+
+namespace log {
+	void setup();
+}

@@ -1,9 +1,11 @@
 #pragma once
 
 #include <Arduino.h>
-
-#include "Log.h"
 #include "Config.h"
+#include "Log.h"
+
+#include "Core.h"
+
 #include "Hardware.h"
 #include "Gps.h"
 #include "Rtc.h"
@@ -13,34 +15,33 @@
 namespace debug {
 
 	enum class GPSTRACKER_DEBUG_COMMAND : uint8_t {
-		NONE =					0,
-		RUN =					1,
-		ONCE =					2,
-		RAM =					3,
-		BATTERY =				4,
-		GPS_ON =				5,
-		GPS_OFF =				6,
-		GPS_GET =				7,
-		GPS_SET =				8,
-		RTC_GET =				11,
-		RTC_SET =				12,
-		SD_WRITE_TEST =			13,
-		EEPROM_GET_CONFIG =		14,
-		EEPROM_RESET_CONFIG =	15,
-		EEPROM_GET_CONTENT =	16,
-		EEPROM_GET_LAST_ENTRY =	17,
-		EEPROM_GET_ENTRIES =	18,
-		EEPROM_ADD_ENTRY =		19,
-		EEPROM_BACKUP_ENTRIES =	20,
-		SLEEP =					21,
-		SLEEP_DEEP =			22
+		NONE,
+		RUN,
+		ONCE,
+		RAM,
+		BATTERY,
+		GPS_ON,
+		GPS_OFF,
+		GPS_GET,
+		GPS_SET,
+		RTC_GET,
+		RTC_SET,
+		SD_WRITE_TEST,
+		EEPROM_GET_CONFIG,
+		EEPROM_RESET_CONFIG,
+		EEPROM_GET_CONTENT,
+		EEPROM_GET_LAST_ENTRY,
+		EEPROM_GET_ENTRIES,
+		EEPROM_ADD_ENTRY,
+		EEPROM_BACKUP_ENTRIES,
+		SLEEP,
+		SLEEP_DEEP
 	};
 
-	void waitForSerial();
 	int freeRam();
 	void displayFreeRam();
 
-	GPSTRACKER_DEBUG_COMMAND menu();
+	GPSTRACKER_DEBUG_COMMAND menu(uint16_t timeout);
 
 	void getAndDisplayBattery();
 	void getAndDisplayGpsPosition();

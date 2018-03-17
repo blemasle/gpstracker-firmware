@@ -9,8 +9,8 @@
 
 const char FAKE_GPS_ENTRY[] PROGMEM = "1,1,20170924184842.000,49.454862,1.144537,71.900,67.99,172.6,1,,1.3,2.2,1.8,,11,7,,,37,,";
 
-MENU_ENTRY(HEADER,			"-- Debug Menu --");
-MENU_ENTRY(SEPARATOR,		"----");
+MENU_ENTRY(HEADER,					"-- Debug Menu --");
+MENU_ENTRY(SEPARATOR,				"----");
 
 MENU_ENTRY(RUN,						"[R] Run");
 MENU_ENTRY(RUN_ONCE,				"[r] Run once");
@@ -116,11 +116,6 @@ namespace debug {
 		}
 	}
 
-	void waitForSerial() {
-		while (!Serial);
-		Serial.begin(DEBUG_SERIAL_SPEED);
-	}
-
 	int freeRam() {
 		return freeRam2();
 	}
@@ -141,13 +136,10 @@ namespace debug {
 		return GPSTRACKER_DEBUG_COMMAND::NONE;
 	}
 
-	GPSTRACKER_DEBUG_COMMAND menu() {
-		if (!Serial) return GPSTRACKER_DEBUG_COMMAND::RUN;
-
+	GPSTRACKER_DEBUG_COMMAND menu(uint16_t timeout) {
 		GPSTRACKER_DEBUG_COMMAND command;
 		size_t menuSize = flash::getArraySize(MENU_ENTRIES);
-		
-		int16_t timeout = MENU_TIMEOUT;
+		uint8_t intermediate_timeout = 50;
 
 		do {		
 			for (uint8_t i = 0; i < menuSize; i++) {
@@ -155,17 +147,17 @@ namespace debug {
 			}
 
 			while (!Serial.available()) {
-#ifndef _DEBUG
-				delay(50); 
-				timeout -= 50;
-				if (timeout < 0) {
-					NOTICE_MSG("menu", "Timeout expired.");
-					return GPSTRACKER_DEBUG_COMMAND::RUN;
+				if (timeout > 0) {
+					delay(intermediate_timeout);
+					timeout -= intermediate_timeout;
+					if (timeout <= 0) {
+						NOTICE_MSG("menu", "Timeout expired.");
+						return GPSTRACKER_DEBUG_COMMAND::RUN;
+					}
 				}
-#endif
 			}
 			command = parseCommand(Serial.read());
-			while (Serial.available()) Serial.read();
+			while (Serial.available()) Serial.read(); //flushing input
 		} while (command == GPSTRACKER_DEBUG_COMMAND::NONE);
 		
 		return command;

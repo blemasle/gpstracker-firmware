@@ -1,30 +1,28 @@
 #include "GpsTracker.h"
 #include "Positions.h"
 
+#if _DEBUG
+#define MENU_TIMEOUT 0
+#else
+#define MENU_TIMEOUT 10000
+
+#endif
 bool bypassMenu = false;
 
 void setup() {
-#if _DEBUG
-	debug::waitForSerial();
-	Log.begin(LOG_LEVEL_VERBOSE, &Serial);	
-#else
-	if (Serial) {
-		Serial.begin(DEBUG_SERIAL_SPEED);
-		Log.begin(LOG_LEVEL_NOTICE, &Serial);
-	}
-#endif
+	log::setup();
 
-	if (Serial) Serial.println(F("============================="));
 	config::main::setup();
 	rtc::setup();
 	hardware::sim808::setup();
+
 	positions::setup();
 }
 
 void loop() {
 
 	debug::GPSTRACKER_DEBUG_COMMAND command = debug::GPSTRACKER_DEBUG_COMMAND::RUN;
-	if(!bypassMenu) command = debug::menu();
+	if (Serial && !bypassMenu) command = debug::menu(MENU_TIMEOUT);
 
 	bypassMenu = command == debug::GPSTRACKER_DEBUG_COMMAND::RUN;
 
