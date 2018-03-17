@@ -1,9 +1,15 @@
 #pragma once
+#include "Config.h"
 
-#define DISABLE_LOGGING 1
+//#define DISABLE_LOGGING 1
 #include <ArduinoLog.h>
 
-#include "Config.h"
+#define LOG_SERIAL_SPEED 115200
+#if _DEBUG
+#define LOG_LEVEL LOG_LEVEL_VERBOSE
+#else
+#define LOG_LEVEL LOG_LEVEL_NOTICE
+#endif
 
 #define LOG(level, f) Log.level(F("[" LOGGER_NAME "::" f "]\n"))
 #define LOG_MSG(level, f, msg) Log.level(F("[" LOGGER_NAME "::" f "] " msg "\n"))
@@ -24,6 +30,6 @@
 #define NOTICE_FORMAT(f, msg, ...) LOG_FORMAT(notice, f, msg, __VA_ARGS__)
 
 
-namespace log {
+namespace logging {
 	void setup();
 }

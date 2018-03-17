@@ -36,7 +36,7 @@ namespace mainunit {
 	}
 
 	void sleep(period_t period) {
-		NOTICE_FORMAT("sleep", "Sleeping for period : %d", period);
+		NOTICE_FORMAT("sleep", "Period : %d", period);
 		details::prepareSleep();
 		LowPower.powerDown(period, ADC_OFF, BOD_OFF);
 		details::wokeUp();
@@ -44,7 +44,7 @@ namespace mainunit {
 	}
 
 	void deepSleep(uint16_t seconds) {
-		NOTICE_FORMAT("deepSleep", "Deep sleeping for %d seconds", seconds);
+		NOTICE_FORMAT("deepSleep", "%d seconds", seconds);
 		interruptIn(seconds);
 		details::prepareSleep();
 		LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);

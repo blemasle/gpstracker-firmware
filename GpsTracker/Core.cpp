@@ -34,6 +34,7 @@ namespace core {
 		else increaseInARow = 0;
 
 		sleepTime = result;
+		NOTICE_FORMAT("updateSleepTime", "%dkmh => %d seconds", velocity, sleepTime);
 	}
 
 	uint16_t computeSleepTime(uint8_t velocity) {

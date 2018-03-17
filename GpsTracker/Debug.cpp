@@ -9,7 +9,7 @@
 
 const char FAKE_GPS_ENTRY[] PROGMEM = "1,1,20170924184842.000,49.454862,1.144537,71.900,67.99,172.6,1,,1.3,2.2,1.8,,11,7,,,37,,";
 
-MENU_ENTRY(HEADER,					"-- Debug Menu --");
+MENU_ENTRY(HEADER,					"-- Menu --");
 MENU_ENTRY(SEPARATOR,				"----");
 
 MENU_ENTRY(RUN,						"[R] Run");
@@ -244,8 +244,8 @@ namespace debug {
 		uint16_t lastEntryIndex = config::main::value.lastEntry;
 		PositionEntry lastEntry;
 
-		positions::get(lastEntryIndex, lastEntry);
-		details::displayPosition(lastEntry);
+		if(positions::get(lastEntryIndex, lastEntry)) details::displayPosition(lastEntry);
+		else Log.notice(F("No position recorded\n"));
 	}
 
 	void addLastPositionToEeprom() {

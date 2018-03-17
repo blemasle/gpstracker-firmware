@@ -10,7 +10,7 @@
 bool bypassMenu = false;
 
 void setup() {
-	log::setup();
+	logging::setup();
 
 	config::main::setup();
 	rtc::setup();

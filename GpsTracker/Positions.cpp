@@ -53,7 +53,7 @@ namespace positions {
 	}
 
 	bool acquire(PositionEntryMetadata &metadata) {
-		VERBOSE("acquire");
+		NOTICE("acquire");
 
 		timestamp_t before;
 
@@ -62,6 +62,8 @@ namespace positions {
 		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
 		SIM808ChargingStatus battery = hardware::sim808::device.getChargingState();
 		gps::powerOff();
+
+		NOTICE_FORMAT("acquire", "status : %d", gpsStatus);
 
 		if (gpsStatus < SIM808_GPS_STATUS::FIX) return false;
 
@@ -98,7 +100,7 @@ namespace positions {
 		hardware::i2c::powerOn();
 		hardware::i2c::eeprom.writeBlock(entryAddress, entry);
 
-		VERBOSE_FORMAT("appendLast", "Written to EEPROM @ %X : [%d%% @ %dmV] [%f°C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
+		NOTICE_FORMAT("appendLast", "Saved @ %X : [%d%% @ %dmV] [%f°C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
 
 		config->lastEntry++;
 		if (config->lastEntry > details::maxEntryIndex) config->lastEntry = 0;

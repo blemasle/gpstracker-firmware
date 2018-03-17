@@ -2,15 +2,13 @@
 
 #include <Arduino.h>
 #include "Config.h"
-#include "Log.h"
+#include "Logging.h"
 
 #include "Core.h"
 
 #include "Hardware.h"
 #include "Gps.h"
 #include "Rtc.h"
-
-#define DEBUG_SERIAL_SPEED 115200
 
 namespace debug {
 
