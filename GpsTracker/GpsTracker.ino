@@ -2,12 +2,13 @@
 #include "Positions.h"
 
 #if _DEBUG
-#define MENU_TIMEOUT 0
+#define MENU_DEFAULT_TIMEOUT 0
 #else
-#define MENU_TIMEOUT 0
+#define MENU_DEFAULT_TIMEOUT 5000
 
 #endif
 bool bypassMenu = false;
+uint16_t menuTimeout = MENU_DEFAULT_TIMEOUT;
 
 void setup() {
 	logging::setup();
@@ -22,7 +23,10 @@ void setup() {
 void loop() {
 
 	debug::GPSTRACKER_DEBUG_COMMAND command = debug::GPSTRACKER_DEBUG_COMMAND::RUN;
-	if (Serial && !bypassMenu) command = debug::menu(MENU_TIMEOUT);
+	if (Serial && !bypassMenu) command = debug::menu(menuTimeout);
+
+	if (command == debug::GPSTRACKER_DEBUG_COMMAND::RUN) bypassMenu = true;
+	else menuTimeout = 0; //disable timeout once a command has been entered
 
 	bypassMenu = command == debug::GPSTRACKER_DEBUG_COMMAND::RUN;
 

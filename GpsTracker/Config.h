@@ -53,7 +53,7 @@ struct config_t {
 namespace config {
 
 	static const sleepTimings_t defaultSleepTimings[] PROGMEM = {
-	{ 5, SLEEP_DEFAULT_TIME_SECONDS },
+	/*{ 5, SLEEP_DEFAULT_TIME_SECONDS },
 	{ 10, 1200 },
 	{ 20, 600 },
 	{ 30, 540 },
@@ -61,8 +61,17 @@ namespace config {
 	{ 80, 240 },
 	{ 100, 210 },
 	{ 180, 180 },
-	};
+	};*/
 
+	{ 5, 600 },
+	{ 10, 600 },
+	{ 20, 600 },
+	{ 30, 540 },
+	{ 50, 480 },
+	{ 80, 240 },
+	{ 100, 210 },
+	{ 180, 180 },
+	};
 	namespace main {
 		extern config_t value;
 
