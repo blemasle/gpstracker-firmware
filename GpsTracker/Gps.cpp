@@ -30,7 +30,7 @@ namespace gps {
 
 		do {
 			currentStatus = hardware::sim808::device.getGpsStatus();
-			if (currentStatus > SIM808_GPS_STATUS::NO_FIX) break;
+			if (currentStatus > SIM808_GPS_STATUS::FIX) break //if we have an accurate fix, break right now
 
 			VERBOSE_FORMAT("acquireCurrentPosition", "%d", currentStatus);
 			mainunit::deepSleep(GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS / 1000);
