@@ -35,8 +35,14 @@
 
 #pragma endregion
 
+#define SLEEP_TIMING_TIME(hours, minutes) hours * 60 + minutes
+#define SLEEP_TIMING_MIN SLEEP_TIMING_TIME(0, 0)
+#define SLEEP_TIMING_MAX SLEEP_TIMING_TIME(23, 59)
+
 struct sleepTimings_t {
 	uint8_t speed;
+	uint16_t timeMin;
+	uint16_t timeMax;
 	uint16_t seconds;
 };
 
@@ -53,25 +59,19 @@ struct config_t {
 namespace config {
 
 	static const sleepTimings_t defaultSleepTimings[] PROGMEM = {
-	/*{ 5, SLEEP_DEFAULT_TIME_SECONDS },
-	{ 10, 1200 },
-	{ 20, 600 },
-	{ 30, 540 },
-	{ 50, 480 },
-	{ 80, 240 },
-	{ 100, 210 },
-	{ 180, 180 },
-	};*/
-	{ 3, 1800 },
-	{ 5, 900 },
-	{ 10, 600 },
-	{ 20, 600 },
-	{ 30, 540 },
-	{ 50, 480 },
-	{ 80, 240 },
-	{ 100, 210 },
-	{ 180, 180 },
+	{ 3, SLEEP_TIMING_TIME(16, 00), SLEEP_TIMING_TIME(8, 30), SLEEP_DEFAULT_TIME_SECONDS },
+	{ 3, SLEEP_TIMING_MIN, SLEEP_TIMING_TIME(15, 59), 10800 },
+	{ 3, SLEEP_TIMING_TIME(8, 29), SLEEP_TIMING_MAX, 10800 },
+
+	{ 5, SLEEP_TIMING_MIN, SLEEP_TIMING_MAX, 900 },
+	{ 20, SLEEP_TIMING_MIN, SLEEP_TIMING_MAX, 600 },
+	{ 30, SLEEP_TIMING_MIN, SLEEP_TIMING_MAX, 540 },
+	{ 50, SLEEP_TIMING_MIN, SLEEP_TIMING_MAX, 480 },
+	{ 80, SLEEP_TIMING_MIN, SLEEP_TIMING_MAX, 240 },
+	{ 100, SLEEP_TIMING_MIN, SLEEP_TIMING_MAX, 210 },
+	{ 180, SLEEP_TIMING_MIN, SLEEP_TIMING_MAX, 180 },
 	};
+
 	namespace main {
 		extern config_t value;
 

@@ -4,7 +4,7 @@
 #if _DEBUG
 #define MENU_DEFAULT_TIMEOUT 0
 #else
-#define MENU_DEFAULT_TIMEOUT 5000
+#define MENU_DEFAULT_TIMEOUT 10000
 
 #endif
 bool bypassMenu = false;

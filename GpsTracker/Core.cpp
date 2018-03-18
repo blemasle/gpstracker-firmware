@@ -39,13 +39,22 @@ namespace core {
 
 	uint16_t computeSleepTime(uint8_t velocity) {
 		uint16_t result;
+		uint16_t currentTime = 0xFFFF;
+		
+		if (rtc::isAccurate()) {
+			tmElements_t time;
+			rtc::getTime(time);
 
+			currentTime = SLEEP_TIMING_TIME(time.Hour, time.Minute);
+		}
+		
 		for (uint8_t i = 0; i < flash::getArraySize(config::defaultSleepTimings); i++) {
 			sleepTimings_t timing;
 			flash::read(&config::defaultSleepTimings[i], timing);
 
 			if (velocity > timing.speed) continue;
-	
+			if (currentTime != 0xFFFF && (currentTime < timing.timeMin || currentTime > timing.timeMax)) continue;
+
 			result = timing.seconds;
 			break;
 		}

@@ -7,6 +7,7 @@ namespace rtc {
 
 	float getTemperature();
 
+	bool isAccurate();
 	timestamp_t getTime();
 	void getTime(tmElements_t &time);
 	void setTime(const tmElements_t &time);

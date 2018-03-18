@@ -7,7 +7,7 @@
 
 #define MENU_ENTRY(name, text) const char MENU_##name[] PROGMEM = text
 
-const char FAKE_GPS_ENTRY[] PROGMEM = "1,1,20170924184842.000,49.454862,1.144537,71.900,67.99,172.6,1,,1.3,2.2,1.8,,11,7,,,37,,";
+const char FAKE_GPS_ENTRY[] PROGMEM = "1,1,20170924184842.000,49.454862,1.144537,71.900,2.70,172.6,1,,1.3,2.2,1.8,,11,7,,,37,,";
 
 MENU_ENTRY(HEADER,					"========================\n-- Menu --");
 MENU_ENTRY(SEPARATOR,				"----");

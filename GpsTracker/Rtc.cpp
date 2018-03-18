@@ -31,6 +31,14 @@ namespace rtc {
 		return temperature;
 	}
 
+	bool isAccurate() {
+		hardware::i2c::powerOn();
+		bool accurate = RTC.status(DS3231_HALTED_FLAG) == DS3231_OFF;
+		hardware::i2c::powerOff();
+
+		return accurate;
+	}
+
 	timestamp_t getTime() {
 		tmElements_t time;
 		getTime(time);
@@ -50,6 +58,7 @@ namespace rtc {
 
 		hardware::i2c::powerOn();
 		RTC.writeTime(time);
+		RTC.control(DS3231_HALTED_FLAG, DS3231_OFF);
 		hardware::i2c::powerOff();
 	}
 
