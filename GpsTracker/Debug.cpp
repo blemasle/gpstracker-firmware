@@ -173,6 +173,8 @@ namespace debug {
 		strlcpy_P(gps::lastPosition, FAKE_GPS_ENTRY, GPS_POSITION_SIZE);
 
 		NOTICE_FORMAT("setFakeGpsPosition", "Last position set to : %s", gps::lastPosition);
+		NOTICE_FORMAT("setFakeGpsPosition", "Speed : %d", gps::getVelocity());
+		NOTICE_FORMAT("setFakeGpsPosition", "Sleep time : %d", core::computeSleepTime(gps::getVelocity()));
 	}
 
 	void getAndDisplayBattery() {
