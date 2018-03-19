@@ -112,7 +112,7 @@ namespace debug {
 
 	namespace details {
 		inline void displayPosition(PositionEntry entry) {
-			Log.notice(F("%d%%, %dmV, %f°C, %ds %d, %s\n"), entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
+			Log.notice(F("%d%%, %dmV, %f°C, %ds, %d, %s\n"), entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
 		}
 	}
 
