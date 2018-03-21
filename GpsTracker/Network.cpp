@@ -11,6 +11,8 @@
 namespace network {
 
 	SIM808RegistrationStatus waitForRegistered(uint32_t timeout) {
+		VERBOSE("waitForRegistered");
+
 		SIM808RegistrationStatus currentStatus;
 		uint8_t noNetwork = 0;
 
@@ -23,7 +25,7 @@ namespace network {
 			
 			if (report.ssri == 0) noNetwork++;
 			else noNetwork = 0;
-			if (noNetwork > 3) {
+			if (noNetwork > 10) {
 				VERBOSE_MSG("waitForRegistered", "No signal");
 				break; //after a while, not network really means no network. Bailing out
 			}
