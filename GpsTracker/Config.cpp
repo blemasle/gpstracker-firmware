@@ -20,14 +20,21 @@ namespace config {
 
 				NOTICE_FORMAT("read", "%d, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 #if BACKUP_ENABLE_NETWORK
-				VERBOSE_FORMAT("read", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
+				NOTICE_FORMAT("read", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
+				//networkConfig_t c = {
+				//	POSITIONS_CONFIG_NET_DEFAULT_SAVE_THRESHOLD,
+				//	0xFFFF,
+				//	POSITIONS_CONFIG_NET_DEFAULT_APN,
+				//	POSITIONS_CONFIG_NET_DEFAULT_URL,
+				//};
+				//value.network = c;
 #endif
 			}
 
 			void write() {
 				NOTICE_FORMAT("write", "%d, %s, %d, %d", value.seed, value.version, value.firstEntry, value.lastEntry);
 #if BACKUP_ENABLE_NETWORK
-				VERBOSE_FORMAT("write", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
+				NOTICE_FORMAT("write", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
 #endif
 				hardware::i2c::powerOn();
 				int written = hardware::i2c::eeprom.writeBlock(CONFIG_ADDR, value);
@@ -37,6 +44,7 @@ namespace config {
 
 		void setup() {
 			details::read();
+			//details::write();
 		}
 
 		void save() {

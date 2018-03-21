@@ -3,7 +3,7 @@
 #include <Arduino.h>
 
 #define BACKUP_ENABLE_SDCARD 0
-#define BACKUP_ENABLE_NETWORK 0
+#define BACKUP_ENABLE_NETWORK 1
 
 #if BACKUP_ENABLE_NETWORK
 #include "NetworkPositionsConfig.h"

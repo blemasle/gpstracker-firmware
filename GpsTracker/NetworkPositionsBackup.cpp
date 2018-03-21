@@ -26,7 +26,6 @@ namespace positions {
 
 				bool appendPosition(PositionEntry &entry) {
 					VERBOSE("appendPosition");
-					debug::displayFreeRam();
 
 					char buffer[BUFFER_SIZE];
 					snprintf(buffer, BUFFER_SIZE, "%d,%d,%d,%d,",
@@ -36,7 +35,6 @@ namespace positions {
 						static_cast<uint8_t>(entry.metadata.status));
 
 					strcat(buffer, entry.position);
-					debug::displayFreeRam();
 
 					return hardware::sim808::device.httpPost(
 						config::main::value.network.url,
@@ -49,7 +47,6 @@ namespace positions {
 
 				void appendPositions() {
 					VERBOSE("appendPositions");
-					debug::displayFreeRam();
 
 					uint16_t currentEntryIndex = config::main::value.network.lastSavedEntry + 1;
 					PositionEntry currentEntry;
@@ -64,7 +61,6 @@ namespace positions {
 						hardware::i2c::powerOn();
 						do {
 							if (!positions::get(currentEntryIndex, currentEntry)) break;
-							debug::displayFreeRam();
 
 							if (!appendPosition(currentEntry)) break;
 
@@ -72,12 +68,10 @@ namespace positions {
 							config::main::save();
 
 						} while (positions::moveNext(currentEntryIndex));
-						debug::displayFreeRam();
 						hardware::i2c::powerOff();
 					}
 
 					network::powerOff();
-					debug::displayFreeRam();
 				}
 
 			}
@@ -88,11 +82,8 @@ namespace positions {
 
 			void NetworkPositionsBackup::backup() {
 				VERBOSE("backup");
-				debug::displayFreeRam();
 
 				if (!details::isBackupNeeded()) return;
-				debug::displayFreeRam();
-
 				details::appendPositions();
 			}
 		}
