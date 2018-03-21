@@ -28,7 +28,9 @@ namespace positions {
 					VERBOSE("appendPosition");
 
 					char buffer[BUFFER_SIZE];
-					snprintf(buffer, BUFFER_SIZE, "%d,%d,%d,%d,",
+					snprintf(buffer, BUFFER_SIZE, "%d,%d,%d,%d,%d,%d,",
+						debug::freeRam(),
+						hardware::sim808::device.getSignalQuality().attenuation,
 						entry.metadata.batteryLevel,
 						entry.metadata.batteryVoltage,
 						static_cast<uint16_t>(entry.metadata.temperature * 100),
