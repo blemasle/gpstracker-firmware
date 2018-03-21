@@ -1,4 +1,0 @@
-USER_AGENT = 'SIMCOM_MODULE'
-MEDIA_CSV = 'text/csv'
-
-ROUTES_POSITIONS = '/positions'
