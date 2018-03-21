@@ -25,7 +25,7 @@ namespace network {
 			
 			if (report.ssri == 0) noNetwork++;
 			else noNetwork = 0;
-			if (noNetwork > 10) {
+			if (noNetwork > NETWORK_DEFAULT_NO_NETWORK_TRIES) {
 				VERBOSE_MSG("waitForRegistered", "No signal");
 				break; //after a while, not network really means no network. Bailing out
 			}
