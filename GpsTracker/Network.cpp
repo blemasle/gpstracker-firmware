@@ -10,20 +10,21 @@
 
 namespace network {
 
-	SIM808RegistrationStatus waitForRegistered(uint32_t timeout) {
-		VERBOSE("waitForRegistered");
+	SIM808RegistrationStatus waitForRegistered(int32_t timeout) {
+		NOTICE_FORMAT("waitForRegistered", "Timeout : %d", timeout);
 
 		SIM808RegistrationStatus currentStatus;
+		SIM808SignalQualityReport report;
 		uint8_t noReliableNetwork = 0;
 
 		do {
 			currentStatus = hardware::sim808::device.getNetworkRegistrationStatus();
 			if (isAvailable(currentStatus.stat)) break;
 
-			SIM808SignalQualityReport report = hardware::sim808::device.getSignalQuality();
+			report = hardware::sim808::device.getSignalQuality();
 			NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
 			
-			if (report.ssri < NETWORK_DEFAULT_NO_NETWORK_QUALIRY_THRESHOLD) noReliableNetwork++;
+			if (report.ssri < NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD) noReliableNetwork++;
 			else noReliableNetwork = 0;
 			if (noReliableNetwork > NETWORK_DEFAULT_NO_NETWORK_TRIES) {
 				NOTICE_MSG("waitForRegistered", "No reliable signal");
@@ -34,6 +35,7 @@ namespace network {
 			timeout -= NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
 		} while (timeout > 1);
 
+		report = hardware::sim808::device.getSignalQuality();
 		NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
 		return currentStatus;
 	}

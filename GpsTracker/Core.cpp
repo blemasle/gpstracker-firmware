@@ -12,6 +12,7 @@ namespace core {
 
 	void main() {
 
+		positions::prepareBackup();
 		PositionEntryMetadata metadata;
 		if (positions::acquire(metadata)) {
 			positions::appendLast(metadata);

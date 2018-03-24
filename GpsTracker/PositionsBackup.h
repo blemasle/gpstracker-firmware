@@ -6,8 +6,10 @@ namespace positions {
 		class PositionsBackup {
 		public:
 			~PositionsBackup();
-			virtual void setup()=0;
-			virtual void backup()=0;
+			virtual void setup() = 0;
+
+			virtual void prepare() = 0;
+			virtual void backup() = 0;
 		};
 
 	}

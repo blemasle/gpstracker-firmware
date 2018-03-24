@@ -144,6 +144,14 @@ namespace positions {
 		return config->lastEntry - fromIndex;
 	}
 
+	void prepareBackup() {
+#ifdef BACKUPS_ENABLED
+		for (int i = 0; i < BACKUPS_ENABLED; i++) {
+			_backups[i]->prepare();
+		}
+#endif
+	}
+
 	void doBackup() {
 #ifdef BACKUPS_ENABLED
 		for (int i = 0; i < BACKUPS_ENABLED; i++) {

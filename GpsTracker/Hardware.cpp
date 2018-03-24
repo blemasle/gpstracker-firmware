@@ -55,7 +55,7 @@ namespace hardware {
 		}
 
 		void gpsPowerOff() {
-			NOTICE("gpsPowerOff");
+			VERBOSE("gpsPowerOff");
 			device.disableGps();
 			powerOffIfUnused();
 		}

@@ -25,7 +25,7 @@ namespace gps {
 	char lastPosition[GPS_POSITION_SIZE];
 	SIM808_GPS_STATUS lastStatus;
 
-	SIM808_GPS_STATUS acquireCurrentPosition(uint32_t timeout) {
+	SIM808_GPS_STATUS acquireCurrentPosition(int32_t timeout) {
 		SIM808_GPS_STATUS currentStatus = SIM808_GPS_STATUS::OFF;
 
 		do {

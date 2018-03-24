@@ -27,5 +27,6 @@ namespace positions {
 	bool moveNext(uint16_t &index);
 	uint16_t count(uint16_t fromIndex);
 
+	void prepareBackup();
 	void doBackup();
 }
