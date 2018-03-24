@@ -64,7 +64,7 @@ namespace positions {
 		SIM808ChargingStatus battery = hardware::sim808::device.getChargingState();
 		gps::powerOff();
 
-		NOTICE_FORMAT("acquire", "status : %d", gpsStatus);
+		NOTICE_FORMAT("acquire", "Status : %d", gpsStatus);
 
 		if (gpsStatus < SIM808_GPS_STATUS::FIX) return false;
 
@@ -124,7 +124,7 @@ namespace positions {
 		hardware::i2c::eeprom.readBlock(entryAddress, entry);
 		hardware::i2c::powerOff();
 
-		VERBOSE_FORMAT("get", "Read from EEPROM @ %X : [%d%% @ %dmV] [%f°C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
+		NOTICE_FORMAT("get", "Read from EEPROM @ %X : [%d%% @ %dmV] [%f°C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
 		return true;
 	}
 
@@ -146,10 +146,7 @@ namespace positions {
 
 	void doBackup() {
 #ifdef BACKUPS_ENABLED
-		VERBOSE_FORMAT("doBackup", "%d backups enabled", BACKUPS_ENABLED);
-
 		for (int i = 0; i < BACKUPS_ENABLED; i++) {
-			VERBOSE_FORMAT("doBackup", "calling backup %d", i);
 			_backups[i]->backup();
 		}
 #endif

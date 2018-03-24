@@ -42,7 +42,7 @@ namespace hardware {
 		}
 
 		void setup() {
-			VERBOSE("setup");
+			NOTICE("setup");
 			simSerial.begin(SIM808_BAUDRATE);
 			device.begin(simSerial);
 			powerOff(); //ensure powerOff on start
@@ -55,7 +55,7 @@ namespace hardware {
 		}
 
 		void gpsPowerOff() {
-			VERBOSE("gpsPowerOff");
+			NOTICE("gpsPowerOff");
 			device.disableGps();
 			powerOffIfUnused();
 		}
@@ -80,10 +80,7 @@ namespace hardware {
 	namespace i2c {
 
 		E24 eeprom = E24(E24Size_t::E24_512K);
-
 		uint8_t poweredCount = 0;
-
-		//inline void powered() { digitalRead(I2C_PWR) == HIGH; } //TODO = replace enum with just reading the output pin ?
 
 		void powerOn() {
 			if (!poweredCount) {

@@ -26,7 +26,7 @@ namespace network {
 			if (report.ssri < NETWORK_DEFAULT_NO_NETWORK_QUALIRY_THRESHOLD) noReliableNetwork++;
 			else noReliableNetwork = 0;
 			if (noReliableNetwork > NETWORK_DEFAULT_NO_NETWORK_TRIES) {
-				VERBOSE_MSG("waitForRegistered", "No signal");
+				NOTICE_MSG("waitForRegistered", "No reliable signal");
 				break; //after a while, not network really means no network. Bailing out
 			}
 
@@ -34,6 +34,7 @@ namespace network {
 			timeout -= NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
 		} while (timeout > 1);
 
+		NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
 		return currentStatus;
 	}
 

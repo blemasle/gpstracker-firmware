@@ -13,6 +13,7 @@ namespace config {
 
 			void read() {
 				VERBOSE("read");
+
 				hardware::i2c::powerOn();
 				hardware::i2c::eeprom.readBlock(CONFIG_ADDR, value);
 				if (CONFIG_SEED != value.seed) reset(); //todo : reset network if seed for network is not right
@@ -53,6 +54,7 @@ namespace config {
 
 		void reset() {
 			VERBOSE("reset");
+
 			config_t config = {
 				CONFIG_SEED,
 				VERSION,

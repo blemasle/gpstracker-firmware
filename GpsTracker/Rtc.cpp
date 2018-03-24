@@ -80,7 +80,7 @@ namespace rtc {
 		RTC.control(DS3231_A1_INT_ENABLE, DS3231_ON); //Alarm 1 ON
 		RTC.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN ON
 
-		VERBOSE_FORMAT("setAlarm", "Next alarm : %d:%d:%d", time.Hour, time.Minute, time.Second);
+		NOTICE_FORMAT("setAlarm", "Next alarm : %d:%d:%d", time.Hour, time.Minute, time.Second);
 
 		hardware::i2c::powerOff();
 	}

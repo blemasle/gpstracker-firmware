@@ -11,7 +11,6 @@ namespace core {
 	uint8_t increaseInARow = 0;
 
 	void main() {
-		VERBOSE("main");
 
 		PositionEntryMetadata metadata;
 		if (positions::acquire(metadata)) {

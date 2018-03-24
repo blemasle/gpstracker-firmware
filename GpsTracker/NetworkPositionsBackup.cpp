@@ -25,8 +25,6 @@ namespace positions {
 				}
 
 				bool appendPosition(PositionEntry &entry) {
-					VERBOSE("appendPosition");
-
 					char buffer[BUFFER_SIZE];
 					snprintf(buffer, BUFFER_SIZE, "%d,%d,%d,%d,%d,%d,",
 						debug::freeRam(),
@@ -38,18 +36,20 @@ namespace positions {
 
 					strcat(buffer, entry.position);
 
-					return hardware::sim808::device.httpPost(
+					NOTICE_FORMAT("appendPosition", "Sending : %s", buffer);
+					uint16_t responseCode = hardware::sim808::device.httpPost(
 						config::main::value.network.url,
 						F("text/csv"),
 						buffer,
 						buffer,
 						BUFFER_SIZE
 					) == POSITIONS_CONFIG_NET_DEFAULT_EXPECTED_RESPONSE;
+
+					NOTICE_FORMAT("appendPosition", "Response : %d", responseCode);
+					return responseCode;
 				}
 
 				void appendPositions() {
-					VERBOSE("appendPositions");
-
 					uint16_t currentEntryIndex = config::main::value.network.lastSavedEntry + 1;
 					PositionEntry currentEntry;
 					SIM808RegistrationStatus networkStatus;
@@ -57,13 +57,12 @@ namespace positions {
 					network::powerOn();
 					networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
 
-					if (!network::isAvailable(networkStatus.stat)) VERBOSE_MSG("appendPositions", "network unavailable");
-					else if (!network::enableGprs()) VERBOSE_MSG("appendPositions", "gprs unavailable");
+					if (!network::isAvailable(networkStatus.stat)) NOTICE_MSG("appendPositions", "network unavailable");
+					else if (!network::enableGprs()) NOTICE_MSG("appendPositions", "gprs unavailable");
 					else {
 						hardware::i2c::powerOn();
 						do {
 							if (!positions::get(currentEntryIndex, currentEntry)) break;
-
 							if (!appendPosition(currentEntry)) break;
 
 							config::main::value.network.lastSavedEntry = currentEntryIndex;
@@ -79,11 +78,11 @@ namespace positions {
 			}
 
 			void NetworkPositionsBackup::setup() {
-				VERBOSE("setup");
+				NOTICE("setup");
 			}
 
 			void NetworkPositionsBackup::backup() {
-				VERBOSE("backup");
+				NOTICE("backup");
 
 				if (!details::isBackupNeeded()) return;
 				details::appendPositions();

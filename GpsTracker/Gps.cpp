@@ -68,6 +68,6 @@ namespace gps {
 		time.Minute = details::parseSubstring(buffer, timeStr + TIME_MINUTE_OFFSET, 2);
 		time.Second = details::parseSubstring(buffer, timeStr + TIME_SECOND_OFFSET, 2);
 
-		VERBOSE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
+		NOTICE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
 }
