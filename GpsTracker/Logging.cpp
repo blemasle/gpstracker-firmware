@@ -11,7 +11,7 @@ namespace logging {
 			Serial.begin(LOG_SERIAL_SPEED);
 			Log.begin(LOG_LEVEL, &Serial);
 
-			Log.notice("Starting...\n");
+			Log.notice(F("Starting...\n"));
 		}
 	}
 
