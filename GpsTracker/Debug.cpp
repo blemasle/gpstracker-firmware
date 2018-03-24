@@ -22,7 +22,6 @@ MENU_ENTRY(GPS_GET,					"[L] Get GPS position");
 MENU_ENTRY(GPS_SET,					"[l] Set last GPS position");
 MENU_ENTRY(RTC_SET,					"[T] Get RTC time");
 MENU_ENTRY(RTC_GET,					"[t] Set RTC time");
-MENU_ENTRY(SD_WRITE_TEST,			"[W] Write to test file");
 MENU_ENTRY(EEPROM_GET_CONFIG,		"[C] Get EEPROM config");
 MENU_ENTRY(EEPROM_RESET_CONFIG,		"[c] Reset EEPROM config");
 MENU_ENTRY(EEPROM_GET_CONTENT,		"[E] Get EEPROM content");
@@ -45,7 +44,6 @@ const PROGMEM uint8_t commandIdMapping[] = {
 	'l', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::GPS_SET),
 	'T', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RTC_GET),
 	't', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RTC_SET),
-	'W', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SD_WRITE_TEST),
 	'C', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONFIG),
 	'c', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_RESET_CONFIG),
 	'E', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONTENT),
@@ -78,10 +76,6 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 
 	MENU_RTC_SET,
 	MENU_RTC_GET,
-
-	MENU_SEPARATOR,
-
-	MENU_SD_WRITE_TEST,
 
 	MENU_SEPARATOR,
 

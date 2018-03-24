@@ -86,7 +86,6 @@ void loop() {
 		case debug::GPSTRACKER_DEBUG_COMMAND::SLEEP_DEEP:
 			mainunit::deepSleep(10);
 			break;
-		case debug::GPSTRACKER_DEBUG_COMMAND::SD_WRITE_TEST:
 		default:
 			NOTICE_MSG("loop", "Unsupported");
 	}
