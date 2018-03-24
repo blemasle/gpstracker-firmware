@@ -46,17 +46,16 @@ namespace positions {
 				return responseCode;
 			}
 
-			__attribute__((__optimize__("O2")))
+			//__attribute__((__optimize__("O2")))
 			void NetworkPositionsBackup::appendPositions() {
 				uint16_t currentEntryIndex = config::main::value.network.lastSavedEntry + 1;
-				int32_t networkTimeout = 0;
+				uint32_t networkTimeout = 0;
 				PositionEntry currentEntry;
 				SIM808RegistrationStatus networkStatus;
 
 				network::powerOn();
-				networkTimeout = _prepareTime > 0 ?
-					NETWORK_DEFAULT_TOTAL_TIMEOUT_MS - (rtc::getTime() - _prepareTime) * 1000 :
-					NETWORK_DEFAULT_TOTAL_TIMEOUT_MS;
+				networkTimeout = NETWORK_DEFAULT_TOTAL_TIMEOUT_MS;
+				if (_prepareTime > 0) networkTimeout -= (rtc::getTime() - _prepareTime) * 1000;
 
 				networkStatus = network::waitForRegistered(networkTimeout);
 

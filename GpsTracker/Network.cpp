@@ -10,8 +10,8 @@
 
 namespace network {
 
-	SIM808RegistrationStatus waitForRegistered(int32_t timeout) {
-		NOTICE_FORMAT("waitForRegistered", "Timeout : %d", timeout);
+	__attribute__((__optimize__("O2")))
+	SIM808RegistrationStatus waitForRegistered(uint32_t timeout) {
 
 		SIM808RegistrationStatus currentStatus;
 		SIM808SignalQualityReport report;
@@ -33,6 +33,7 @@ namespace network {
 
 			mainunit::deepSleep(NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS / 1000);
 			timeout -= NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
+
 		} while (timeout > 1);
 
 		report = hardware::sim808::device.getSignalQuality();

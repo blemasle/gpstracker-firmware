@@ -34,9 +34,9 @@ namespace hardware {
 
 		void powerOffIfUnused() {
 			bool gpsPowered = false;
-			bool gprsPowered = false;
+
 			if ((!device.getGpsPowerState(&gpsPowered) || !gpsPowered) &&
-				(!device.getGprsPowerState(&gprsPowered) || !gprsPowered)) {
+				(device.getPhoneFunctionality() != SIM808_PHONE_FUNCTIONALITY::FULL)) {
 				powerOff();
 			}
 		}
