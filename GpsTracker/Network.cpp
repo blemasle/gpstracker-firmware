@@ -14,18 +14,18 @@ namespace network {
 		VERBOSE("waitForRegistered");
 
 		SIM808RegistrationStatus currentStatus;
-		uint8_t noNetwork = 0;
+		uint8_t noReliableNetwork = 0;
 
 		do {
 			currentStatus = hardware::sim808::device.getNetworkRegistrationStatus();
 			if (isAvailable(currentStatus.stat)) break;
 
 			SIM808SignalQualityReport report = hardware::sim808::device.getSignalQuality();
-			VERBOSE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
+			NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
 			
-			if (report.ssri == 0) noNetwork++;
-			else noNetwork = 0;
-			if (noNetwork > NETWORK_DEFAULT_NO_NETWORK_TRIES) {
+			if (report.ssri < NETWORK_DEFAULT_NO_NETWORK_QUALIRY_THRESHOLD) noReliableNetwork++;
+			else noReliableNetwork = 0;
+			if (noReliableNetwork > NETWORK_DEFAULT_NO_NETWORK_TRIES) {
 				VERBOSE_MSG("waitForRegistered", "No signal");
 				break; //after a while, not network really means no network. Bailing out
 			}
