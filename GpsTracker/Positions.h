@@ -18,12 +18,14 @@ struct PositionEntry {
 };									//sizeof = 125
 
 namespace positions {
+
+	void setup();
 	bool acquire(PositionEntryMetadata &metadata);
 	void appendLast(const PositionEntryMetadata &metadata);
 
 	bool get(uint16_t index, PositionEntry &entry);
 	bool moveNext(uint16_t &index);
+	uint16_t count(uint16_t fromIndex);
 
-	bool needsToSend();
-	void send();
+	void doBackup();
 }

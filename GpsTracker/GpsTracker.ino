@@ -1,24 +1,32 @@
 #include "GpsTracker.h"
 #include "Positions.h"
 
+#if _DEBUG
+#define MENU_DEFAULT_TIMEOUT 0
+#else
+#define MENU_DEFAULT_TIMEOUT 10000
+
+#endif
 bool bypassMenu = false;
+uint16_t menuTimeout = MENU_DEFAULT_TIMEOUT;
 
 void setup() {
-#ifdef _DEBUG
-	debug::waitForSerial();
-	Log.begin(LOG_LEVEL_VERBOSE, &Serial);	
-#else
-	if(Serial) Log.begin(LOG_LEVEL_NOTICE, &Serial);
-#endif
+	logging::setup();
 
+	config::main::setup();
 	rtc::setup();
 	hardware::sim808::setup();
+
+	positions::setup();
 }
 
 void loop() {
 
 	debug::GPSTRACKER_DEBUG_COMMAND command = debug::GPSTRACKER_DEBUG_COMMAND::RUN;
-	if(!bypassMenu) command = debug::menu();
+	if (Serial && !bypassMenu) command = debug::menu(menuTimeout);
+
+	if (command == debug::GPSTRACKER_DEBUG_COMMAND::RUN) bypassMenu = true;
+	else menuTimeout = 0; //disable timeout once a command has been entered
 
 	bypassMenu = command == debug::GPSTRACKER_DEBUG_COMMAND::RUN;
 
@@ -55,7 +63,7 @@ void loop() {
 			debug::getAndDisplayEepromConfig();
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_RESET_CONFIG:
-			config::reset();
+			config::main::reset();
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_CONTENT:
 			debug::getAndDisplayEepromContent();
@@ -69,14 +77,16 @@ void loop() {
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY:
 			debug::addLastPositionToEeprom();
 			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_BACKUP_ENTRIES:
+			positions::doBackup();
+			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::SLEEP:
 			mainunit::sleep(period_t::SLEEP_8S);
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::SLEEP_DEEP:
 			mainunit::deepSleep(10);
 			break;
-		case debug::GPSTRACKER_DEBUG_COMMAND::SD_WRITE_TEST:
 		default:
-			Serial.println(F("Unsupported command !"));
+			NOTICE_MSG("loop", "Unsupported");
 	}
 }

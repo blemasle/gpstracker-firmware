@@ -17,7 +17,7 @@ namespace rtc {
 		hardware::i2c::powerOn();
 		RTC.control(DS3231_12H, DS3231_OFF); //24 hours clock
 		RTC.control(DS3231_A1_INT_ENABLE, DS3231_OFF); //Alarm 1 OFF
-		RTC.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN OFF
+		RTC.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN ON
 		hardware::i2c::powerOff();
 
 		//TODO : check wether the osc has been halted (meaning the battery could be dead)
@@ -29,6 +29,14 @@ namespace rtc {
 		hardware::i2c::powerOff();
 
 		return temperature;
+	}
+
+	bool isAccurate() {
+		hardware::i2c::powerOn();
+		bool accurate = RTC.status(DS3231_HALTED_FLAG) == DS3231_OFF;
+		hardware::i2c::powerOff();
+
+		return accurate;
 	}
 
 	timestamp_t getTime() {
@@ -50,6 +58,7 @@ namespace rtc {
 
 		hardware::i2c::powerOn();
 		RTC.writeTime(time);
+		RTC.control(DS3231_HALTED_FLAG, DS3231_OFF);
 		hardware::i2c::powerOff();
 	}
 

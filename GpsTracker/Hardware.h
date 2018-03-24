@@ -1,11 +1,13 @@
 #pragma once
 
+#include <SoftwareSerial.h>
 #include <SIM808.h>
 #include <E24.h>
 
 namespace hardware {
 
 	namespace sim808 {
+		extern SoftwareSerial simSerial;
 		extern SIM808 device;
 
 		void powerOn();

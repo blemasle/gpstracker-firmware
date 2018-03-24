@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "Hardware.h"
 #include "Pins.h"
 #include "Debug.h"
@@ -41,12 +42,10 @@ namespace hardware {
 		}
 
 		void setup() {
-			VERBOSE("setup");
-			device.powerOnOff(true);
-			simSerial.begin(4800);
-
+			NOTICE("setup");
+			simSerial.begin(SIM808_BAUDRATE);
 			device.begin(simSerial);
-			device.powerOnOff(false);
+			powerOff(); //ensure powerOff on start
 		}
 
 		void gpsPowerOn() {
@@ -56,7 +55,7 @@ namespace hardware {
 		}
 
 		void gpsPowerOff() {
-			VERBOSE("gpsPowerOff");
+			NOTICE("gpsPowerOff");
 			device.disableGps();
 			powerOffIfUnused();
 		}
@@ -65,13 +64,12 @@ namespace hardware {
 			VERBOSE("networkPowerOn");
 			powerOn();
 			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::FULL);
-			device.enableGprs(config::get().apn);
 		}
 
 		void networkPowerOff() {
 			VERBOSE("networkPowerOff");
-			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
 			device.disableGprs();
+			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
 
 			powerOffIfUnused();
 		}
@@ -82,10 +80,7 @@ namespace hardware {
 	namespace i2c {
 
 		E24 eeprom = E24(E24Size_t::E24_512K);
-
 		uint8_t poweredCount = 0;
-
-		//inline void powered() { digitalRead(I2C_PWR) == HIGH; } //TODO = replace enum with just reading the output pin ?
 
 		void powerOn() {
 			if (!poweredCount) {

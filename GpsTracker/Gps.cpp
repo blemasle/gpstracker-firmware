@@ -25,13 +25,14 @@ namespace gps {
 	char lastPosition[GPS_POSITION_SIZE];
 	SIM808_GPS_STATUS lastStatus;
 
-	SIM808_GPS_STATUS acquireCurrentPosition(uint16_t timeout) {
+	SIM808_GPS_STATUS acquireCurrentPosition(uint32_t timeout) {
 		SIM808_GPS_STATUS currentStatus = SIM808_GPS_STATUS::OFF;
 
 		do {
 			currentStatus = hardware::sim808::device.getGpsStatus();
-			if (currentStatus > SIM808_GPS_STATUS::NO_FIX) break;
+			if (currentStatus > SIM808_GPS_STATUS::FIX) break; //if we have an accurate fix, break right now
 
+			NOTICE_FORMAT("acquireCurrentPosition", "%d", currentStatus);
 			mainunit::deepSleep(GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS / 1000);
 			timeout -= GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
 		} while (timeout > 1);
@@ -41,12 +42,13 @@ namespace gps {
 			hardware::sim808::device.getGpsPosition(lastPosition);
 		}
 
+		NOTICE_FORMAT("acquireCurrentPosition", "%d", currentStatus);
 		return currentStatus;
 	}
 
 	uint8_t getVelocity() {
 		uint8_t velocity;
-		hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::SPEED, &velocity);
+		if (!hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::SPEED, &velocity)) velocity = 0;
 
 		VERBOSE_FORMAT("getVelocity", "%d", velocity);
 
@@ -67,6 +69,6 @@ namespace gps {
 		time.Minute = details::parseSubstring(buffer, timeStr + TIME_MINUTE_OFFSET, 2);
 		time.Second = details::parseSubstring(buffer, timeStr + TIME_SECOND_OFFSET, 2);
 
-		VERBOSE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
+		NOTICE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
 	}
 }

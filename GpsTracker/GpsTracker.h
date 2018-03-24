@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Arduino.h>
-#include <SoftwareSerial.h>
 #include <SIM808.h>
 
 #include "Debug.h"
