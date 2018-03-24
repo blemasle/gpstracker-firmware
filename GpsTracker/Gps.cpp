@@ -42,6 +42,7 @@ namespace gps {
 			hardware::sim808::device.getGpsPosition(lastPosition);
 		}
 
+		NOTICE_FORMAT("acquireCurrentPosition", "%d", currentStatus);
 		return currentStatus;
 	}
 
