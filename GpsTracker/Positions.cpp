@@ -139,9 +139,11 @@ namespace positions {
 
 	uint16_t count(uint16_t fromIndex) {
 		config_t *config = &config::main::value;
-		if (config->lastEntry < config->firstEntry) { config->lastEntry += details::maxEntryIndex; }
+		uint16_t lastEntry = config->lastEntry;
 
-		return config->lastEntry - fromIndex;
+		if (lastEntry < config->firstEntry) { lastEntry += details::maxEntryIndex; }
+
+		return lastEntry - fromIndex;
 	}
 
 	void prepareBackup() {
