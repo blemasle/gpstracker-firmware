@@ -141,7 +141,7 @@ namespace positions {
 		config_t *config = &config::main::value;
 		uint16_t lastEntry = config->lastEntry;
 
-		if (lastEntry < config->firstEntry) { lastEntry += details::maxEntryIndex; }
+		if (lastEntry < fromIndex) { lastEntry += details::maxEntryIndex; }
 
 		return lastEntry - fromIndex;
 	}
