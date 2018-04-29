@@ -15,10 +15,13 @@ namespace positions {
 	namespace backup {
 		namespace net {
 
+			uint8_t networkUnavailableInARow = 0;
+			uint8_t networkUnavailablePostpone = 1;
+
 			bool NetworkPositionsBackup::isBackupNeeded(bool forPrepare) {
 				config_t *config = &config::main::value;
 				return (config->network.lastSavedEntry == 0xFFFF && config->lastEntry != 0xFFFF) ||
-					positions::count(config->network.lastSavedEntry) > config->network.saveThreshold - (forPrepare ? 1 : 0);
+					positions::count(config->network.lastSavedEntry) > (config->network.saveThreshold * networkUnavailablePostpone) - (forPrepare ? 1 : 0);
 			}
 
 			bool NetworkPositionsBackup::appendPosition(PositionEntry &entry) {
@@ -60,9 +63,18 @@ namespace positions {
 
 				networkStatus = network::waitForRegistered(networkTimeout);
 
-				if (!network::isAvailable(networkStatus.stat)) NOTICE_MSG("appendPositions", "network unavailable");
-				else if (!network::enableGprs()) NOTICE_MSG("appendPositions", "gprs unavailable");
+				if (!network::isAvailable(networkStatus.stat) || !network::enableGprs()) {
+					networkUnavailableInARow++;
+					NOTICE_MSG("appendPositions", "network or gprs unavailable");
+
+					if (networkUnavailableInARow > POSITIONS_CONFIG_NET_DEFAULT_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD) {
+						networkUnavailablePostpone++;
+					}
+				}
 				else {
+					networkUnavailableInARow = 0;
+					networkUnavailablePostpone = 1;
+
 					hardware::i2c::powerOn();
 					do {
 						if (!positions::get(currentEntryIndex, currentEntry)) break;
