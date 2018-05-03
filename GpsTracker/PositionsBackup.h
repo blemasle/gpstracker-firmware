@@ -9,7 +9,7 @@ namespace positions {
 			virtual void setup() = 0;
 
 			virtual void prepare() = 0;
-			virtual void backup() = 0;
+			virtual void backup(bool force) = 0;
 		};
 
 	}

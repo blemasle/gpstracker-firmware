@@ -10,7 +10,7 @@ namespace positions {
 			private:
 			public:
 				void setup();
-				void backup();
+				void backup(bool force);
 			};
 
 		}

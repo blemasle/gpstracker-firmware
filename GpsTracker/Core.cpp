@@ -7,38 +7,42 @@
 using namespace utils;
 
 namespace core {
-	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;;
+	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;
 	uint8_t stoppedInARow = 0;
 
 	void main() {
-
+		bool forceBackup = false;
 		positions::prepareBackup();
 		PositionEntryMetadata metadata;
 		if (positions::acquire(metadata)) {
 			positions::appendLast(metadata);
-			updateSleepTime(gps::getVelocity());
+			forceBackup = updateSleepTime(gps::getVelocity());
 		}
 
-		positions::doBackup();
+		positions::doBackup(forceBackup);
 		mainunit::deepSleep(sleepTime);
 	}
 
-	void updateSleepTime(uint8_t velocity) {
-		uint16_t result = computeSleepTime(velocity);
+	bool updateSleepTime(uint8_t velocity) {
+		uint16_t result = mapSleepTime(velocity);
+		bool goingLongSleep = false;
 
 		if (velocity < SLEEP_TIMING_MIN_MOVING_VELOCITY) {
 			stoppedInARow++;
 			if (stoppedInARow < SLEEP_DEFAULT_STOPPED_THRESHOLD) {
 				result = SLEEP_DEFAULT_PAUSING_TIME_SECONDS;
 			}
+			else goingLongSleep = true;
 		}
 		else stoppedInARow = 0;
 
 		sleepTime = result;
 		NOTICE_FORMAT("updateSleepTime", "%dkmh => %d seconds", velocity, sleepTime);
+
+		return goingLongSleep;
 	}
 
-	uint16_t computeSleepTime(uint8_t velocity) {
+	uint16_t mapSleepTime(uint8_t velocity) {
 		uint16_t result;
 		uint16_t currentTime = 0xFFFF;
 		

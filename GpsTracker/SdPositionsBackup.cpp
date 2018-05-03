@@ -99,7 +99,7 @@ namespace positions {
 				hardware::sdcard::setup();
 			}
 
-			void SdPositionsBackup::backup() {
+			void SdPositionsBackup::backup(bool force) {
 				VERBOSE("backup");
 
 				if (!hardware::sdcard::available) {

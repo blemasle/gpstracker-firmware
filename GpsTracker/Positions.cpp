@@ -154,10 +154,10 @@ namespace positions {
 #endif
 	}
 
-	void doBackup() {
+	void doBackup(bool force) {
 #ifdef BACKUPS_ENABLED
 		for (int i = 0; i < BACKUPS_ENABLED; i++) {
-			_backups[i]->backup();
+			_backups[i]->backup(force);
 		}
 #endif
 	}

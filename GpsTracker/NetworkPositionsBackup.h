@@ -20,7 +20,7 @@ namespace positions {
 				void setup();
 
 				void prepare();
-				void backup();
+				void backup(bool force);
 			};
 
 		}

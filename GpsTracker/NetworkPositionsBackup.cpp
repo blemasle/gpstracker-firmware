@@ -106,10 +106,10 @@ namespace positions {
 				_prepareTime = rtc::getTime();
 			}
 
-			void NetworkPositionsBackup::backup() {
+			void NetworkPositionsBackup::backup(bool force) {
 				NOTICE("backup");
 
-				if (!isBackupNeeded(false)) return;
+				if (!force || !isBackupNeeded(false)) return;
 				appendPositions();
 			}
 		}

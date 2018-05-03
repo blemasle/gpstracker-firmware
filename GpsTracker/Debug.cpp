@@ -168,7 +168,7 @@ namespace debug {
 
 		NOTICE_FORMAT("setFakeGpsPosition", "Last position set to : %s", gps::lastPosition);
 		NOTICE_FORMAT("setFakeGpsPosition", "Speed : %d", gps::getVelocity());
-		NOTICE_FORMAT("setFakeGpsPosition", "Sleep time : %d", core::computeSleepTime(gps::getVelocity()));
+		NOTICE_FORMAT("setFakeGpsPosition", "Sleep time : %d", core::mapSleepTime(gps::getVelocity()));
 	}
 
 	void getAndDisplayBattery() {
@@ -198,7 +198,7 @@ namespace debug {
 		utils::flash::read(&config::defaultSleepTimings[arraySize - 1], maxSpeedTiming);
 
 		for (int i = 0; i <= maxSpeedTiming.speed; i++) {
-			core::computeSleepTime(i);
+			core::mapSleepTime(i);
 		}
 
 		NOTICE_MSG("getAndDisplaySleepTimes", "Done");
