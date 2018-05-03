@@ -55,6 +55,8 @@ namespace hardware {
 		}
 
 		void gpsPowerOff() {
+			if (!device.powered()) return;
+
 			VERBOSE("gpsPowerOff");
 			device.disableGps();
 			powerOffIfUnused();
@@ -67,6 +69,8 @@ namespace hardware {
 		}
 
 		void networkPowerOff() {
+			if (!device.powered()) return;
+
 			VERBOSE("networkPowerOff");
 			device.disableGprs();
 			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
