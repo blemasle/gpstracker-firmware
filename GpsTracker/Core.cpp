@@ -8,7 +8,7 @@ using namespace utils;
 
 namespace core {
 	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;
-	uint8_t stoppedInARow = 0;
+	uint8_t stoppedInARow = SLEEP_DEFAULT_STOPPED_THRESHOLD - 1;
 
 	void main() {
 		bool forceBackup = false;
@@ -32,7 +32,7 @@ namespace core {
 			if (stoppedInARow < SLEEP_DEFAULT_STOPPED_THRESHOLD) {
 				result = SLEEP_DEFAULT_PAUSING_TIME_SECONDS;
 			}
-			else goingLongSleep = true;
+			else if(stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD) goingLongSleep = true;
 		}
 		else stoppedInARow = 0;
 
