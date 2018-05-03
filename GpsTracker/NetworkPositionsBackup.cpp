@@ -109,8 +109,11 @@ namespace positions {
 			void NetworkPositionsBackup::backup(bool force) {
 				NOTICE("backup");
 
-				if (!force || !isBackupNeeded(false)) return;
-				appendPositions();
+				if (force || isBackupNeeded(false)) {
+					appendPositions();
+				}
+
+				network::powerOff();
 			}
 		}
 	}
