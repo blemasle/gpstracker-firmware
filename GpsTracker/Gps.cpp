@@ -3,6 +3,7 @@
 #include "Debug.h"
 #include "Hardware.h"
 #include "MainUnit.h"
+#include "math.h"
 
 #define LOGGER_NAME "Gps"
 
@@ -12,6 +13,8 @@
 #define TIME_HOUR_OFFSET	8
 #define TIME_MINUTE_OFFSET	10
 #define TIME_SECOND_OFFSET	12
+
+#define EARTH_RADIUS 6371 //kilometers
 
 namespace gps {
 
@@ -24,6 +27,9 @@ namespace gps {
 	}
 	char lastPosition[GPS_POSITION_SIZE];
 	SIM808_GPS_STATUS lastStatus;
+
+	float previousLat = 0;
+	float previousLng = 0;
 
 	SIM808_GPS_STATUS acquireCurrentPosition(int32_t timeout) {
 		SIM808_GPS_STATUS currentStatus = SIM808_GPS_STATUS::OFF;
@@ -44,6 +50,42 @@ namespace gps {
 
 		NOTICE_FORMAT("acquireCurrentPosition", "%d", currentStatus);
 		return currentStatus;
+	}
+
+	void preserveCurrentCoordinates() {
+		float lat, lng;
+		if(!hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::LATITUDE, &lat)) lat = 0;
+		if(!hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::LONGITUDE, &lng)) lng = 0;
+
+		if (lat == 0 || lng == 0) return;
+		previousLat = lat;
+		previousLng = lng;
+	}
+
+	float getDistanceFromPrevious() {
+		float lat1, lng1, lat2, lng2;
+
+		if(!hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::LATITUDE, &lat2)) return 0;
+		if(!hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::LONGITUDE, &lng2)) return 0;
+		
+		lat1 = radians(previousLat);
+		lng1 = radians(previousLng);
+
+		lat2 = radians(lat2);
+		lng2 = radians(lng2);
+
+		float dlat = lat2 - lat1;
+		float dlng = lng2 - lng1;
+		float a = (
+				pow(sin(dlat / 2), 2) +
+				cos(lat1) * cos(lat2) * pow(sin(dlng / 2), 2)
+			);
+
+
+		a = EARTH_RADIUS * (2 * atan2(sqrt(a), sqrt(1 - a))); //kilometers
+
+		NOTICE_FORMAT("distanceFromPrevious", "%fkm", a);
+		return a;
 	}
 
 	uint8_t getVelocity() {

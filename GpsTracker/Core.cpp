@@ -16,23 +16,29 @@ namespace core {
 		PositionEntryMetadata metadata;
 		if (positions::acquire(metadata)) {
 			positions::appendLast(metadata);
-			forceBackup = updateSleepTime(gps::getVelocity());
+			forceBackup = updateSleepTime();
+
+			gps::preserveCurrentCoordinates();
 		}
 
 		positions::doBackup(forceBackup);
 		mainunit::deepSleep(sleepTime);
 	}
 
-	bool updateSleepTime(uint8_t velocity) {
+	bool updateSleepTime() {
+		uint8_t velocity = gps::getVelocity();
 		uint16_t result = mapSleepTime(velocity);
 		bool goingLongSleep = false;
 
 		if (velocity < SLEEP_TIMING_MIN_MOVING_VELOCITY) {
-			stoppedInARow++;
+			float distance = gps::getDistanceFromPrevious(); //did we missed positions because we were sleeping ?
+			if (distance > GPS_DEFAULT_MISSED_POSITION_GAP_KM) stoppedInARow = 0;
+			else stoppedInARow = max(stoppedInARow + 1, SLEEP_DEFAULT_STOPPED_THRESHOLD + 1); //avoid overflow on REALLY long stops
+			
 			if (stoppedInARow < SLEEP_DEFAULT_STOPPED_THRESHOLD) {
 				result = SLEEP_DEFAULT_PAUSING_TIME_SECONDS;
 			}
-			else if(stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD) goingLongSleep = true;
+			else if (stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD) goingLongSleep = true;
 		}
 		else stoppedInARow = 0;
 
