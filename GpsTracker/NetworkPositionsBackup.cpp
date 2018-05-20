@@ -64,7 +64,7 @@ namespace positions {
 				networkStatus = network::waitForRegistered(networkTimeout);
 
 				if (!network::isAvailable(networkStatus.stat) || !network::enableGprs()) {
-					networkUnavailableInARow++;
+					networkUnavailableInARow = min(networkUnavailableInARow + 1, POSITIONS_CONFIG_NET_DEFAULT_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD + 1); //avoid increment overflow
 					NOTICE_MSG("appendPositions", "network or gprs unavailable");
 
 					if (networkUnavailableInARow > POSITIONS_CONFIG_NET_DEFAULT_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD) {
