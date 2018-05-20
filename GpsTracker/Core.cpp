@@ -33,7 +33,7 @@ namespace core {
 		if (velocity < SLEEP_TIMING_MIN_MOVING_VELOCITY) {
 			float distance = gps::getDistanceFromPrevious(); //did we missed positions because we were sleeping ?
 			if (distance > GPS_DEFAULT_MISSED_POSITION_GAP_KM) stoppedInARow = 0;
-			else stoppedInARow = max(stoppedInARow + 1, SLEEP_DEFAULT_STOPPED_THRESHOLD + 1); //avoid overflow on REALLY long stops
+			else stoppedInARow = min(stoppedInARow + 1, SLEEP_DEFAULT_STOPPED_THRESHOLD + 1); //avoid overflow on REALLY long stops
 			
 			if (stoppedInARow < SLEEP_DEFAULT_STOPPED_THRESHOLD) {
 				result = SLEEP_DEFAULT_PAUSING_TIME_SECONDS;
