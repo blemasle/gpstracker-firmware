@@ -7,14 +7,19 @@
 using namespace utils;
 
 namespace core {
+
 	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;
 	uint8_t stoppedInARow = SLEEP_DEFAULT_STOPPED_THRESHOLD - 1;
 
 	void main() {
 		bool forceBackup = false;
-		positions::prepareBackup();
+		bool acquired = false;
 		PositionEntryMetadata metadata;
-		if (positions::acquire(metadata)) {
+
+		positions::prepareBackup();
+		acquired = positions::acquire(metadata);
+
+		if (acquired) {
 			positions::appendLast(metadata);
 			forceBackup = updateSleepTime();
 
@@ -22,7 +27,15 @@ namespace core {
 		}
 
 		positions::doBackup(forceBackup);
+
+		if (acquired) updateRtcTime();
 		mainunit::deepSleep(sleepTime);
+	}
+
+	void updateRtcTime() {
+		tmElements_t time;
+		gps::getTime(time);
+		rtc::setTime(time);
 	}
 
 	bool updateSleepTime() {

@@ -70,10 +70,6 @@ namespace positions {
 
 		uint16_t timeToFix = rtc::getTime() - before;
 
-		tmElements_t time;
-		gps::getTime(time);
-		rtc::setTime(time);
-
 		metadata = {
 			battery.level,
 			battery.voltage,

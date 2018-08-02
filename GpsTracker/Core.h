@@ -14,6 +14,7 @@ namespace core {
 	extern uint16_t sleepTime;
 
 	void main();
+	void updateRtcTime();
 	bool updateSleepTime();
 	uint16_t mapSleepTime(uint8_t velocity);
 }
