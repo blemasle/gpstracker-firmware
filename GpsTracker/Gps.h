@@ -18,5 +18,8 @@ namespace gps {
 	SIM808_GPS_STATUS acquireCurrentPosition(int32_t timeout);
 
 	uint8_t getVelocity();
+	float getDistanceFromPrevious();
 	void getTime(tmElements_t &time);
+
+	void preserveCurrentCoordinates();
 }
