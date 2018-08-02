@@ -57,18 +57,16 @@ namespace positions {
 		NOTICE("acquire");
 
 		timestamp_t before;
-
+		
 		gps::powerOn();
 		before = rtc::getTime();
 		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
+		uint16_t timeToFix = rtc::getTime() - before;
 		SIM808ChargingStatus battery = hardware::sim808::device.getChargingState();
 		gps::powerOff();
 
+		bool acquired = gpsStatus >= SIM808_GPS_STATUS::FIX; //prety useless wins 14 bytes on the hex size rather than return gpStatus >= ...
 		NOTICE_FORMAT("acquire", "Status : %d", gpsStatus);
-
-		if (gpsStatus < SIM808_GPS_STATUS::FIX) return false;
-
-		uint16_t timeToFix = rtc::getTime() - before;
 
 		metadata = {
 			battery.level,
@@ -78,7 +76,7 @@ namespace positions {
 			gpsStatus
 		};
 
-		return true;
+		return acquired;
 	}
 
 	void appendLast(const PositionEntryMetadata &metadata) {
@@ -126,7 +124,7 @@ namespace positions {
 
 	bool moveNext(uint16_t &index) {
 		if (index == config::main::value.lastEntry) return false;
-		
+
 		if (index == details::maxEntryIndex) index = 0; //could use a modulo but easier to understand that way
 		else index++;
 
