@@ -1,21 +1,35 @@
 #include "Config.h"
 
-#if BACKUP_ENABLE_NETWORK
 #include "Debug.h"
 #include "Network.h"
 #include "Hardware.h"
 #include "MainUnit.h"
+#include "Rtc.h"
 
 #define LOGGER_NAME "Network"
 
 namespace network {
 
+	timestamp_t _poweredOnTime;
+
+	void powerOn() {
+		hardware::sim808::networkPowerOn();
+		_poweredOnTime = rtc::getTime();
+	}
+
+	void powerOff() {
+		hardware::sim808::networkPowerOff();
+		_poweredOnTime = 0;
+	}
+
 	__attribute__((__optimize__("O2")))
-	SIM808RegistrationStatus waitForRegistered(uint32_t timeout) {
+	SIM808RegistrationStatus waitForRegistered(uint32_t timeout, bool relativeToPowerOnTime = true) {
 
 		SIM808RegistrationStatus currentStatus;
 		SIM808SignalQualityReport report;
 		uint8_t noReliableNetwork = 0;
+
+		if (relativeToPowerOnTime) timeout -= (rtc::getTime() - _poweredOnTime) * 1000;
 
 		do {
 			currentStatus = hardware::sim808::device.getNetworkRegistrationStatus();
@@ -50,6 +64,4 @@ namespace network {
 		return hardware::sim808::device.enableGprs(config::main::value.network.apn);
 	}
 	
-	
 }
-#endif

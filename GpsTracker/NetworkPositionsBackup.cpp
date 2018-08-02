@@ -53,15 +53,11 @@ namespace positions {
 			//__attribute__((__optimize__("O2")))
 			void NetworkPositionsBackup::appendPositions() {
 				uint16_t currentEntryIndex = config::main::value.network.lastSavedEntry + 1;
-				uint32_t networkTimeout = 0;
 				PositionEntry currentEntry;
 				SIM808RegistrationStatus networkStatus;
 
 				network::powerOn();
-				networkTimeout = NETWORK_DEFAULT_TOTAL_TIMEOUT_MS;
-				if (_prepareTime > 0) networkTimeout -= (rtc::getTime() - _prepareTime) * 1000;
-
-				networkStatus = network::waitForRegistered(networkTimeout);
+				networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
 
 				if (!network::isAvailable(networkStatus.stat) || !network::enableGprs()) {
 					networkUnavailableInARow = min(networkUnavailableInARow + 1, POSITIONS_CONFIG_NET_DEFAULT_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD + 1); //avoid increment overflow
@@ -97,13 +93,8 @@ namespace positions {
 			void NetworkPositionsBackup::prepare() {
 				NOTICE("prepare");
 
-				if (!isBackupNeeded(true)) {
-					_prepareTime = 0;
-					return;
-				}
-
+				if (!isBackupNeeded(true)) return;
 				network::powerOn();
-				_prepareTime = rtc::getTime();
 			}
 
 			void NetworkPositionsBackup::backup(bool force) {
