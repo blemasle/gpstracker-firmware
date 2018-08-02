@@ -43,6 +43,8 @@
 #define NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD	8
 #define NETWORK_DEFAULT_NO_NETWORK_TRIES				5
 
+#define ALERT_RTC_TEMPERATURE_FAILURE					0
+
 #pragma endregion
 
 struct sleepTimings_t {
@@ -60,6 +62,10 @@ struct config_t {
 #if BACKUP_ENABLE_NETWORK
 	networkConfig_t network;
 #endif
+	uint8_t alertBatteryLevel1;
+	uint8_t alertBatteryLevel2;
+	uint8_t alertBatteryLevelClear;
+	char contactPhone[15];
 };
 
 namespace config {
