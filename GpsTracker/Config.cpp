@@ -29,6 +29,11 @@ namespace config {
 				//	POSITIONS_CONFIG_NET_DEFAULT_URL,
 				//};
 				//value.network = c;
+
+				value.alertBatteryLevel1 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1;
+				value.alertBatteryLevel2 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2;
+				value.alertBatteryLevelClear = CONFIG_DEFAULT_BATTERY_ALERT_CLEAR;
+				strcpy(value.contactPhone, CONFIG_DEFAULT_CONTACT_PHONE);
 #endif
 			}
 
@@ -45,7 +50,7 @@ namespace config {
 
 		void setup() {
 			details::read();
-			//details::write();
+			details::write();
 		}
 
 		void save() {
@@ -67,6 +72,10 @@ namespace config {
 					POSITIONS_CONFIG_NET_DEFAULT_APN,
 					POSITIONS_CONFIG_NET_DEFAULT_URL,
 				},
+				CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1,
+				CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2,
+				CONFIG_DEFAULT_BATTERY_ALERT_CLEAR,
+				CONFIG_DEFAULT_CONTACT_PHONE
 #endif
 			};
 
