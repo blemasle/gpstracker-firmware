@@ -23,7 +23,7 @@ namespace core {
 
 		if (acquired) {
 			positions::appendLast(metadata);
-			
+
 			forceBackup = updateSleepTime();
 			gps::preserveCurrentCoordinates();
 		}
@@ -51,8 +51,12 @@ namespace core {
 		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
 			sprintf_P(buffer + strlen(buffer), PSTR(" - Battery at %d%%.\n"), metadata.batteryLevel);
 		}
-		
-		if (bitRead(triggered, ALERT_RTC_FAILURE)) {
+
+		if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {
+			sprintf_P(buffer + strlen(buffer), PSTR(" - RTC was stopped. Bakup battery failure ?\n"));
+		}
+
+		if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
 			sprintf_P(buffer + strlen(buffer), PSTR(" - Temperature is %dC. Backup battery failure ?\n"), static_cast<uint16_t>(metadata.temperature * 100));
 		}
 

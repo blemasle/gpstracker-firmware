@@ -69,8 +69,9 @@ struct config_t {
 	uint8_t alertBatteryLevel1;		//sizeof = 1
 	uint8_t alertBatteryLevel2;		//sizeof = 1
 	uint8_t alertBatteryLevelClear; //sizeof = 1
+	uint8_t activeAlerts;			//sizeof = 1
 	char contactPhone[15];			//sizeof = 15
-};									//sizeof = 28 + 73 = 101
+};									//sizeof = 29 + 73 = 102
 
 namespace config {
 
