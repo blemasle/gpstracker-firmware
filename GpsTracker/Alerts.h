@@ -11,6 +11,6 @@ namespace alerts {
 	extern uint8_t _alerts;
 
 	uint8_t getTriggered(PositionEntryMetadata &metadata);
-	inline void add(uint8_t mask) { _alerts |= mask; }
+	inline void add(uint8_t mask) { _alerts |= mask; } //TODO : save to EEPROM to survive reset
 	void clear(PositionEntryMetadata &metadata);
 }
