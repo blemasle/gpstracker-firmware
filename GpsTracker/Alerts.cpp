@@ -11,7 +11,7 @@ namespace alerts {
 		config_t* config = &config::main::value;
 		uint8_t result = 0;
 
-		if (metadata.temperature == ALERT_RTC_TEMPERATURE_FAILURE && !bitRead(_alerts, ALERT_RTC_FAILURE)) {
+		if (metadata.temperature == ALERT_SUSPICIOUS_RTC_TEMPERATURE && !bitRead(_alerts, ALERT_RTC_FAILURE)) {
 			bitSet(result, ALERT_RTC_FAILURE);
 		}
 
@@ -30,7 +30,7 @@ namespace alerts {
 		config_t* config = &config::main::value;
 		uint8_t clearMask = 0;
 
-		if (bitRead(_alerts, ALERT_RTC_FAILURE) && metadata.temperature != ALERT_RTC_TEMPERATURE_FAILURE) {
+		if (bitRead(_alerts, ALERT_RTC_FAILURE) && metadata.temperature != ALERT_SUSPICIOUS_RTC_TEMPERATURE) {
 			bitSet(clearMask, ALERT_RTC_FAILURE);
 		}
 
