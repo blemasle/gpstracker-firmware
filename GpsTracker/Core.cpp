@@ -28,7 +28,7 @@ namespace core {
 			gps::preserveCurrentCoordinates();
 		}
 
-		notifyFailures(metadata);
+		alerts::add(notifyFailures(metadata));
 		alerts::clear(metadata);
 		positions::doBackup(forceBackup);
 
@@ -36,13 +36,12 @@ namespace core {
 		mainunit::deepSleep(sleepTime);
 	}
 
-	void notifyFailures(PositionEntryMetadata &metadata) {
+	uint8_t notifyFailures(PositionEntryMetadata &metadata) {
 		uint8_t triggered = alerts::getTriggered(metadata);
-		uint8_t notified = 0;
 		SIM808RegistrationStatus networkStatus;
 		char buffer[SMS_BUFFER_SIZE] = "Alerts !\n";
 
-		if (!triggered) return;
+		if (!triggered) return 0;
 
 		network::powerOn();
 		networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
@@ -53,18 +52,18 @@ namespace core {
 			sprintf_P(buffer + strlen(buffer), PSTR(" - Battery at %d%%.\n"), metadata.batteryLevel);
 		}
 		
-		if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
-			sprintf_P(buffer + strlen(buffer), PSTR(" - Temperature is %.2f°C. Backup battery failure ?\n"), metadata.batteryLevel);
+		if (bitRead(triggered, ALERT_RTC_FAILURE)) {
+			sprintf_P(buffer + strlen(buffer), PSTR(" - Temperature is %.2fC. Backup battery failure ?\n"), metadata.batteryLevel);
 		}
 
 		config_t* config = &config::main::value;
 		if (!network::sendSms(config->contactPhone, buffer)) {
 			NOTICE_MSG("notifyFailure", "SMS not sent !");
-			return;
+			return 0;
 		}
 
-		alerts::add(notified); //only add the successly notified failures
-		//TODO : network::powerOff(); count "handles" like for i2c ?
+		network::powerOff();
+		return triggered;
 	}
 
 	void updateRtcTime() {
