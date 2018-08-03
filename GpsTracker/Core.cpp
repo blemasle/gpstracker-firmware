@@ -57,7 +57,12 @@ namespace core {
 			sprintf_P(buffer + strlen(buffer), PSTR(" - Temperature is %.2f°C. Backup battery failure ?\n"), metadata.batteryLevel);
 		}
 
-		//TODO : send sms, return if failed
+		config_t* config = &config::main::value;
+		if (!network::sendSms(config->contactPhone, buffer)) {
+			NOTICE_MSG("notifyFailure", "SMS not sent !");
+			return;
+		}
+
 		alerts::add(notified); //only add the successly notified failures
 		//TODO : network::powerOff(); count "handles" like for i2c ?
 	}
