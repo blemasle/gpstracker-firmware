@@ -18,6 +18,8 @@ namespace hardware {
 	namespace sim808 {
 		SoftwareSerial simSerial = SoftwareSerial(SIM_TX, SIM_RX);
 		SIM808 device = SIM808(SIM_RST, SIM_PWR, SIM_STATUS);
+		uint8_t networkPoweredCount = 0;
+		uint8_t gpsPoweredCount = 0;
 
 		void powerOn() {
 			VERBOSE("powerOn");
@@ -25,11 +27,13 @@ namespace hardware {
 			if (!poweredOn) return;
 
 			device.init();
+			networkPoweredCount = gpsPoweredCount = 0;
 		}
 
 		void powerOff() {
 			VERBOSE("powerOff");
 			device.powerOnOff(false);
+			networkPoweredCount = gpsPoweredCount = 0;
 		}
 
 		void powerOffIfUnused() {
@@ -49,33 +53,55 @@ namespace hardware {
 		}
 
 		void gpsPowerOn() {
-			VERBOSE("gpsPowerOn");
-			powerOn();
-			device.enableGps();
+			if (!gpsPoweredCount) {
+				VERBOSE("gpsPowerOn");
+				powerOn();
+				device.enableGps();
+			}
+
+			gpsPoweredCount++;
 		}
 
 		void gpsPowerOff() {
-			if (!device.powered()) return;
+			if (!device.powered()) {
+				networkPoweredCount = gpsPoweredCount = 0;
+				return;
+			}
 
-			VERBOSE("gpsPowerOff");
-			device.disableGps();
-			powerOffIfUnused();
+			if (gpsPoweredCount == 1) {
+				VERBOSE("gpsPowerOff");
+				device.disableGps();
+				powerOffIfUnused();
+			}
+
+			gpsPoweredCount--;
 		}
 
 		void networkPowerOn() {
-			VERBOSE("networkPowerOn");
-			powerOn();
-			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::FULL);
+			if (!networkPoweredCount) {
+				VERBOSE("networkPowerOn");
+				powerOn();
+				device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::FULL);
+			}
+
+			networkPoweredCount++;
 		}
 
 		void networkPowerOff() {
-			if (!device.powered()) return;
+			if (!device.powered()) {
+				networkPoweredCount = gpsPoweredCount = 0;
+				return;
+			}
 
-			VERBOSE("networkPowerOff");
-			device.disableGprs();
-			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
+			if (networkPoweredCount == 1) {
+				VERBOSE("networkPowerOff");
+				device.disableGprs();
+				device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
 
-			powerOffIfUnused();
+				powerOffIfUnused();
+			}
+
+			networkPoweredCount--;
 		}
 	}
 
