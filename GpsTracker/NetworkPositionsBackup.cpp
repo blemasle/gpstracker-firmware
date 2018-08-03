@@ -86,9 +86,7 @@ namespace positions {
 				network::powerOff();
 			}
 
-			void NetworkPositionsBackup::setup() {
-				NOTICE("setup");
-			}
+			void NetworkPositionsBackup::setup() {}
 
 			void NetworkPositionsBackup::prepare() {
 				NOTICE("prepare");
