@@ -61,13 +61,11 @@ namespace core {
 		}
 
 		config_t* config = &config::main::value;
-		if (!network::sendSms(config->contactPhone, buffer)) {
-			NOTICE_MSG("notifyFailure", "SMS not sent !");
-			return 0;
-		}
+		bool sent = network::sendSms(config->contactPhone, buffer);
+		if (!sent) NOTICE_MSG("notifyFailure", "SMS not sent !");
 
 		network::powerOff();
-		return triggered;
+		return sent ? triggered : 0;
 	}
 
 	void updateRtcTime() {
