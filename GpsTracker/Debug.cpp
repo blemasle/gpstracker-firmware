@@ -29,6 +29,7 @@ MENU_ENTRY(EEPROM_GET_ENTRIES,		"[P] Get EEPROM entries");
 MENU_ENTRY(EEPROM_GET_LAST_ENTRY,	"[p] Get EEPROM last entry");
 MENU_ENTRY(EEPROM_ADD_ENTRY,		"[a] Add last entry to EEPROM");
 MENU_ENTRY(EEPROM_BACKUP_ENTRIES,	"[B] Backup EEPROM entries");
+MENU_ENTRY(SEND_FAILURE_SMS,		"[F] Send failure SMS");
 MENU_ENTRY(SLEEP,					"[S] Sleep for 8s");
 MENU_ENTRY(SLEEP_DEEP,				"[s] Deep sleep for 10s");
 MENU_ENTRY(QUESTION,				"?");
@@ -51,6 +52,7 @@ const PROGMEM uint8_t commandIdMapping[] = {
 	'p', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_LAST_ENTRY),
 	'a', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY),
 	'B', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_BACKUP_ENTRIES),
+	'F', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SEND_FAILURE_SMS),
 	'S', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP),
 	's', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP_DEEP),
 };
@@ -86,6 +88,9 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 	MENU_EEPROM_GET_LAST_ENTRY,
 	MENU_EEPROM_ADD_ENTRY,
 	MENU_EEPROM_BACKUP_ENTRIES,
+	MENU_SEPARATOR,
+
+	MENU_SEND_FAILURE_SMS,
 	MENU_SEPARATOR,
 
 	MENU_SLEEP,
@@ -258,5 +263,17 @@ namespace debug {
 		};
 
 		for(int i = 0; i < 10; i++) positions::appendLast(metadata);
+	}
+
+	void sendGlobalFailureSms() {
+		PositionEntryMetadata metadata = {
+			3,
+			3800,
+			ALERT_SUSPICIOUS_RTC_TEMPERATURE,
+			0,
+			SIM808_GPS_STATUS::OFF
+		};
+
+		core::notifyFailures(metadata);
 	}
 }

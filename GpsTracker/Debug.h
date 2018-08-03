@@ -31,6 +31,7 @@ namespace debug {
 		EEPROM_GET_ENTRIES,
 		EEPROM_ADD_ENTRY,
 		EEPROM_BACKUP_ENTRIES,
+		SEND_FAILURE_SMS,
 		SLEEP,
 		SLEEP_DEEP
 	};
@@ -55,5 +56,5 @@ namespace debug {
 	void getAndDisplayEepromLastPosition();
 	void addLastPositionToEeprom();
 
-
+	void sendGlobalFailureSms();
 }
