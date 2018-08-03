@@ -17,4 +17,6 @@ namespace core {
 	void updateRtcTime();
 	bool updateSleepTime();
 	uint16_t mapSleepTime(uint8_t velocity);
+
+	void notifyFailures(PositionEntryMetadata &metadata);
 }

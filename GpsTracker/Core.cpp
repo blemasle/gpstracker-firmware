@@ -1,8 +1,10 @@
 #include "Core.h"
 #include "Config.h"
 #include "Flash.h"
+#include "Alerts.h"
 
 #define LOGGER_NAME "Core"
+#define SMS_BUFFER_SIZE 100
 
 using namespace utils;
 
@@ -21,15 +23,43 @@ namespace core {
 
 		if (acquired) {
 			positions::appendLast(metadata);
+			
 			forceBackup = updateSleepTime();
-
 			gps::preserveCurrentCoordinates();
 		}
 
+		notifyFailures(metadata);
+		alerts::clear(metadata);
 		positions::doBackup(forceBackup);
 
 		if (acquired) updateRtcTime();
 		mainunit::deepSleep(sleepTime);
+	}
+
+	void notifyFailures(PositionEntryMetadata &metadata) {
+		uint8_t triggered = alerts::getTriggered(metadata);
+		uint8_t notified = 0;
+		SIM808RegistrationStatus networkStatus;
+		char buffer[SMS_BUFFER_SIZE] = "Alerts !\n";
+
+		if (!triggered) return;
+
+		network::powerOn();
+		networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
+
+		if (!network::isAvailable(networkStatus.stat)) return;
+
+		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
+			sprintf_P(buffer + strlen(buffer), PSTR(" - Battery at %d%%.\n"), metadata.batteryLevel);
+		}
+		
+		if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
+			sprintf_P(buffer + strlen(buffer), PSTR(" - Temperature is %.2f°C. Backup battery failure ?\n"), metadata.batteryLevel);
+		}
+
+		//TODO : send sms, return if failed
+		alerts::add(notified); //only add the successly notified failures
+		//TODO : network::powerOff(); count "handles" like for i2c ?
 	}
 
 	void updateRtcTime() {
