@@ -53,7 +53,7 @@ namespace core {
 		}
 		
 		if (bitRead(triggered, ALERT_RTC_FAILURE)) {
-			sprintf_P(buffer + strlen(buffer), PSTR(" - Temperature is %.2fC. Backup battery failure ?\n"), metadata.batteryLevel);
+			sprintf_P(buffer + strlen(buffer), PSTR(" - Temperature is %dC. Backup battery failure ?\n"), static_cast<uint16_t>(metadata.temperature * 100));
 		}
 
 		config_t* config = &config::main::value;
