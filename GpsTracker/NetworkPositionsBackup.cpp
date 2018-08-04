@@ -7,9 +7,9 @@
 #include "Debug.h"
 #include "Hardware.h"
 #include "Network.h"
-#include "Buffer.h"
 
 #define LOGGER_NAME "Positions::backup::network"
+#define BUFFER_SIZE 170
 
 namespace positions {
 	namespace backup {
@@ -25,8 +25,8 @@ namespace positions {
 			}
 
 			bool NetworkPositionsBackup::appendPosition(PositionEntry &entry) {
-				buffer::clear();
-				snprintf_P(buffer::value, BUFFER_SIZE, PSTR("%d,%d,%d,%d,%d,%d,%d,"),
+				char buffer[BUFFER_SIZE];
+				snprintf_P(buffer, BUFFER_SIZE, PSTR("%d,%d,%d,%d,%d,%d,%d,"),
 					debug::freeRam(),
 					hardware::sim808::device.getSignalQuality().attenuation,
 					entry.metadata.batteryLevel,
@@ -35,14 +35,14 @@ namespace positions {
 					static_cast<uint8_t>(entry.metadata.status),
 					entry.metadata.timeToFix);
 
-				strcat(buffer::value, entry.position);
+				strcat(buffer, entry.position);
 
-				NOTICE_FORMAT("appendPosition", "Sending : %s", buffer::value);
+				NOTICE_FORMAT("appendPosition", "Sending : %s", buffer);
 				uint16_t responseCode = hardware::sim808::device.httpPost(
 					config::main::value.network.url,
 					F("text/gpstracker"),
-					buffer::value,
-					buffer::value,
+					buffer,
+					buffer,
 					BUFFER_SIZE
 				) == POSITIONS_CONFIG_NET_DEFAULT_EXPECTED_RESPONSE;
 
