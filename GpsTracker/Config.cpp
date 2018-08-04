@@ -19,7 +19,7 @@ namespace config {
 				if (CONFIG_SEED != value.seed) reset(); //todo : reset network if seed for network is not right
 				hardware::i2c::powerOff();
 
-				NOTICE_FORMAT("read", "%d, %s, %d, %d, %d, %d, %d, %d, %s", value.seed, value.version, value.firstEntry, value.lastEntry, value.alertBatteryLevel1, value.alertBatteryLevel2, value.alertBatteryLevelClear, value.activeAlerts, value.contactPhone);
+				NOTICE_FORMAT("read", "%d, %s, %d, %d, %d, %d, %d, %B, %s", value.seed, value.version, value.firstEntry, value.lastEntry, value.alertBatteryLevel1, value.alertBatteryLevel2, value.alertBatteryLevelClear, value.activeAlerts, value.contactPhone);
 #if BACKUP_ENABLE_NETWORK
 				NOTICE_FORMAT("read", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
 				//networkConfig_t c = {
@@ -39,7 +39,7 @@ namespace config {
 			}
 
 			void write() {
-				NOTICE_FORMAT("write", "%d, %s, %d, %d, %d, %d, %d, %d, %s", value.seed, value.version, value.firstEntry, value.lastEntry, value.activeAlerts, value.alertBatteryLevel1, value.alertBatteryLevel2, value.alertBatteryLevelClear, value.activeAlerts, value.contactPhone);
+				NOTICE_FORMAT("write", "%d, %s, %d, %d, %d, %d, %d, %B, %s", value.seed, value.version, value.firstEntry, value.lastEntry, value.activeAlerts, value.alertBatteryLevel1, value.alertBatteryLevel2, value.alertBatteryLevelClear, value.activeAlerts, value.contactPhone);
 #if BACKUP_ENABLE_NETWORK
 				NOTICE_FORMAT("write", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
 #endif
