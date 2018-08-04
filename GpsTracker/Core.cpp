@@ -4,7 +4,7 @@
 #include "Alerts.h"
 
 #define LOGGER_NAME "Core"
-#define SMS_BUFFER_SIZE 100
+#define SMS_BUFFER_SIZE 140
 
 using namespace utils;
 
@@ -52,17 +52,17 @@ namespace core {
 
 		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
 			bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
-			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR(" - Battery at %d%%.\n"), metadata.batteryLevel);
+			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR("- Battery at %d%%.\n"), metadata.batteryLevel);
 		}
 
 		if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {
 			bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
-			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR(" - RTC was stopped. %S"), backupFailureString);
+			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR("- RTC was stopped. %S"), backupFailureString);
 		}
 
 		if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
 			bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
-			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR(" - Temperature is %dC. %S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
+			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR("- Temperature is %dC. %S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
 		}
 
 		config_t* config = &config::main::value;
