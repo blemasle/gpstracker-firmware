@@ -2,9 +2,10 @@
 #include "Config.h"
 #include "Flash.h"
 #include "Alerts.h"
+#include "Buffer.h"
 
 #define LOGGER_NAME "Core"
-#define SMS_BUFFER_SIZE		140
+#define SMS_MAX_SIZE		140
 #define NO_ALERTS_NOTIFIED	0
 
 using namespace utils;
@@ -16,12 +17,12 @@ namespace core {
 
 	namespace details {
 
-		void appendToSmsBuffer(char * buffer, const char * fmt, ...) {
+		void appendToSmsBuffer(const char * fmt, ...) {
 			va_list args;
 			va_start(args, fmt);
 
-			size_t bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
-			char * p = buffer + strlen(buffer);
+			size_t bufferLeft = SMS_MAX_SIZE - strlen(buffer::value);
+			char * p = buffer::value + strlen(buffer::value);
 			vsnprintf_P(p, bufferLeft, fmt, args);
 
 			va_end(args);
@@ -54,7 +55,6 @@ namespace core {
 
 	uint8_t notifyFailures(PositionEntryMetadata &metadata) {
 		SIM808RegistrationStatus networkStatus;
-		char buffer[SMS_BUFFER_SIZE] = "Alerts !\n";
 		const __FlashStringHelper * backupFailureString = F(" Backup battery failure ?\n");
 
 		uint8_t triggered = alerts::getTriggered(metadata);
@@ -65,19 +65,21 @@ namespace core {
 
 		if (!network::isAvailable(networkStatus.stat)) return NO_ALERTS_NOTIFIED;
 
+		buffer::clear();
+		strcpy_P(buffer::value, PSTR("Alerts !\n"));
 		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
-			details::appendToSmsBuffer(buffer, PSTR("- Battery at %d%%.\n"), metadata.batteryLevel);
+			details::appendToSmsBuffer(PSTR("- Battery at %d%%.\n"), metadata.batteryLevel);
 		}
 
 		if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {
-			details::appendToSmsBuffer(buffer, PSTR("-RTC was stopped. %S"), backupFailureString);
+			details::appendToSmsBuffer(PSTR("-RTC was stopped. %S"), backupFailureString);
 		}
 
 		if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
-			details::appendToSmsBuffer(buffer, PSTR("- Temperature is %dC. %S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
+			details::appendToSmsBuffer(PSTR("- Temperature is %dC. %S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
 		}
 
-		bool notified = network::sendSms(buffer);
+		bool notified = network::sendSms(buffer::value);
 		if (!notified) NOTICE_MSG("notifyFailure", "SMS not sent !");
 
 		network::powerOff();
