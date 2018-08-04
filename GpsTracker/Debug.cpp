@@ -2,6 +2,7 @@
 #include "Flash.h"
 #include "Positions.h"
 #include "Core.h"
+#include "Alerts.h"
 
 #define LOGGER_NAME "Debug"
 
@@ -30,6 +31,7 @@ MENU_ENTRY(EEPROM_GET_LAST_ENTRY,	"[p] Get EEPROM last entry");
 MENU_ENTRY(EEPROM_ADD_ENTRY,		"[a] Add last entry to EEPROM");
 MENU_ENTRY(EEPROM_BACKUP_ENTRIES,	"[B] Backup EEPROM entries");
 MENU_ENTRY(NOTIFY_FAILURES,			"[F] Notify failures");
+MENU_ENTRY(CLEAR_ALERTS,			"[A] Clear alerts");
 MENU_ENTRY(SLEEP,					"[S] Sleep for 8s");
 MENU_ENTRY(SLEEP_DEEP,				"[s] Deep sleep for 10s");
 MENU_ENTRY(QUESTION,				"?");
@@ -53,6 +55,7 @@ const PROGMEM uint8_t commandIdMapping[] = {
 	'a', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY),
 	'B', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_BACKUP_ENTRIES),
 	'F', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::NOTIFY_FAILURES),
+	'A', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::CLEAR_ALERTS),
 	'S', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP),
 	's', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP_DEEP),
 };
@@ -91,6 +94,7 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 	MENU_SEPARATOR,
 
 	MENU_NOTIFY_FAILURES,
+	MENU_CLEAR_ALERTS,
 	MENU_SEPARATOR,
 
 	MENU_SLEEP,
@@ -275,5 +279,17 @@ namespace debug {
 		};
 
 		core::notifyFailures(metadata);
+	}
+
+	void clearAlerts() {
+		PositionEntryMetadata metadata = {
+			100, //all battery alert should goes off with this
+			3800, //doesn't matter 
+			10,
+			0,
+			SIM808_GPS_STATUS::OFF
+		};
+
+		alerts::clear(metadata);
 	}
 }
