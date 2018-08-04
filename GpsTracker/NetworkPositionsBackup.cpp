@@ -56,6 +56,9 @@ namespace positions {
 				PositionEntry currentEntry;
 				SIM808RegistrationStatus networkStatus;
 
+				//avoid edge case where if 0, whole set of positions will be sent again
+				if (!positions::count(config::main::value.network.lastSavedEntry)) return;
+
 				network::powerOn();
 				networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
 
