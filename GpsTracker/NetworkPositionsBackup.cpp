@@ -26,7 +26,7 @@ namespace positions {
 
 			bool NetworkPositionsBackup::appendPosition(PositionEntry &entry) {
 				char buffer[BUFFER_SIZE];
-				snprintf(buffer, BUFFER_SIZE, "%d,%d,%d,%d,%d,%d,%d,",
+				snprintf_P(buffer, BUFFER_SIZE, PSTR("%d,%d,%d,%d,%d,%d,%d,"),
 					debug::freeRam(),
 					hardware::sim808::device.getSignalQuality().attenuation,
 					entry.metadata.batteryLevel,
