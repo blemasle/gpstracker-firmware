@@ -4,7 +4,8 @@
 #include "Alerts.h"
 
 #define LOGGER_NAME "Core"
-#define SMS_BUFFER_SIZE 140
+#define SMS_BUFFER_SIZE		140
+#define NO_ALERTS_NOTIFIED	0
 
 using namespace utils;
 
@@ -37,18 +38,18 @@ namespace core {
 	}
 
 	uint8_t notifyFailures(PositionEntryMetadata &metadata) {
-		uint8_t triggered = alerts::getTriggered(metadata);
 		SIM808RegistrationStatus networkStatus;
 		char buffer[SMS_BUFFER_SIZE] = "Alerts !\n";
 		size_t bufferLeft = 0;
 		const __FlashStringHelper * backupFailureString = F(" Backup battery failure ?\n");
 
-		if (!triggered) return 0;
+		uint8_t triggered = alerts::getTriggered(metadata);
+		if (!triggered) return NO_ALERTS_NOTIFIED;
 
 		network::powerOn();
 		networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
 
-		if (!network::isAvailable(networkStatus.stat)) return;
+		if (!network::isAvailable(networkStatus.stat)) return NO_ALERTS_NOTIFIED;
 
 		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
 			bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
@@ -66,11 +67,11 @@ namespace core {
 		}
 
 		config_t* config = &config::main::value;
-		bool sent = network::sendSms(config->contactPhone, buffer);
-		if (!sent) NOTICE_MSG("notifyFailure", "SMS not sent !");
+		bool notified = network::sendSms(config->contactPhone, buffer);
+		if (!notified) NOTICE_MSG("notifyFailure", "SMS not sent !");
 
 		network::powerOff();
-		return sent ? triggered : 0;
+		return notified ? triggered : NO_ALERTS_NOTIFIED; //If not notified, the alerts state should not be persisted (so we can retry to notify them)
 	}
 
 	void updateRtcTime() {
