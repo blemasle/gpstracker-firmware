@@ -66,6 +66,8 @@ struct config_t {
 	uint16_t lastEntry;				//sizeof = 2
 #if BACKUP_ENABLE_NETWORK
 	networkConfig_t network;		//sizeof = 73
+#else
+	char reserved[73];
 #endif
 	uint8_t alertBatteryLevel1;		//sizeof = 1
 	uint8_t alertBatteryLevel2;		//sizeof = 1

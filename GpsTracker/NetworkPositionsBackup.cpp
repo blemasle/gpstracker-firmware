@@ -26,16 +26,15 @@ namespace positions {
 
 			bool NetworkPositionsBackup::appendPosition(PositionEntry &entry) {
 				char buffer[BUFFER_SIZE];
-				snprintf_P(buffer, BUFFER_SIZE, PSTR("%d,%d,%d,%d,%d,%d,%d,"),
+				snprintf_P(buffer, BUFFER_SIZE, PSTR("%d,%d,%d,%d,%d,%d,%d,%s"),
 					debug::freeRam(),
 					hardware::sim808::device.getSignalQuality().attenuation,
 					entry.metadata.batteryLevel,
 					entry.metadata.batteryVoltage,
 					static_cast<uint16_t>(entry.metadata.temperature * 100),
 					static_cast<uint8_t>(entry.metadata.status),
-					entry.metadata.timeToFix);
-
-				strcat(buffer, entry.position);
+					entry.metadata.timeToFix,
+					entry.position);
 
 				NOTICE_FORMAT("appendPosition", "Sending : %s", buffer);
 				uint16_t responseCode = hardware::sim808::device.httpPost(
