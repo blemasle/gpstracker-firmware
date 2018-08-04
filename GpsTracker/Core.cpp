@@ -14,6 +14,21 @@ namespace core {
 	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;
 	uint8_t stoppedInARow = SLEEP_DEFAULT_STOPPED_THRESHOLD - 1;
 
+	namespace details {
+
+		void appendToSmsBuffer(char * buffer, const char * fmt, ...) {
+			va_list args;
+			va_start(args, fmt);
+
+			size_t bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
+			char * p = buffer + strlen(buffer);
+			vsnprintf_P(p, bufferLeft, fmt, args);
+
+			va_end(args);
+		}
+
+	}
+
 	void main() {
 		bool forceBackup = false;
 		bool acquired = false;
@@ -40,7 +55,6 @@ namespace core {
 	uint8_t notifyFailures(PositionEntryMetadata &metadata) {
 		SIM808RegistrationStatus networkStatus;
 		char buffer[SMS_BUFFER_SIZE] = "Alerts !\n";
-		size_t bufferLeft = 0;
 		const __FlashStringHelper * backupFailureString = F(" Backup battery failure ?\n");
 
 		uint8_t triggered = alerts::getTriggered(metadata);
@@ -52,18 +66,15 @@ namespace core {
 		if (!network::isAvailable(networkStatus.stat)) return NO_ALERTS_NOTIFIED;
 
 		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
-			bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
-			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR("- Battery at %d%%.\n"), metadata.batteryLevel);
+			details::appendToSmsBuffer(buffer, PSTR("- Battery at %d%%.\n"), metadata.batteryLevel);
 		}
 
 		if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {
-			bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
-			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR("- RTC was stopped. %S"), backupFailureString);
+			details::appendToSmsBuffer(buffer, PSTR("-RTC was stopped. %S"), backupFailureString);
 		}
 
 		if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
-			bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
-			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR("- Temperature is %dC. %S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
+			details::appendToSmsBuffer(buffer, PSTR("- Temperature is %dC. %S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
 		}
 
 		config_t* config = &config::main::value;
