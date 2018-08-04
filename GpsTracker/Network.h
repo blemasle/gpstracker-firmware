@@ -11,5 +11,5 @@ namespace network {
 	bool isAvailable(SIM808_NETWORK_REGISTRATION_STATE state);
 	bool enableGprs();
 
-	bool sendSms(const char * phoneNumber, const char * msg);
+	bool sendSms(const char * msg);
 }

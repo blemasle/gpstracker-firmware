@@ -64,7 +64,9 @@ namespace network {
 		return hardware::sim808::device.enableGprs(config::main::value.network.apn);
 	}
 
-	bool sendSms(const char * phoneNumber, const char * msg) {
+	bool sendSms(const char * msg) {
+		const char * phoneNumber = config::main::value.contactPhone;
+
 		NOTICE_FORMAT("sendSms", "%s, %s", phoneNumber, msg);
 		return hardware::sim808::device.sendSms(phoneNumber, msg);
 	}

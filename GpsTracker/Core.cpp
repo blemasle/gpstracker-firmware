@@ -77,8 +77,7 @@ namespace core {
 			details::appendToSmsBuffer(buffer, PSTR("- Temperature is %dC. %S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
 		}
 
-		config_t* config = &config::main::value;
-		bool notified = network::sendSms(config->contactPhone, buffer);
+		bool notified = network::sendSms(buffer);
 		if (!notified) NOTICE_MSG("notifyFailure", "SMS not sent !");
 
 		network::powerOff();
