@@ -267,8 +267,8 @@ namespace debug {
 
 	void notifyFailures() {
 		PositionEntryMetadata metadata = {
-			3,
-			3800,
+			1, //all battery alert should goes on with this
+			3800, //doesn't matter 
 			ALERT_SUSPICIOUS_RTC_TEMPERATURE,
 			0,
 			SIM808_GPS_STATUS::OFF
