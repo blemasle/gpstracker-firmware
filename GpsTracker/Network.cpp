@@ -42,7 +42,7 @@ namespace network {
 			else noReliableNetwork = 0;
 			if (noReliableNetwork > NETWORK_DEFAULT_NO_NETWORK_TRIES) {
 				NOTICE_MSG("waitForRegistered", "No reliable signal");
-				break; //after a while, not network really means no network. Bailing out
+				break; //after a while, no network really means no network. Bailing out
 			}
 
 			mainunit::deepSleep(NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS / 1000);
@@ -62,5 +62,10 @@ namespace network {
 
 	bool enableGprs() {
 		return hardware::sim808::device.enableGprs(config::main::value.network.apn);
+	}
+
+	bool sendSms(const char * phoneNumber, const char * msg) {
+		NOTICE_FORMAT("sendSms", "%s, %s", phoneNumber, msg);
+		return hardware::sim808::device.sendSms(phoneNumber, msg);
 	}
 }
