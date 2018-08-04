@@ -49,7 +49,7 @@ namespace alerts {
 			bitSet(clearMask, ALERT_RTC_TEMPERATURE_FAILURE);
 		}
 
-		if (config->activeAlerts & (_BV(ALERT_BATTERY_LEVEL_1) | _BV(ALERT_BATTERY_LEVEL_2) && metadata.temperature >= config->alertBatteryLevelClear)) {
+		if ((config->activeAlerts & (_BV(ALERT_BATTERY_LEVEL_1) | _BV(ALERT_BATTERY_LEVEL_2))) && metadata.temperature >= config->alertBatteryLevelClear) {
 			clearMask |= _BV(ALERT_BATTERY_LEVEL_1) | _BV(ALERT_BATTERY_LEVEL_2);
 		}
 
