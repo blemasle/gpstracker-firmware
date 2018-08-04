@@ -40,7 +40,8 @@ namespace core {
 		uint8_t triggered = alerts::getTriggered(metadata);
 		SIM808RegistrationStatus networkStatus;
 		char buffer[SMS_BUFFER_SIZE] = "Alerts !\n";
-		size_t available = SMS_BUFFER_SIZE - strlen(buffer);
+		size_t bufferLeft = 0;
+		const __FlashStringHelper * backupFailureString = F(" Backup battery failure ?\n");
 
 		if (!triggered) return 0;
 
@@ -50,18 +51,18 @@ namespace core {
 		if (!network::isAvailable(networkStatus.stat)) return;
 
 		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
-			available = SMS_BUFFER_SIZE - strlen(buffer);
-			snprintf_P(buffer + strlen(buffer), available, PSTR(" - Battery at %d%%.\n"), metadata.batteryLevel); //TODO : this code will NOT print the string at the right place
+			bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
+			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR(" - Battery at %d%%.\n"), metadata.batteryLevel);
 		}
 
 		if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {
-			available = SMS_BUFFER_SIZE - strlen(buffer);
-			snprintf_P(buffer + strlen(buffer), available, PSTR(" - RTC was stopped. Bakup battery failure ?\n"));
+			bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
+			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR(" - RTC was stopped. %S"), backupFailureString);
 		}
 
 		if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
-			available = SMS_BUFFER_SIZE - strlen(buffer);
-			snprintf_P(buffer + strlen(buffer), available, PSTR(" - Temperature is %dC. Backup battery failure ?\n"), static_cast<uint16_t>(metadata.temperature * 100));
+			bufferLeft = SMS_BUFFER_SIZE - strlen(buffer);
+			snprintf_P(buffer + strlen(buffer), bufferLeft, PSTR(" - Temperature is %dC. %S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
 		}
 
 		config_t* config = &config::main::value;
