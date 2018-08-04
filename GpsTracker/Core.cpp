@@ -54,7 +54,7 @@ namespace core {
 
 	uint8_t notifyFailures(PositionEntryMetadata &metadata) {
 		SIM808RegistrationStatus networkStatus;
-		char buffer[SMS_BUFFER_SIZE] = "Alerts !\n";
+		char buffer[SMS_BUFFER_SIZE];
 		const __FlashStringHelper * backupFailureString = F(" Backup battery failure ?\n");
 
 		uint8_t triggered = alerts::getTriggered(metadata);
@@ -65,6 +65,7 @@ namespace core {
 
 		if (!network::isAvailable(networkStatus.stat)) return NO_ALERTS_NOTIFIED;
 
+		details::appendToSmsBuffer(buffer, PSTR("Alerts !\n"));
 		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
 			details::appendToSmsBuffer(buffer, PSTR("- Battery at %d%%.\n"), metadata.batteryLevel);
 		}
