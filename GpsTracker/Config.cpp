@@ -30,6 +30,7 @@ namespace config {
 				//};
 				//value.network = c;
 
+				strcpy(value.version, VERSION);
 				value.alertBatteryLevel1 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1;
 				value.alertBatteryLevel2 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2;
 				value.alertBatteryLevelClear = CONFIG_DEFAULT_BATTERY_ALERT_CLEAR;
