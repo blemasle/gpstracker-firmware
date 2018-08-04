@@ -29,14 +29,13 @@ namespace config {
 				//	POSITIONS_CONFIG_NET_DEFAULT_URL,
 				//};
 				//value.network = c;
-
-				strcpy(value.version, VERSION);
+#endif
+				/*strcpy(value.version, VERSION);
 				value.alertBatteryLevel1 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1;
 				value.alertBatteryLevel2 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2;
 				value.alertBatteryLevelClear = CONFIG_DEFAULT_BATTERY_ALERT_CLEAR;
 				value.activeAlerts = 0;
-				strcpy(value.contactPhone, CONFIG_DEFAULT_CONTACT_PHONE);
-#endif
+				strcpy(value.contactPhone, CONFIG_DEFAULT_CONTACT_PHONE);*/
 			}
 
 			void write() {
@@ -52,7 +51,7 @@ namespace config {
 
 		void setup() {
 			details::read();
-			details::write();
+			//details::write();
 		}
 
 		void save() {
