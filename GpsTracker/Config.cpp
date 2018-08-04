@@ -34,7 +34,7 @@ namespace config {
 				value.alertBatteryLevel1 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1;
 				value.alertBatteryLevel2 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2;
 				value.alertBatteryLevelClear = CONFIG_DEFAULT_BATTERY_ALERT_CLEAR;
-				value.activeAlerts = 0;
+				value.activeAlerts = CONFIG_DEFAULT_ACTIVE_ALERTS;
 				strcpy(value.contactPhone, CONFIG_DEFAULT_CONTACT_PHONE);*/
 			}
 
@@ -76,7 +76,7 @@ namespace config {
 				CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1,
 				CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2,
 				CONFIG_DEFAULT_BATTERY_ALERT_CLEAR,
-				0,
+				CONFIG_DEFAULT_ACTIVE_ALERTS,
 				CONFIG_DEFAULT_CONTACT_PHONE
 #endif
 			};
