@@ -70,16 +70,17 @@ namespace core {
 			details::appendToSmsBuffer(buffer, PSTR("- Battery at %d%%.\n"), metadata.batteryLevel);
 		}
 
-		if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {
-			details::appendToSmsBuffer(buffer, PSTR("-RTC was stopped. %S"), backupFailureString);
+		if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
+			details::appendToSmsBuffer(buffer, PSTR("- Temperature is %dC.%S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
 		}
 
-		if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
-			details::appendToSmsBuffer(buffer, PSTR("- Temperature is %dC. %S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
+		if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {
+			details::appendToSmsBuffer(buffer, PSTR("-RTC was stopped.%S"), backupFailureString);
 		}
 
 		bool notified = network::sendSms(buffer);
 		if (!notified) NOTICE_MSG("notifyFailure", "SMS not sent !");
+		NOTICE_FORMAT("notifyFailures", "%s", buffer);
 
 		network::powerOff();
 		return notified ? triggered : NO_ALERTS_NOTIFIED; //If not notified, the alerts state should not be persisted (so we can retry to notify them)
