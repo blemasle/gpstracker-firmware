@@ -43,10 +43,10 @@ namespace positions {
 					buffer,
 					buffer,
 					BUFFER_SIZE
-				) == POSITIONS_CONFIG_NET_DEFAULT_EXPECTED_RESPONSE;
+				);
 
 				NOTICE_FORMAT("appendPosition", "Response : %d", responseCode);
-				return responseCode;
+				return responseCode == POSITIONS_CONFIG_NET_DEFAULT_EXPECTED_RESPONSE;
 			}
 
 			//__attribute__((__optimize__("O2")))
