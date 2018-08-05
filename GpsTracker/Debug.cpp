@@ -192,7 +192,7 @@ namespace debug {
 		tmElements_t time;
 		rtc::getTime(time);
 
-		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
+		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d %t", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second, rtc::isAccurate());
 	}
 
 	void setRtcTime() {
@@ -271,19 +271,21 @@ namespace debug {
 
 	void notifyFailures() {
 		PositionEntryMetadata metadata = {
-			1, //all battery alert should goes on with this
+			1, //all battery alerts should goes on with this
 			3800, //doesn't matter 
 			ALERT_SUSPICIOUS_RTC_TEMPERATURE,
 			0,
 			SIM808_GPS_STATUS::OFF
 		};
 
-		core::notifyFailures(metadata);
+		uint8_t alerts = core::notifyFailures(metadata);
+		NOTICE_FORMAT("notifyFailures", "result : %B", alerts);
+		alerts::add(alerts);
 	}
 
 	void clearAlerts() {
 		PositionEntryMetadata metadata = {
-			100, //all battery alert should goes off with this
+			100, //all battery alerts should goes off with this
 			3800, //doesn't matter 
 			10,
 			0,

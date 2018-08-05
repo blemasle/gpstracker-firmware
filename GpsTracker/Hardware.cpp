@@ -64,7 +64,7 @@ namespace hardware {
 
 		void gpsPowerOff() {
 			if (!device.powered()) {
-				networkPoweredCount = gpsPoweredCount = 0;
+				networkPoweredCount = gpsPoweredCount = 0; //just to be sure counts == 0
 				return;
 			}
 
@@ -74,7 +74,7 @@ namespace hardware {
 				powerOffIfUnused();
 			}
 
-			gpsPoweredCount--;
+			if (gpsPoweredCount) gpsPoweredCount--; //avoid 255 if 0--
 		}
 
 		void networkPowerOn() {
@@ -89,9 +89,10 @@ namespace hardware {
 
 		void networkPowerOff() {
 			if (!device.powered()) {
-				networkPoweredCount = gpsPoweredCount = 0;
+				networkPoweredCount = gpsPoweredCount = 0; //just to be sure counts == 0
 				return;
 			}
+
 
 			if (networkPoweredCount == 1) {
 				VERBOSE("networkPowerOff");
@@ -101,7 +102,7 @@ namespace hardware {
 				powerOffIfUnused();
 			}
 
-			networkPoweredCount--;
+			if (networkPoweredCount) networkPoweredCount--; //avoid 255 if 0--
 		}
 	}
 

@@ -55,27 +55,29 @@ namespace core {
 	uint8_t notifyFailures(PositionEntryMetadata &metadata) {
 		SIM808RegistrationStatus networkStatus;
 		char buffer[SMS_BUFFER_SIZE];
-		const __FlashStringHelper * backupFailureString = F(" Backup battery failure ?\n");
+		const __FlashStringHelper * backupFailureString = F(" Backup battery failure ?");
 
 		uint8_t triggered = alerts::getTriggered(metadata);
 		if (!triggered) return NO_ALERTS_NOTIFIED;
+
+		NOTICE_FORMAT("notifyFailures", "triggered : %B", triggered);
 
 		network::powerOn();
 		networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
 
 		if (!network::isAvailable(networkStatus.stat)) return NO_ALERTS_NOTIFIED;
 
-		details::appendToSmsBuffer(buffer, PSTR("Alerts !\n"));
+		strncpy_P(buffer, PSTR("Alerts !"), SMS_BUFFER_SIZE);
 		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
-			details::appendToSmsBuffer(buffer, PSTR("- Battery at %d%%.\n"), metadata.batteryLevel);
-		}
-
-		if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {
-			details::appendToSmsBuffer(buffer, PSTR("-RTC was stopped. %S"), backupFailureString);
+			details::appendToSmsBuffer(buffer, PSTR("\n- Battery at %d%%."), metadata.batteryLevel);
 		}
 
 		if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
-			details::appendToSmsBuffer(buffer, PSTR("- Temperature is %dC. %S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
+			details::appendToSmsBuffer(buffer, PSTR("\n- Temperature is %dC.%S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
+		}
+
+		if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {
+			details::appendToSmsBuffer(buffer, PSTR("\n- RTC was stopped.%S"), backupFailureString);
 		}
 
 		bool notified = network::sendSms(buffer);
