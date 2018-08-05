@@ -44,7 +44,7 @@ namespace alerts {
 		config_t* config = &config::main::value;
 		uint8_t clearMask = 0;
 
-		if ((config->activeAlerts & (_BV(ALERT_BATTERY_LEVEL_1) | _BV(ALERT_BATTERY_LEVEL_2))) && metadata.temperature >= config->alertBatteryLevelClear) {
+		if ((config->activeAlerts & (_BV(ALERT_BATTERY_LEVEL_1) | _BV(ALERT_BATTERY_LEVEL_2))) && metadata.batteryLevel >= config->alertBatteryLevelClear) {
 			clearMask |= _BV(ALERT_BATTERY_LEVEL_1) | _BV(ALERT_BATTERY_LEVEL_2);
 		}
 
