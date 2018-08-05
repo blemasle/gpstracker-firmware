@@ -192,7 +192,7 @@ namespace debug {
 		tmElements_t time;
 		rtc::getTime(time);
 
-		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
+		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d %t", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second, rtc::isAccurate());
 	}
 
 	void setRtcTime() {
@@ -278,7 +278,8 @@ namespace debug {
 			SIM808_GPS_STATUS::OFF
 		};
 
-		core::notifyFailures(metadata);
+		uint8_t alerts = core::notifyFailures(metadata);
+		NOTICE_FORMAT("notifyFailures", "result : %B", alerts);
 	}
 
 	void clearAlerts() {
