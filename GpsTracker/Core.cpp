@@ -65,7 +65,7 @@ namespace core {
 
 		if (!network::isAvailable(networkStatus.stat)) return NO_ALERTS_NOTIFIED;
 
-		details::appendToSmsBuffer(buffer, PSTR("Alerts !\n"));
+		strncpy_P(buffer, PSTR("Alerts !\n"), SMS_BUFFER_SIZE);
 		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
 			details::appendToSmsBuffer(buffer, PSTR("- Battery at %d%%.\n"), metadata.batteryLevel);
 		}
