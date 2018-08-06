@@ -189,7 +189,7 @@ namespace debug {
 		tmElements_t time;
 		rtc::getTime(time);
 
-		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d %t", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second, rtc::isAccurate());
+		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d %t %d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second, rtc::isAccurate(), (uint16_t)(rtc::getTemperature() * 1000));
 	}
 
 	void setRtcTime() {
