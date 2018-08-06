@@ -63,6 +63,8 @@ namespace hardware {
 
 			VEBOSE("gpsPowerOn");
 			powerOn();
+			//SIM808 turns phone on by default but we don't need it
+			if(!networkPoweredCount) device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
 			device.enableGps();
 		}
 
