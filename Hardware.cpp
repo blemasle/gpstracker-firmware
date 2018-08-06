@@ -120,9 +120,9 @@ namespace hardware {
 				pinMode(I2C_PWR, OUTPUT);
 
 				Wire.begin();
+				poweredCount = 1;
 			}
-
-			poweredCount++;
+			else poweredCount++;
 		}
 
 		void powerOff(bool forced = false) {
@@ -137,9 +137,10 @@ namespace hardware {
 				//disable i2c internal pull ups
 				digitalWrite(A4, LOW);
 				digitalWrite(A5, LOW);
-			}
 
-			poweredCount--;
+				poweredCount = 0;
+			}
+			else if(poweredCount > 1) poweredCount--; //avoid decrement if == 0
 		}
 	}
 }
