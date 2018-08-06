@@ -32,7 +32,6 @@ MENU_ENTRY(EEPROM_ADD_ENTRY,		"[a] Add last entry to EEPROM");
 MENU_ENTRY(EEPROM_BACKUP_ENTRIES,	"[B] Backup EEPROM entries");
 MENU_ENTRY(NOTIFY_FAILURES,			"[F] Notify failures");
 MENU_ENTRY(CLEAR_ALERTS,			"[A] Clear alerts");
-MENU_ENTRY(SLEEP,					"[S] Sleep for 8s");
 MENU_ENTRY(SLEEP_DEEP,				"[s] Deep sleep for 10s");
 MENU_ENTRY(QUESTION,				"?");
 
@@ -56,7 +55,6 @@ const PROGMEM uint8_t commandIdMapping[] = {
 	'B', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_BACKUP_ENTRIES),
 	'F', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::NOTIFY_FAILURES),
 	'A', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::CLEAR_ALERTS),
-	'S', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP),
 	's', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP_DEEP),
 };
 
@@ -97,7 +95,6 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 	MENU_CLEAR_ALERTS,
 	MENU_SEPARATOR,
 
-	MENU_SLEEP,
 	MENU_SLEEP_DEEP,
 
 	MENU_QUESTION
@@ -115,7 +112,7 @@ namespace debug {
 
 	namespace details {
 		inline void displayPosition(PositionEntry entry) {
-			Log.notice(F("%d%%, %dmV, %f°C, %ds, %d, %s\n"), entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
+			Log.notice(F("%d%%, %dmV, %fï¿½C, %ds, %d, %s\n"), entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
 		}
 	}
 
@@ -131,7 +128,7 @@ namespace debug {
 		size_t mappingArraySize = flash::getArraySize(commandIdMapping);
 		char commandId;
 
-		for (uint8_t i = 0; i < mappingArraySize; i += 2) {			
+		for (uint8_t i = 0; i < mappingArraySize; i += 2) {
 			commandId = pgm_read_byte_near(commandIdMapping + i);
 			if (commandId == id) return static_cast<GPSTRACKER_DEBUG_COMMAND>(pgm_read_byte_near(commandIdMapping + i + 1));
 		}
@@ -144,7 +141,7 @@ namespace debug {
 		size_t menuSize = flash::getArraySize(MENU_ENTRIES);
 		uint8_t intermediate_timeout = 50;
 
-		do {		
+		do {
 			for (uint8_t i = 0; i < menuSize; i++) {
 				Serial.println(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word_near(&MENU_ENTRIES[i])));
 			}
@@ -162,7 +159,7 @@ namespace debug {
 			command = parseCommand(Serial.read());
 			while (Serial.available()) Serial.read(); //flushing input
 		} while (command == GPSTRACKER_DEBUG_COMMAND::NONE);
-		
+
 		return command;
 	}
 
@@ -272,7 +269,7 @@ namespace debug {
 	void notifyFailures() {
 		PositionEntryMetadata metadata = {
 			1, //all battery alerts should goes on with this
-			3800, //doesn't matter 
+			3800, //doesn't matter
 			ALERT_SUSPICIOUS_RTC_TEMPERATURE,
 			0,
 			SIM808_GPS_STATUS::OFF
@@ -286,7 +283,7 @@ namespace debug {
 	void clearAlerts() {
 		PositionEntryMetadata metadata = {
 			100, //all battery alerts should goes off with this
-			3800, //doesn't matter 
+			3800, //doesn't matter
 			10,
 			0,
 			SIM808_GPS_STATUS::OFF

@@ -10,8 +10,12 @@ namespace mainunit {
 	namespace details {
 
 		void prepareSleep() {
+			//forcing the power off of ALL devices for safety
+			hardware::sim808::powerOff();
+			hardware::i2c::powerOff(true);
+
 			hardware::sim808::simSerial.end(); //avoid woke up by SoftwareSerial interrupt
-			delay(5); //ensure message have been printed out
+			delay(5); //ensure log messages have been printed out
 		}
 
 		void wokeUp() {
@@ -33,14 +37,6 @@ namespace mainunit {
 
 		pinMode(RTC_WAKE, INPUT);
 		attachInterrupt(digitalPinToInterrupt(RTC_WAKE), interrupt, FALLING);
-	}
-
-	void sleep(period_t period) {
-		NOTICE_FORMAT("sleep", "Period : %d", period);
-		details::prepareSleep();
-		LowPower.powerDown(period, ADC_OFF, BOD_OFF);
-		details::wokeUp();
-
 	}
 
 	void deepSleep(uint16_t seconds) {

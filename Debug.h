@@ -33,7 +33,6 @@ namespace debug {
 		EEPROM_BACKUP_ENTRIES,
 		NOTIFY_FAILURES,
 		CLEAR_ALERTS,
-		SLEEP,
 		SLEEP_DEEP
 	};
 

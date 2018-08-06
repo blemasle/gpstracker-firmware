@@ -11,7 +11,7 @@
 using namespace utils;
 
 namespace rtc {
-	
+
 	void setup() {
 		VERBOSE("setup");
 		hardware::i2c::powerOn();
@@ -19,8 +19,6 @@ namespace rtc {
 		RTC.control(DS3231_A1_INT_ENABLE, DS3231_OFF); //Alarm 1 OFF
 		RTC.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN ON
 		hardware::i2c::powerOff();
-
-		//TODO : check wether the osc has been halted (meaning the battery could be dead)
 	}
 
 	float getTemperature() {
