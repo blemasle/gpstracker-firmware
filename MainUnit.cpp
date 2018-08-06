@@ -10,8 +10,12 @@ namespace mainunit {
 	namespace details {
 
 		void prepareSleep() {
+			//forcing the power off of ALL devices for safety
+			hardware::sim808::powerOff();
+			hardware::i2c::powerOff(true);
+
 			hardware::sim808::simSerial.end(); //avoid woke up by SoftwareSerial interrupt
-			delay(5); //ensure message have been printed out
+			delay(5); //ensure log messages have been printed out
 		}
 
 		void wokeUp() {
