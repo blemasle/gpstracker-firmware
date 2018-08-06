@@ -56,6 +56,7 @@ namespace core {
 		SIM808RegistrationStatus networkStatus;
 		char buffer[SMS_BUFFER_SIZE];
 		const __FlashStringHelper * backupFailureString = F(" Backup battery failure ?");
+		bool notified = false;
 
 		uint8_t triggered = alerts::getTriggered(metadata);
 		if (!triggered) return NO_ALERTS_NOTIFIED;
@@ -65,26 +66,23 @@ namespace core {
 		network::powerOn();
 		networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
 
-		if (!network::isAvailable(networkStatus.stat)) {
-			network::powerOff();
-			return NO_ALERTS_NOTIFIED;
-		}
+		if (network::isAvailable(networkStatus.stat)) {
+			strncpy_P(buffer, PSTR("Alerts !"), SMS_BUFFER_SIZE);
+			if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
+				details::appendToSmsBuffer(buffer, PSTR("\n- Battery at %d%%."), metadata.batteryLevel);
+			}
 
-		strncpy_P(buffer, PSTR("Alerts !"), SMS_BUFFER_SIZE);
-		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
-			details::appendToSmsBuffer(buffer, PSTR("\n- Battery at %d%%."), metadata.batteryLevel);
-		}
+			if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
+				details::appendToSmsBuffer(buffer, PSTR("\n- Temperature is %dC.%S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
+			}
 
-		if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
-			details::appendToSmsBuffer(buffer, PSTR("\n- Temperature is %dC.%S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
-		}
+			if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {
+				details::appendToSmsBuffer(buffer, PSTR("\n- RTC was stopped.%S"), backupFailureString);
+			}
 
-		if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {
-			details::appendToSmsBuffer(buffer, PSTR("\n- RTC was stopped.%S"), backupFailureString);
+			notified = network::sendSms(buffer);
+			if (!notified) NOTICE_MSG("notifyFailure", "SMS not sent !");
 		}
-
-		bool notified = network::sendSms(buffer);
-		if (!notified) NOTICE_MSG("notifyFailure", "SMS not sent !");
 
 		network::powerOff();
 		return notified ? triggered : NO_ALERTS_NOTIFIED; //If not notified, the alerts state should not be persisted (so we can retry to notify them)
