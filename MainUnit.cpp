@@ -35,14 +35,6 @@ namespace mainunit {
 		attachInterrupt(digitalPinToInterrupt(RTC_WAKE), interrupt, FALLING);
 	}
 
-	void sleep(period_t period) {
-		NOTICE_FORMAT("sleep", "Period : %d", period);
-		details::prepareSleep();
-		LowPower.powerDown(period, ADC_OFF, BOD_OFF);
-		details::wokeUp();
-
-	}
-
 	void deepSleep(uint16_t seconds) {
 		NOTICE_FORMAT("deepSleep", "%d seconds", seconds);
 		interruptIn(seconds);

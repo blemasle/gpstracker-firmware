@@ -86,9 +86,6 @@ void loop() {
 		case debug::GPSTRACKER_DEBUG_COMMAND::CLEAR_ALERTS:
 			debug::clearAlerts();
 			break;
-		case debug::GPSTRACKER_DEBUG_COMMAND::SLEEP:
-			mainunit::sleep(period_t::SLEEP_8S);
-			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::SLEEP_DEEP:
 			mainunit::deepSleep(10);
 			break;
