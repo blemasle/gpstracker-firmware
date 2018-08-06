@@ -44,8 +44,8 @@ namespace core {
 			gps::preserveCurrentCoordinates();
 		}
 
-		alerts::add(notifyFailures(metadata));
 		alerts::clear(metadata);
+		alerts::add(notifyFailures(metadata));
 		positions::doBackup(forceBackup);
 
 		if (acquired) updateRtcTime();
