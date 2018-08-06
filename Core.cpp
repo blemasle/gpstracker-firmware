@@ -140,7 +140,7 @@ namespace core {
 
 		}
 
-		VERBOSE_FORMAT("computeSleepTime", "%d,%d", velocity, result);
+		VERBOSE_FORMAT("mapSleepTime", "%d,%d", velocity, result);
 		return result;
 	}
 }

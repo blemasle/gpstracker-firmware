@@ -4,7 +4,7 @@
 #include "Gps.h"
 
 #if BACKUP_ENABLE_SDCARD || BACKUP_ENABLE_NETWORK
-#define BACKUPS_ENABLED BACKUP_ENABLE_SDCARD + BACKUP_ENABLE_NETWORK
+#define BACKUPS_ENABLED (BACKUP_ENABLE_SDCARD + BACKUP_ENABLE_NETWORK)
 #endif
 
 #if BACKUP_ENABLE_SDCARD
@@ -21,8 +21,10 @@
 #define ENTRIES_ADDR		CONFIG_RESERVED_SIZE
 
 namespace positions {
-#ifdef BACKUPS_ENABLED
+#if BACKUPS_ENABLED > 1
 	backup::PositionsBackup **_backups;
+#elif BACKUPS_ENABLED == 1
+	backup::PositionsBackup * _backup;
 #endif
 
 	namespace details {
@@ -36,28 +38,44 @@ namespace positions {
 
 	void setup() {
 		details::maxEntryIndex = (E24_MAX_ADDRESS(hardware::i2c::eeprom.getSize()) - ENTRIES_ADDR) / ENTRY_RESERVED_SIZE;
-#ifdef BACKUPS_ENABLED
+
+#if BACKUPS_ENABLED > 0
+		backup::PositionsBackup * backup = NULL;
+#if BACKUPS_ENABLED > 1
 		uint8_t backupIdx = 0;
 		_backups = new backup::PositionsBackup*[BACKUPS_ENABLED];
+#endif //BACKUPS_ENABLED > 1
 
 #if BACKUP_ENABLE_SDCARD
-		_backups[backupIdx] = new backup::sd::SdPositionsBackup();
-		_backups[backupIdx]->setup();
+		backup = new backup::sd::SdPositionsBackup();
+		backup->setup();
+#if BACKUPS_ENABLED > 1
+		_backups[backupIdx] = backup;
 		backupIdx++;
-#endif
+#endif //BACKUPS_ENABLED > 1
+#endif //BACKUP_ENABLE_SDCARD
+
 #if BACKUP_ENABLE_NETWORK
-		_backups[backupIdx] = new backup::net::NetworkPositionsBackup();
-		_backups[backupIdx]->setup();
+		backup = new backup::net::NetworkPositionsBackup();
+		backup->setup();
+#if BACKUPS_ENABLED > 1
+		_backups[backupIdx] = backup;
 		backupIdx++;
-#endif
-#endif
+#endif //BACKUPS_ENABLED > 1
+#endif //BACKUP_ENABLE_NETWORK
+
+#if BACKUPS_ENABLED == 1
+	_backup = backup;
+#endif //BACKUPS_ENABLED == 1
+#endif //BACKUPS_ENABLED > 0
+
 	}
 
 	bool acquire(PositionEntryMetadata &metadata) {
 		NOTICE("acquire");
 
 		timestamp_t before;
-		
+
 		gps::powerOn();
 		before = rtc::getTime();
 		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
@@ -95,7 +113,7 @@ namespace positions {
 		hardware::i2c::powerOn();
 		hardware::i2c::eeprom.writeBlock(entryAddress, entry);
 
-		NOTICE_FORMAT("appendLast", "Saved @ %X : [%d%% @ %dmV] [%f°C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
+		NOTICE_FORMAT("appendLast", "Saved @ %X : [%d%% @ %dmV] [%fï¿½C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
 
 		config->lastEntry++;
 		if (config->lastEntry > details::maxEntryIndex) config->lastEntry = 0;
@@ -112,13 +130,13 @@ namespace positions {
 		uint16_t entryAddress = details::getEntryAddress(index);
 		if (entryAddress == -1) return false;
 
-		VERBOSE_FORMAT("get", "Reading entry n°%d @ %X", index, entryAddress);
+		VERBOSE_FORMAT("get", "Reading entry nï¿½%d @ %X", index, entryAddress);
 
 		hardware::i2c::powerOn();
 		hardware::i2c::eeprom.readBlock(entryAddress, entry);
 		hardware::i2c::powerOff();
 
-		NOTICE_FORMAT("get", "Read from EEPROM @ %X : [%d%% @ %dmV] [%f°C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
+		NOTICE_FORMAT("get", "Read from EEPROM @ %X : [%d%% @ %dmV] [%fï¿½C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
 		return true;
 	}
 
@@ -141,18 +159,22 @@ namespace positions {
 	}
 
 	void prepareBackup() {
-#ifdef BACKUPS_ENABLED
+#if BACKUPS_ENABLED > 1
 		for (int i = 0; i < BACKUPS_ENABLED; i++) {
 			_backups[i]->prepare();
 		}
+#elif BACKUPS_ENABLED == 1
+		_backup->prepare();
 #endif
 	}
 
 	void doBackup(bool force) {
-#ifdef BACKUPS_ENABLED
+#if BACKUPS_ENABLED > 1
 		for (int i = 0; i < BACKUPS_ENABLED; i++) {
 			_backups[i]->backup(force);
 		}
+#elif BACKUPS_ENABLED == 1
+		_backup->backup(force);
 #endif
 	}
 }
