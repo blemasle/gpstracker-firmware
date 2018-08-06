@@ -13,6 +13,7 @@ namespace core {
 
 	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;
 	uint8_t stoppedInARow = SLEEP_DEFAULT_STOPPED_THRESHOLD - 1;
+	TRACKER_MOVING_STATE movingState = TRACKER_MOVING_STATE::MOVING;
 
 	namespace details {
 
@@ -30,23 +31,25 @@ namespace core {
 	}
 
 	void main() {
-		bool forceBackup = false;
 		bool acquired = false;
 		PositionEntryMetadata metadata;
 
-		positions::prepareBackup();
+		if(movingState >= TRACKER_MOVING_STATE::STOPPED) positions::prepareBackup();
 		acquired = positions::acquire(metadata);
 
 		if (acquired) {
 			positions::appendLast(metadata);
 
-			forceBackup = updateSleepTime();
+			movingState = updateSleepTime();
 			gps::preserveCurrentCoordinates();
 		}
 
 		alerts::clear(metadata);
 		alerts::add(notifyFailures(metadata));
-		positions::doBackup(forceBackup);
+
+		if(movingState >= TRACKER_MOVING_STATE::STOPPED) {
+			positions::doBackup(movingState == TRACKER_MOVING_STATE::STOPPED); //do not force on STATIC
+		}
 
 		if (acquired) updateRtcTime();
 		mainunit::deepSleep(sleepTime);
@@ -104,8 +107,8 @@ namespace core {
 		rtc::setTime(time);
 	}
 
-	bool updateSleepTime() {
-		bool goingLongSleep = false;
+	TRACKER_MOVING_STATE updateSleepTime() {
+		TRACKER_MOVING_STATE state = TRACKER_MOVING_STATE::MOVING;
 		uint8_t velocity = gps::getVelocity();
 
 		sleepTime = mapSleepTime(velocity);
@@ -117,13 +120,15 @@ namespace core {
 
 			if (stoppedInARow < SLEEP_DEFAULT_STOPPED_THRESHOLD) {
 				sleepTime = SLEEP_DEFAULT_PAUSING_TIME_SECONDS;
+				state = TRACKER_MOVING_STATE::PAUSED;
 			}
-			else if (stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD) goingLongSleep = true;
+			else if (stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD) state = TRACKER_MOVING_STATE::STOPPED;
+			else state = TRACKER_MOVING_STATE::STATIC;
 		}
 		else stoppedInARow = 0;
 
 		NOTICE_FORMAT("updateSleepTime", "%dkmh => %d seconds", velocity, sleepTime);
-		return goingLongSleep;
+		return state;
 	}
 
 	uint16_t mapSleepTime(uint8_t velocity) {
