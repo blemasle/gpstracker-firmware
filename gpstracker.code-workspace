@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../libraries/SIM808"
+		},
+		{
+			"path": "../libraries/uDS3231"
+		},
+		{
+			"path": "../libraries/E24"
+		},
+		{
+			"path": "../libraries/Low-Power"
+		},
+		{
+			"path": "../libraries/ArduinoLog"
+		}
+	],
+	"settings": {
+		"C_Cpp.intelliSenseEngineFallback": "Disabled",
+		"C_Cpp.intelliSenseEngine": "Tag Parser"
+	}
+}

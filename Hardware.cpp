@@ -18,6 +18,8 @@ namespace hardware {
 	namespace sim808 {
 		SoftwareSerial simSerial = SoftwareSerial(SIM_TX, SIM_RX);
 		SIM808 device = SIM808(SIM_RST, SIM_PWR, SIM_STATUS);
+		uint8_t networkPoweredCount = 0;
+		uint8_t gpsPoweredCount = 0;
 
 		void powerOn() {
 			VERBOSE("powerOn");
@@ -25,14 +27,19 @@ namespace hardware {
 			if (!poweredOn) return;
 
 			device.init();
+			networkPoweredCount = gpsPoweredCount = 0;
 		}
 
 		void powerOff() {
 			VERBOSE("powerOff");
 			device.powerOnOff(false);
+			networkPoweredCount = gpsPoweredCount = 0;
 		}
 
 		void powerOffIfUnused() {
+			//does not rely on count for safety
+			//if there is a bug somewhere, the device will consume more battery,
+			//but will not fail due to an over aggressive battery saving strategy
 			bool gpsPowered = false;
 
 			if ((!device.getGpsPowerState(&gpsPowered) || !gpsPowered) &&
@@ -49,13 +56,30 @@ namespace hardware {
 		}
 
 		void gpsPowerOn() {
+			if(gpsPoweredCount) {
+				gpsPoweredCount++;
+				return;
+			}
+
 			VERBOSE("gpsPowerOn");
 			powerOn();
+			if(!networkPoweredCount) {
+				//SIM808 turns phone on by default but we don't need it for gps only
+				device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
+			}
 			device.enableGps();
 		}
 
 		void gpsPowerOff() {
-			if (!device.powered()) return;
+			if (!device.powered()) {
+				networkPoweredCount = gpsPoweredCount = 0; //just to be sure counts == 0
+				return;
+			}
+
+			if(gpsPoweredCount > 1) {
+				gpsPoweredCount--;
+				return;
+			}
 
 			VERBOSE("gpsPowerOff");
 			device.disableGps();
@@ -63,18 +87,30 @@ namespace hardware {
 		}
 
 		void networkPowerOn() {
+			if(networkPoweredCount) {
+				networkPoweredCount++;
+				return;
+			}
+
 			VERBOSE("networkPowerOn");
 			powerOn();
 			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::FULL);
 		}
 
 		void networkPowerOff() {
-			if (!device.powered()) return;
+			if (!device.powered()) {
+				networkPoweredCount = gpsPoweredCount = 0; //just to be sure counts == 0
+				return;
+			}
+
+			if(networkPoweredCount > 1) {
+				networkPoweredCount--;
+				return;
+			}
 
 			VERBOSE("networkPowerOff");
 			device.disableGprs();
 			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
-
 			powerOffIfUnused();
 		}
 	}
@@ -87,32 +123,37 @@ namespace hardware {
 		uint8_t poweredCount = 0;
 
 		void powerOn() {
-			if (!poweredCount) {
-				VERBOSE("powerOn");
-				digitalWrite(I2C_PWR, HIGH);
-				pinMode(I2C_PWR, OUTPUT);
-
-				Wire.begin();
+			if(poweredCount) {
+				poweredCount++;
+				return;
 			}
 
-			poweredCount++;
+			VERBOSE("powerOn");
+			digitalWrite(I2C_PWR, HIGH);
+			pinMode(I2C_PWR, OUTPUT);
+
+			Wire.begin();
+			poweredCount = 1;
 		}
 
 		void powerOff(bool forced = false) {
-			if (poweredCount == 1 || forced) {
-				VERBOSE("powerOff");
-				pinMode(I2C_PWR, INPUT);
-				digitalWrite(I2C_PWR, LOW);
-
-				//turn off i2c
-				TWCR &= ~(bit(TWEN) | bit(TWIE) | bit(TWEA));
-
-				//disable i2c internal pull ups
-				digitalWrite(A4, LOW);
-				digitalWrite(A5, LOW);
+			if(poweredCount > 1 && !forced) {
+				poweredCount--;
+				return;
 			}
 
-			poweredCount--;
+			VERBOSE("powerOff");
+			pinMode(I2C_PWR, INPUT);
+			digitalWrite(I2C_PWR, LOW);
+
+			//turn off i2c
+			TWCR &= ~(bit(TWEN) | bit(TWIE) | bit(TWEA));
+
+			//disable i2c internal pull ups
+			digitalWrite(A4, LOW);
+			digitalWrite(A5, LOW);
+
+			poweredCount = 0;
 		}
 	}
 }

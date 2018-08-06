@@ -9,8 +9,8 @@
 
 
 struct networkConfig_t {
-	uint8_t saveThreshold;
-	uint16_t lastSavedEntry;
-	char apn[20];
-	char url[50];
-};
+	uint8_t saveThreshold;		//sizeof = 1
+	uint16_t lastSavedEntry;	//sizeof = 2
+	char apn[20];				//sizeof = 20
+	char url[50];				//sizeof = 50
+};								//sizeof = 73

@@ -80,8 +80,11 @@ void loop() {
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_BACKUP_ENTRIES:
 			positions::doBackup(true);
 			break;
-		case debug::GPSTRACKER_DEBUG_COMMAND::SLEEP:
-			mainunit::sleep(period_t::SLEEP_8S);
+		case debug::GPSTRACKER_DEBUG_COMMAND::NOTIFY_FAILURES:
+			debug::notifyFailures();
+			break;
+		case debug::GPSTRACKER_DEBUG_COMMAND::CLEAR_ALERTS:
+			debug::clearAlerts();
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::SLEEP_DEEP:
 			mainunit::deepSleep(10);

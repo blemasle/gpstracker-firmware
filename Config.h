@@ -14,7 +14,7 @@
 #define CONFIG_ADDR 0
 #define CONFIG_RESERVED_SIZE 128
 #define CONFIG_SEED 13
-#define VERSION "1.00"
+#define VERSION "1.10"
 
 #define SLEEP_TIMING_TIME(hours, minutes) hours * 60 + minutes
 
@@ -26,8 +26,15 @@
  Hard coded value for default sleep time between position acquisitions.
  Exprimed in seconds
 */
+
+#define CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1			45
+#define CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2			38
+#define CONFIG_DEFAULT_BATTERY_ALERT_CLEAR			60
+#define CONFIG_DEFAULT_ACTIVE_ALERTS				0
+#define CONFIG_DEFAULT_CONTACT_PHONE				"+642568452"
+
 #define SLEEP_DEFAULT_TIME_SECONDS						1800
-#define SLEEP_DEFAULT_STOPPED_THRESHOLD					5		
+#define SLEEP_DEFAULT_STOPPED_THRESHOLD					5
 #define SLEEP_DEFAULT_PAUSING_TIME_SECONDS				270
 
 #define SLEEP_TIMING_MIN SLEEP_TIMING_TIME(0, 0)
@@ -43,6 +50,14 @@
 #define NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD	8
 #define NETWORK_DEFAULT_NO_NETWORK_TRIES				5
 
+#define ALERTS_ON_SERIAL_IF_AVAILABLE					1
+/**
+ \def ALERTS_ON_SERIAL_IF_AVAILABLE
+ Display alerts on serial when connected rather than sending an SMS.
+ Useful for debugging purpose and avoid costs related to SMS sending.
+*/
+#define ALERT_SUSPICIOUS_RTC_TEMPERATURE				0
+
 #pragma endregion
 
 struct sleepTimings_t {
@@ -53,14 +68,21 @@ struct sleepTimings_t {
 };
 
 struct config_t {
-	uint8_t seed;
-	char version[5];
-	uint16_t firstEntry;
-	uint16_t lastEntry;
+	uint8_t seed;					//sizeof = 1
+	char version[5];				//sizeof = 5
+	uint16_t firstEntry;			//sizeof = 2
+	uint16_t lastEntry;				//sizeof = 2
 #if BACKUP_ENABLE_NETWORK
-	networkConfig_t network;
+	networkConfig_t network;		//sizeof = 73
+#else
+	char reserved[73];
 #endif
-};
+	uint8_t alertBatteryLevel1;		//sizeof = 1
+	uint8_t alertBatteryLevel2;		//sizeof = 1
+	uint8_t alertBatteryLevelClear; //sizeof = 1
+	uint8_t activeAlerts;			//sizeof = 1
+	char contactPhone[15];			//sizeof = 15
+};									//sizeof = 29 + 73 = 102
 
 namespace config {
 

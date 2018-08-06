@@ -2,6 +2,7 @@
 #include "Flash.h"
 #include "Positions.h"
 #include "Core.h"
+#include "Alerts.h"
 
 #define LOGGER_NAME "Debug"
 
@@ -29,7 +30,8 @@ MENU_ENTRY(EEPROM_GET_ENTRIES,		"[P] Get EEPROM entries");
 MENU_ENTRY(EEPROM_GET_LAST_ENTRY,	"[p] Get EEPROM last entry");
 MENU_ENTRY(EEPROM_ADD_ENTRY,		"[a] Add last entry to EEPROM");
 MENU_ENTRY(EEPROM_BACKUP_ENTRIES,	"[B] Backup EEPROM entries");
-MENU_ENTRY(SLEEP,					"[S] Sleep for 8s");
+MENU_ENTRY(NOTIFY_FAILURES,			"[F] Notify failures");
+MENU_ENTRY(CLEAR_ALERTS,			"[A] Clear alerts");
 MENU_ENTRY(SLEEP_DEEP,				"[s] Deep sleep for 10s");
 MENU_ENTRY(QUESTION,				"?");
 
@@ -51,7 +53,8 @@ const PROGMEM uint8_t commandIdMapping[] = {
 	'p', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_LAST_ENTRY),
 	'a', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY),
 	'B', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_BACKUP_ENTRIES),
-	'S', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP),
+	'F', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::NOTIFY_FAILURES),
+	'A', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::CLEAR_ALERTS),
 	's', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::SLEEP_DEEP),
 };
 
@@ -88,7 +91,10 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 	MENU_EEPROM_BACKUP_ENTRIES,
 	MENU_SEPARATOR,
 
-	MENU_SLEEP,
+	MENU_NOTIFY_FAILURES,
+	MENU_CLEAR_ALERTS,
+	MENU_SEPARATOR,
+
 	MENU_SLEEP_DEEP,
 
 	MENU_QUESTION
@@ -106,7 +112,7 @@ namespace debug {
 
 	namespace details {
 		inline void displayPosition(PositionEntry entry) {
-			Log.notice(F("%d%%, %dmV, %f°C, %ds, %d, %s\n"), entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
+			Log.notice(F("%d%%, %dmV, %fï¿½C, %ds, %d, %s\n"), entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
 		}
 	}
 
@@ -122,7 +128,7 @@ namespace debug {
 		size_t mappingArraySize = flash::getArraySize(commandIdMapping);
 		char commandId;
 
-		for (uint8_t i = 0; i < mappingArraySize; i += 2) {			
+		for (uint8_t i = 0; i < mappingArraySize; i += 2) {
 			commandId = pgm_read_byte_near(commandIdMapping + i);
 			if (commandId == id) return static_cast<GPSTRACKER_DEBUG_COMMAND>(pgm_read_byte_near(commandIdMapping + i + 1));
 		}
@@ -135,7 +141,7 @@ namespace debug {
 		size_t menuSize = flash::getArraySize(MENU_ENTRIES);
 		uint8_t intermediate_timeout = 50;
 
-		do {		
+		do {
 			for (uint8_t i = 0; i < menuSize; i++) {
 				Serial.println(reinterpret_cast<const __FlashStringHelper *>(pgm_read_word_near(&MENU_ENTRIES[i])));
 			}
@@ -153,7 +159,7 @@ namespace debug {
 			command = parseCommand(Serial.read());
 			while (Serial.available()) Serial.read(); //flushing input
 		} while (command == GPSTRACKER_DEBUG_COMMAND::NONE);
-		
+
 		return command;
 	}
 
@@ -183,7 +189,7 @@ namespace debug {
 		tmElements_t time;
 		rtc::getTime(time);
 
-		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
+		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d %t %d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second, rtc::isAccurate(), (uint16_t)(rtc::getTemperature() * 1000));
 	}
 
 	void setRtcTime() {
@@ -258,5 +264,31 @@ namespace debug {
 		};
 
 		for(int i = 0; i < 10; i++) positions::appendLast(metadata);
+	}
+
+	void notifyFailures() {
+		PositionEntryMetadata metadata = {
+			1, //all battery alerts should goes on with this
+			3800, //doesn't matter
+			ALERT_SUSPICIOUS_RTC_TEMPERATURE,
+			0,
+			SIM808_GPS_STATUS::OFF
+		};
+
+		uint8_t alerts = core::notifyFailures(metadata);
+		NOTICE_FORMAT("notifyFailures", "result : %B", alerts);
+		alerts::add(alerts);
+	}
+
+	void clearAlerts() {
+		PositionEntryMetadata metadata = {
+			100, //all battery alerts should goes off with this
+			3800, //doesn't matter
+			10,
+			0,
+			SIM808_GPS_STATUS::OFF
+		};
+
+		alerts::clear(metadata);
 	}
 }
