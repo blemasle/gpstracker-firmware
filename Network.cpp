@@ -31,11 +31,12 @@ namespace network {
 
 		if (relativeToPowerOnTime) timeout -= (rtc::getTime() - _poweredOnTime) * 1000;
 
+		currentStatus = hardware::sim808::device.getNetworkRegistrationStatus();
+		report = hardware::sim808::device.getSignalQuality();
+
 		do {
-			currentStatus = hardware::sim808::device.getNetworkRegistrationStatus();
 			if (isAvailable(currentStatus.stat)) break;
 
-			report = hardware::sim808::device.getSignalQuality();
 			NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
 
 			if (report.ssri < NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD) noReliableNetwork++;
@@ -48,11 +49,12 @@ namespace network {
 			mainunit::deepSleep(NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS / 1000);
 			timeout -= NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
 
+			currentStatus = hardware::sim808::device.getNetworkRegistrationStatus();
+			report = hardware::sim808::device.getSignalQuality();
 		} while (timeout > 1);
 
-		report = hardware::sim808::device.getSignalQuality(); //FIXME : report does not match currentStatus
 		NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
-		return currentStatus; //FIXME : on last loop waited for nothing
+		return currentStatus;
 	}
 
 	bool isAvailable(SIM808_NETWORK_REGISTRATION_STATE state) {
