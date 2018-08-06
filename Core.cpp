@@ -80,7 +80,17 @@ namespace core {
 				details::appendToSmsBuffer(buffer, PSTR("\n- RTC was stopped.%S"), backupFailureString);
 			}
 
+#if ALERTS_ON_SERIAL_IF_AVAILABLE
+			if(Serial) {
+				NOTICE_FORMAT("notifyFailure", "%s", buffer);
+				notified = true;
+			}
+			else {
+#endif
 			notified = network::sendSms(buffer);
+#if ALERTS_ON_SERIAL_IF_AVAILABLE
+			}
+#endif
 			if (!notified) NOTICE_MSG("notifyFailure", "SMS not sent !");
 		}
 
