@@ -37,6 +37,9 @@ namespace hardware {
 		}
 
 		void powerOffIfUnused() {
+			//does not rely on count for safety
+			//if there is a bug somewhere, the device will consume more battery,
+			//but will not fail due to an over aggressive battery saving strategy
 			bool gpsPowered = false;
 
 			if ((!device.getGpsPowerState(&gpsPowered) || !gpsPowered) &&
@@ -53,13 +56,14 @@ namespace hardware {
 		}
 
 		void gpsPowerOn() {
-			if (!gpsPoweredCount) {
-				VERBOSE("gpsPowerOn");
-				powerOn();
-				device.enableGps();
+			if(gpsPoweredCount) {
+				gpsPoweredCount++;
+				return;
 			}
 
-			gpsPoweredCount++;
+			VEBOSE("gpsPowerOn");
+			powerOn();
+			device.enableGps();
 		}
 
 		void gpsPowerOff() {
@@ -68,23 +72,25 @@ namespace hardware {
 				return;
 			}
 
-			if (gpsPoweredCount == 1) {
-				VERBOSE("gpsPowerOff");
-				device.disableGps();
-				powerOffIfUnused();
+			if(gpsPoweredCount > 1) {
+				gpsPoweredCount--;
+				return;
 			}
 
-			if (gpsPoweredCount) gpsPoweredCount--; //avoid 255 if 0--
+			VERBOSE("gpsPowerOff");
+			device.disableGps();
+			powerOffIfUnused();
 		}
 
 		void networkPowerOn() {
-			if (!networkPoweredCount) {
-				VERBOSE("networkPowerOn");
-				powerOn();
-				device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::FULL);
+			if(networkPoweredCount) {
+				networkPoweredCount++;
+				return;
 			}
 
-			networkPoweredCount++;
+			VERBOSE("networkPowerOn");
+			powerOn();
+			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::FULL);
 		}
 
 		void networkPowerOff() {
@@ -93,16 +99,15 @@ namespace hardware {
 				return;
 			}
 
-
-			if (networkPoweredCount == 1) {
-				VERBOSE("networkPowerOff");
-				device.disableGprs();
-				device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
-
-				powerOffIfUnused();
+			if(networkPoweredCount > 1) {
+				networkPoweredCount--;
+				return;
 			}
 
-			if (networkPoweredCount) networkPoweredCount--; //avoid 255 if 0--
+			VERBOSE("networkPowerOff");
+			device.disableGprs();
+			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
+			powerOffIfUnused();
 		}
 	}
 
@@ -114,33 +119,37 @@ namespace hardware {
 		uint8_t poweredCount = 0;
 
 		void powerOn() {
-			if (!poweredCount) {
-				VERBOSE("powerOn");
-				digitalWrite(I2C_PWR, HIGH);
-				pinMode(I2C_PWR, OUTPUT);
-
-				Wire.begin();
-				poweredCount = 1;
+			if(poweredCount) {
+				poweredCount++;
+				return;
 			}
-			else poweredCount++;
+
+			VERBOSE("powerOn");
+			digitalWrite(I2C_PWR, HIGH);
+			pinMode(I2C_PWR, OUTPUT);
+
+			Wire.begin();
+			poweredCount = 1;
 		}
 
 		void powerOff(bool forced = false) {
-			if (poweredCount == 1 || forced) {
-				VERBOSE("powerOff");
-				pinMode(I2C_PWR, INPUT);
-				digitalWrite(I2C_PWR, LOW);
-
-				//turn off i2c
-				TWCR &= ~(bit(TWEN) | bit(TWIE) | bit(TWEA));
-
-				//disable i2c internal pull ups
-				digitalWrite(A4, LOW);
-				digitalWrite(A5, LOW);
-
-				poweredCount = 0;
+			if(poweredCount > 1 && !forced) {
+				poweredCount--;
+				return;
 			}
-			else if(poweredCount > 1) poweredCount--; //avoid decrement if == 0
+
+			VERBOSE("powerOff");
+			pinMode(I2C_PWR, INPUT);
+			digitalWrite(I2C_PWR, LOW);
+
+			//turn off i2c
+			TWCR &= ~(bit(TWEN) | bit(TWIE) | bit(TWEA));
+
+			//disable i2c internal pull ups
+			digitalWrite(A4, LOW);
+			digitalWrite(A5, LOW);
+
+			poweredCount = 0;
 		}
 	}
 }
