@@ -65,7 +65,10 @@ namespace core {
 		network::powerOn();
 		networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
 
-		if (!network::isAvailable(networkStatus.stat)) return NO_ALERTS_NOTIFIED;
+		if (!network::isAvailable(networkStatus.stat)) {
+			network::powerOff();
+			return NO_ALERTS_NOTIFIED;
+		}
 
 		strncpy_P(buffer, PSTR("Alerts !"), SMS_BUFFER_SIZE);
 		if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
@@ -102,7 +105,7 @@ namespace core {
 			float distance = gps::getDistanceFromPrevious(); //did we missed positions because we were sleeping ?
 			if (distance > GPS_DEFAULT_MISSED_POSITION_GAP_KM) stoppedInARow = 0;
 			else stoppedInARow = min(stoppedInARow + 1, SLEEP_DEFAULT_STOPPED_THRESHOLD + 1); //avoid overflow on REALLY long stops
-			
+
 			if (stoppedInARow < SLEEP_DEFAULT_STOPPED_THRESHOLD) {
 				result = SLEEP_DEFAULT_PAUSING_TIME_SECONDS;
 			}
@@ -119,14 +122,14 @@ namespace core {
 	uint16_t mapSleepTime(uint8_t velocity) {
 		uint16_t result;
 		uint16_t currentTime = 0xFFFF;
-		
+
 		if (rtc::isAccurate()) {
 			tmElements_t time;
 			rtc::getTime(time);
 
 			currentTime = SLEEP_TIMING_TIME(time.Hour, time.Minute);
 		}
-		
+
 		for (uint8_t i = flash::getArraySize(config::defaultSleepTimings); i--;) {
 			sleepTimings_t timing;
 			flash::read(&config::defaultSleepTimings[i], timing);
