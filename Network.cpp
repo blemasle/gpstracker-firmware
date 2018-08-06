@@ -37,7 +37,7 @@ namespace network {
 
 			report = hardware::sim808::device.getSignalQuality();
 			NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
-			
+
 			if (report.ssri < NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD) noReliableNetwork++;
 			else noReliableNetwork = 0;
 			if (noReliableNetwork > NETWORK_DEFAULT_NO_NETWORK_TRIES) {
@@ -50,14 +50,15 @@ namespace network {
 
 		} while (timeout > 1);
 
-		report = hardware::sim808::device.getSignalQuality();
+		report = hardware::sim808::device.getSignalQuality(); //FIXME : report does not match currentStatus
 		NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
-		return currentStatus;
+		return currentStatus; //FIXME : on last loop waited for nothing
 	}
 
 	bool isAvailable(SIM808_NETWORK_REGISTRATION_STATE state) {
-		return state == SIM808_NETWORK_REGISTRATION_STATE::REGISTERED ||
-			state == SIM808_NETWORK_REGISTRATION_STATE::ROAMING;
+		return static_cast<int8_t>(state) &
+			(static_cast<int8_t>(SIM808_NETWORK_REGISTRATION_STATE::REGISTERED) | static_cast<int8_t>(SIM808_NETWORK_REGISTRATION_STATE::ROAMING))
+			!= 0;
 	}
 
 	bool enableGprs() {
