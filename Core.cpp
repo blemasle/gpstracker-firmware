@@ -95,9 +95,10 @@ namespace core {
 	}
 
 	bool updateSleepTime() {
-		uint8_t velocity = gps::getVelocity();
-		uint16_t result = mapSleepTime(velocity);
 		bool goingLongSleep = false;
+		uint8_t velocity = gps::getVelocity();
+
+		sleepTime = mapSleepTime(velocity);
 
 		if (velocity < SLEEP_TIMING_MIN_MOVING_VELOCITY) {
 			float distance = gps::getDistanceFromPrevious(); //did we missed positions because we were sleeping ?
@@ -105,15 +106,13 @@ namespace core {
 			else stoppedInARow = min(stoppedInARow + 1, SLEEP_DEFAULT_STOPPED_THRESHOLD + 1); //avoid overflow on REALLY long stops
 
 			if (stoppedInARow < SLEEP_DEFAULT_STOPPED_THRESHOLD) {
-				result = SLEEP_DEFAULT_PAUSING_TIME_SECONDS;
+				sleepTime = SLEEP_DEFAULT_PAUSING_TIME_SECONDS;
 			}
 			else if (stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD) goingLongSleep = true;
 		}
 		else stoppedInARow = 0;
 
-		sleepTime = result;
 		NOTICE_FORMAT("updateSleepTime", "%dkmh => %d seconds", velocity, sleepTime);
-
 		return goingLongSleep;
 	}
 
