@@ -113,7 +113,14 @@ namespace positions {
 		hardware::i2c::powerOn();
 		hardware::i2c::eeprom.writeBlock(entryAddress, entry);
 
-		NOTICE_FORMAT("appendLast", "Saved @ %X : [%d%% @ %dmV] [%f�C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
+		NOTICE_FORMAT("appendLast", "Saved @ %X : %d,%d,%d,%d,%d,%s",
+			entryAddress,
+			entry.metadata.batteryLevel,
+			entry.metadata.batteryVoltage,
+			static_cast<uint16_t>(entry.metadata.temperature * 100),
+			static_cast<uint8_t>(entry.metadata.status),
+			entry.metadata.timeToFix,
+			entry.position);
 
 		config->lastEntry++;
 		if (config->lastEntry > details::maxEntryIndex) config->lastEntry = 0;
@@ -130,13 +137,21 @@ namespace positions {
 		uint16_t entryAddress = details::getEntryAddress(index);
 		if (entryAddress == -1) return false;
 
-		VERBOSE_FORMAT("get", "Reading entry n�%d @ %X", index, entryAddress);
+		VERBOSE_FORMAT("get", "Reading entry %d @ %X", index, entryAddress);
 
 		hardware::i2c::powerOn();
 		hardware::i2c::eeprom.readBlock(entryAddress, entry);
 		hardware::i2c::powerOff();
 
-		NOTICE_FORMAT("get", "Read from EEPROM @ %X : [%d%% @ %dmV] [%f�C] [TTF : %d, Status : %d, Position : %s]", entryAddress, entry.metadata.batteryLevel, entry.metadata.batteryVoltage, entry.metadata.temperature, entry.metadata.timeToFix, entry.metadata.status, entry.position);
+		NOTICE_FORMAT("get", "Read from EEPROM @ %X : %d,%d,%d,%d,%d,%s",
+			entryAddress,
+			entry.metadata.batteryLevel,
+			entry.metadata.batteryVoltage,
+			static_cast<uint16_t>(entry.metadata.temperature * 100),
+			static_cast<uint8_t>(entry.metadata.status),
+			entry.metadata.timeToFix,
+			entry.position);
+
 		return true;
 	}
 
