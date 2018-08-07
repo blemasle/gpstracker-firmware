@@ -35,7 +35,7 @@ MENU_ENTRY(CLEAR_ALERTS,			"[A] Clear alerts");
 MENU_ENTRY(SLEEP_DEEP,				"[s] Deep sleep for 10s");
 MENU_ENTRY(QUESTION,				"?");
 
-const PROGMEM uint8_t commandIdMapping[] = {
+const uint8_t commandIdMapping[] PROGMEM = {
 	'R', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RUN),
 	'r', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::ONCE),
 	'f', static_cast<uint8_t>(debug::GPSTRACKER_DEBUG_COMMAND::RAM),
@@ -98,6 +98,14 @@ const char * const MENU_ENTRIES[] PROGMEM = {
 	MENU_SLEEP_DEEP,
 
 	MENU_QUESTION
+};
+
+static const PositionEntryMetadata fakeMetadata PROGMEM = {
+	100,
+	3800,
+	10,
+	20,
+	SIM808_GPS_STATUS::ACCURATE_FIX
 };
 
 int freeRam2() { // dirty hack because putting it in namespace doesn't compile
@@ -267,13 +275,10 @@ namespace debug {
 	}
 
 	void notifyFailures() {
-		PositionEntryMetadata metadata = {
-			1, //all battery alerts should goes on with this
-			3800, //doesn't matter
-			ALERT_SUSPICIOUS_RTC_TEMPERATURE,
-			0,
-			SIM808_GPS_STATUS::OFF
-		};
+		PositionEntryMetadata metadata = {};
+		flash::read(&fakeMetadata, metadata);
+		metadata.batteryLevel = 1;
+		metadata.temperature = ALERT_SUSPICIOUS_RTC_TEMPERATURE;
 
 		uint8_t alerts = core::notifyFailures(metadata);
 		NOTICE_FORMAT("notifyFailures", "result : %B", alerts);
@@ -281,13 +286,8 @@ namespace debug {
 	}
 
 	void clearAlerts() {
-		PositionEntryMetadata metadata = {
-			100, //all battery alerts should goes off with this
-			3800, //doesn't matter
-			10,
-			0,
-			SIM808_GPS_STATUS::OFF
-		};
+		PositionEntryMetadata metadata = {};
+		flash::read(&fakeMetadata, metadata);
 
 		alerts::clear(metadata);
 	}
