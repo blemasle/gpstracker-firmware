@@ -31,7 +31,7 @@ namespace positions {
 					hardware::sim808::device.getSignalQuality().attenuation,
 					entry.metadata.batteryLevel,
 					entry.metadata.batteryVoltage,
-					static_cast<uint16_t>(entry.metadata.temperature * 100),
+					entry.metadata.temperature,
 					static_cast<uint8_t>(entry.metadata.status),
 					entry.metadata.timeToFix,
 					entry.position);

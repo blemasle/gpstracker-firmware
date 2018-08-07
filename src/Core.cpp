@@ -76,7 +76,7 @@ namespace core {
 			}
 
 			if (bitRead(triggered, ALERT_RTC_TEMPERATURE_FAILURE)) {
-				details::appendToSmsBuffer(buffer, PSTR("\n- Temperature is %dC.%S"), static_cast<uint16_t>(metadata.temperature * 100), backupFailureString);
+				details::appendToSmsBuffer(buffer, PSTR("\n- Temperature is %dC.%S"), metadata.temperature, backupFailureString);
 			}
 
 			if (bitRead(triggered, ALERT_RTC_CLOCK_FAILURE)) {

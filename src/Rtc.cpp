@@ -21,12 +21,12 @@ namespace rtc {
 		hardware::i2c::powerOff();
 	}
 
-	float getTemperature() {
+	int16_t getTemperature() {
 		hardware::i2c::powerOn();
 		float temperature = RTC.readTempRegister();
 		hardware::i2c::powerOff();
 
-		return temperature;
+		return static_cast<int16_t>(temperature * 100);
 	}
 
 	bool isAccurate() {

@@ -5,7 +5,7 @@
 namespace rtc {
 	void setup();
 
-	float getTemperature();
+	int16_t getTemperature();
 
 	bool isAccurate();
 	timestamp_t getTime();

@@ -123,7 +123,7 @@ namespace debug {
 			Log.notice(F("%d,%d,%d,%d,%d,%s"),
 				entry.metadata.batteryLevel,
 				entry.metadata.batteryVoltage,
-				static_cast<uint16_t>(entry.metadata.temperature * 100),
+				entry.metadata.temperature,
 				static_cast<uint8_t>(entry.metadata.status),
 				entry.metadata.timeToFix,
 				entry.position);
@@ -203,7 +203,7 @@ namespace debug {
 		tmElements_t time;
 		rtc::getTime(time);
 
-		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d %t %d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second, rtc::isAccurate(), (uint16_t)(rtc::getTemperature() * 1000));
+		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d %t %d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second, rtc::isAccurate(), rtc::getTemperature());
 	}
 
 	void setRtcTime() {

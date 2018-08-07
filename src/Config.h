@@ -13,8 +13,8 @@
 
 #define CONFIG_ADDR 0
 #define CONFIG_RESERVED_SIZE 128
-#define CONFIG_SEED 13
-#define VERSION "1.10"
+#define CONFIG_SEED 14
+#define VERSION "1.20"
 
 #define SLEEP_TIMING_TIME(hours, minutes) hours * 60 + minutes
 
