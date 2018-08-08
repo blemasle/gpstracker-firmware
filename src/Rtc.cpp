@@ -1,5 +1,5 @@
 #include "Rtc.h"
-#include "config/Hardware.h"
+#include "config/Pins.h"
 #include "Hardware.h"
 #include "Logging.h"
 

@@ -1,7 +1,7 @@
 #include "MainUnit.h"
 #include "Rtc.h"
 #include "Hardware.h"
-#include "config/Hardware.h"
+#include "config/Pins.h"
 #include "Logging.h"
 
 #define LOGGER_NAME "MainUnit"

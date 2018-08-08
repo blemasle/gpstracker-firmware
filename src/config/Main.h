@@ -1,9 +1,10 @@
 #pragma once
 
 #include "System.h"
-#include "Sleeps.h"
+#include "Hardware.h"
 #include "Gps.h"
 #include "Network.h"
+#include "Sleeps.h"
 #include "Alerts.h"
 
 /**

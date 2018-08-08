@@ -1,12 +1,6 @@
 #pragma once
 
 /**
- \def SIM808_BAUDRATE
- Control the baudrate use to communicate with the SIM808 module
-*/
-#define SIM808_BAUDRATE 4800
-
-/**
  \def CONFIG_ADDR
  Address of the config block in the I2C EEPROM chip.
  */

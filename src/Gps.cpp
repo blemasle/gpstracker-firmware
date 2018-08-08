@@ -1,9 +1,9 @@
+#include <math.h>
 #include "Gps.h"
 #include "Config.h"
 #include "Hardware.h"
 #include "MainUnit.h"
 #include "Logging.h"
-#include "math.h"
 
 #define LOGGER_NAME "Gps"
 

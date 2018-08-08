@@ -1,9 +1,8 @@
-#include "Config.h"
-
 #include "Network.h"
 #include "Hardware.h"
 #include "MainUnit.h"
 #include "Rtc.h"
+#include "Config.h"
 #include "Logging.h"
 
 #define LOGGER_NAME "Network"
