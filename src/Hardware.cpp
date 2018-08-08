@@ -1,6 +1,6 @@
 #include "Config.h"
 #include "Hardware.h"
-#include "Pins.h"
+#include "config/Pins.h"
 #include "Debug.h"
 
 #include <SoftwareSerial.h>

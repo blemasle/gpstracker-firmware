@@ -7,7 +7,7 @@
 #include "MainUnit.h"
 #include "Network.h"
 #include "Rtc.h"
-#include "Pins.h"
+#include "config/Pins.h"
 #include "Positions.h"
 
 enum class TRACKER_MOVING_STATE : uint8_t {

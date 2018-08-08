@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SdFat.h>
-#include "Pins.h"
 
 namespace hardware {
 	namespace sdcard {

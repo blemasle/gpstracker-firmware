@@ -1,6 +1,6 @@
 #include "MainUnit.h"
 #include "Rtc.h"
-#include "Pins.h"
+#include "config/Pins.h"
 #include "Debug.h"
 
 #define LOGGER_NAME "MainUnit"
