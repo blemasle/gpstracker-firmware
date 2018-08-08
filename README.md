@@ -1,5 +1,5 @@
 # High autonomy automatic GPS tracker.
-This project aims to provides an autonomous GPS tracker based on an Arduino as the central unit. Battery saving has been incorporated into every step of the design.
+This project aims to provides an autonomous GPS tracker based on an Arduino Pro mini as the central unit. Battery saving has been incorporated into every step of the design. A custom designed [circuit board]() is available to avoid using poorly power efficient boards.
 
 # Features
  * High autonomy
