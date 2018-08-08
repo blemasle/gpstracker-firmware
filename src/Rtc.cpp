@@ -1,7 +1,7 @@
-#include "Debug.h"
-
 #include "Rtc.h"
-#include "config/Pins.h"
+#include "config/Hardware.h"
+#include "Hardware.h"
+#include "Logging.h"
 
 #include <Wire.h>
 #include <uDS3231.h>

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Debug.h"
 #include "Alerts.h"
 #include "Config.h"
 #include "Rtc.h"
+#include "Logging.h"
 
 #define LOGGER_NAME "Alerts"
 

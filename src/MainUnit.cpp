@@ -1,9 +1,12 @@
 #include "MainUnit.h"
 #include "Rtc.h"
-#include "config/Pins.h"
-#include "Debug.h"
+#include "Hardware.h"
+#include "config/Hardware.h"
+#include "Logging.h"
 
 #define LOGGER_NAME "MainUnit"
+
+extern int __heap_start, *__brkval;
 
 namespace mainunit {
 
@@ -41,5 +44,10 @@ namespace mainunit {
 		details::prepareSleep();
 		LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
 		details::wokeUp();
+	}
+
+	int freeRam() {
+		int v;
+		return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
 	}
 }

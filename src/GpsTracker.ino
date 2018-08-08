@@ -1,14 +1,16 @@
-#include "GpsTracker.h"
+#include <Arduino.h>
+#include <SIM808.h>
+
+#include "Debug.h"
+#include "Config.h"
+#include "Core.h"
 #include "Positions.h"
+#include "Logging.h"
 
-#if _DEBUG
-#define MENU_DEFAULT_TIMEOUT 0
-#else
-#define MENU_DEFAULT_TIMEOUT 10000
+#define LOGGER_NAME "GpsTracker"
 
-#endif
 bool bypassMenu = false;
-uint16_t menuTimeout = MENU_DEFAULT_TIMEOUT;
+uint16_t menuTimeout = MENU_TIMEOUT;
 
 void setup() {
 	logging::setup();

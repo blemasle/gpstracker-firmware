@@ -1,6 +1,6 @@
 #include "Config.h"
-#include "Debug.h"
 #include "Hardware.h"
+#include "Logging.h"
 
 #define LOGGER_NAME "Config"
 

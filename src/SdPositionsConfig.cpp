@@ -1,6 +1,6 @@
 #include "SdPositionsConfig.h"
 #include "SdCard.h"
-#include "Debug.h"
+#include "Logging.h"
 
 #define LOGGER_NAME "Config::backup::sd"
 

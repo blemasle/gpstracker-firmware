@@ -1,8 +1,8 @@
 #include "Gps.h"
 #include "Config.h"
-#include "Debug.h"
 #include "Hardware.h"
 #include "MainUnit.h"
+#include "Logging.h"
 #include "math.h"
 
 #define LOGGER_NAME "Gps"

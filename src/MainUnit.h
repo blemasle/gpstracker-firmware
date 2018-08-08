@@ -5,4 +5,5 @@
 
 namespace mainunit {
 	void deepSleep(uint16_t seconds);
+	int freeRam();
 }

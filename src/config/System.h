@@ -34,4 +34,10 @@
  When hooked up on Serial port, determine how much milliseconds
  to wait for a user input before proceeding.
  */
+#if _DEBUG
+#define MENU_TIMEOUT 0
+#else
 #define MENU_TIMEOUT 20000
+#endif
+
+#define MENU_INTERMEDIATE_TIMEOUT 50

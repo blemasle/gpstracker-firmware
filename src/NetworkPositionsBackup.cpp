@@ -4,11 +4,13 @@
 
 #if BACKUP_ENABLE_NETWORK
 #include "NetworkPositionsBackup.h"
-#include "Debug.h"
+#include "MainUnit.h"
 #include "Hardware.h"
 #include "Network.h"
+#include "Logging.h"
 
 #define LOGGER_NAME "Positions::backup::network"
+
 #define BUFFER_SIZE 170
 
 namespace positions {
@@ -27,7 +29,7 @@ namespace positions {
 			bool NetworkPositionsBackup::appendPosition(PositionEntry &entry) {
 				char buffer[BUFFER_SIZE];
 				snprintf_P(buffer, BUFFER_SIZE, PSTR("%d,%d,%d,%d,%d,%d,%d,%s"),
-					debug::freeRam(),
+					mainunit::freeRam(),
 					hardware::sim808::device.getSignalQuality().attenuation,
 					entry.metadata.batteryLevel,
 					entry.metadata.batteryVoltage,

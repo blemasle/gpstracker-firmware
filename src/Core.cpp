@@ -2,6 +2,7 @@
 #include "Config.h"
 #include "Flash.h"
 #include "Alerts.h"
+#include "Logging.h"
 
 #define LOGGER_NAME "Core"
 #define SMS_BUFFER_SIZE		140

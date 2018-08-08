@@ -1,14 +1,6 @@
 #pragma once
 
 #include <Arduino.h>
-#include "Config.h"
-#include "Logging.h"
-
-#include "Core.h"
-
-#include "Hardware.h"
-#include "Gps.h"
-#include "Rtc.h"
 
 namespace debug {
 

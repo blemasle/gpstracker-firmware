@@ -1,8 +1,10 @@
 #include "Debug.h"
+#include "MainUnit.h"
 #include "Flash.h"
 #include "Positions.h"
 #include "Core.h"
 #include "Alerts.h"
+#include "Logging.h"
 
 #define LOGGER_NAME "Debug"
 
@@ -108,12 +110,6 @@ static const PositionEntryMetadata fakeMetadata PROGMEM = {
 	SIM808_GPS_STATUS::ACCURATE_FIX
 };
 
-int freeRam2() { // dirty hack because putting it in namespace doesn't compile
-	extern int __heap_start, *__brkval;
-	int v;
-	return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
-}
-
 using namespace utils;
 
 namespace debug {
@@ -130,12 +126,8 @@ namespace debug {
 		}
 	}
 
-	int freeRam() {
-		return freeRam2();
-	}
-
 	void displayFreeRam() {
-		Log.notice(F("RAM: %d\n"), freeRam());
+		Log.notice(F("RAM: %d\n"), mainunit::freeRam());
 	}
 
 	GPSTRACKER_DEBUG_COMMAND parseCommand(char id) {
@@ -153,7 +145,6 @@ namespace debug {
 	GPSTRACKER_DEBUG_COMMAND menu(uint16_t timeout) {
 		GPSTRACKER_DEBUG_COMMAND command;
 		size_t menuSize = flash::getArraySize(MENU_ENTRIES);
-		uint8_t intermediate_timeout = 50;
 
 		do {
 			for (uint8_t i = 0; i < menuSize; i++) {
@@ -162,8 +153,8 @@ namespace debug {
 
 			while (!Serial.available()) {
 				if (timeout > 0) {
-					delay(intermediate_timeout);
-					timeout -= intermediate_timeout;
+					delay(MENU_INTERMEDIATE_TIMEOUT);
+					timeout -= MENU_INTERMEDIATE_TIMEOUT;
 					if (timeout <= 0) {
 						NOTICE_MSG("menu", "Timeout expired.");
 						return GPSTRACKER_DEBUG_COMMAND::RUN;

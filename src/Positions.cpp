@@ -1,7 +1,8 @@
 #include "Config.h"
-#include "Debug.h"
 #include "Positions.h"
 #include "Gps.h"
+#include "Rtc.h"
+#include "Logging.h"
 
 #if BACKUP_ENABLE_SDCARD || BACKUP_ENABLE_NETWORK
 #define BACKUPS_ENABLED (BACKUP_ENABLE_SDCARD + BACKUP_ENABLE_NETWORK)

@@ -2,7 +2,7 @@
 
 #if BACKUP_ENABLE_SDCARD
 #include "SdCard.h"
-#include "config/Pins.h"
+#include "config/Hardware.h"
 
 namespace hardware {
 	namespace sdcard {

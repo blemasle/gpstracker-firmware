@@ -2,12 +2,10 @@
 
 #include <Arduino.h>
 
-#include "Debug.h"
 #include "Gps.h"
 #include "MainUnit.h"
 #include "Network.h"
 #include "Rtc.h"
-#include "config/Pins.h"
 #include "Positions.h"
 
 enum class TRACKER_MOVING_STATE : uint8_t {

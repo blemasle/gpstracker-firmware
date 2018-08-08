@@ -1,22 +1,19 @@
 #include "Config.h"
 #include "Hardware.h"
-#include "config/Pins.h"
-#include "Debug.h"
+#include "config/Hardware.h"
+#include "Logging.h"
 
-#include <SoftwareSerial.h>
 #include <SIM808.h>
-#include <SIM808_Types.h>
 
 #include <Wire.h>
 #include <E24.h>
-
 
 namespace hardware {
 
 #define LOGGER_NAME "Hardware::sim808"
 
 	namespace sim808 {
-		SoftwareSerial simSerial = SoftwareSerial(SIM_TX, SIM_RX);
+		SIM_SERIAL_TYPE simSerial = SIM_SERIAL;
 		SIM808 device = SIM808(SIM_RST, SIM_PWR, SIM_STATUS);
 		uint8_t networkPoweredCount = 0;
 		uint8_t gpsPoweredCount = 0;
@@ -119,7 +116,7 @@ namespace hardware {
 
 	namespace i2c {
 
-		E24 eeprom = E24(E24Size_t::E24_512K);
+		E24 eeprom = E24(E24Size_t::E24_512K, E24_ADDRESS);
 		uint8_t poweredCount = 0;
 
 		void powerOn() {
