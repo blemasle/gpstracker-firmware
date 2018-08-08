@@ -1,8 +1,9 @@
 #pragma once
 
-#include "config/Hardware.h"
+#include <Arduino.h>
 #include <SIM808.h>
 #include <E24.h>
+#include "config/Hardware.h"
 
 namespace hardware {
 

@@ -1,5 +1,8 @@
 #include "Debug.h"
 #include "MainUnit.h"
+#include "Hardware.h"
+#include "Gps.h"
+#include "Rtc.h"
 #include "Flash.h"
 #include "Positions.h"
 #include "Core.h"

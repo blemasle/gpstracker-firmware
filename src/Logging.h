@@ -1,8 +1,8 @@
 #pragma once
-#include "Config.h"
 
 //#define DISABLE_LOGGING 1
 #include <ArduinoLog.h>
+#include "Config.h"
 
 #define LOG_SERIAL_SPEED 115200
 #if _DEBUG

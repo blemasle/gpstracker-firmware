@@ -1,6 +1,10 @@
 #include "Core.h"
 #include "Config.h"
 #include "Flash.h"
+#include "MainUnit.h"
+#include "Gps.h"
+#include "Network.h"
+#include "Rtc.h"
 #include "Alerts.h"
 #include "Logging.h"
 

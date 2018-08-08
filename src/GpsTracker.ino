@@ -2,6 +2,9 @@
 #include <SIM808.h>
 
 #include "Debug.h"
+#include "MainUnit.h"
+#include "Hardware.h"
+#include "Gps.h"
 #include "Config.h"
 #include "Core.h"
 #include "Positions.h"

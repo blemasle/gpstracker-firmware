@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Arduino.h>
 #include "Time2.h"
 
 namespace rtc {
