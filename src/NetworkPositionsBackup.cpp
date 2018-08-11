@@ -26,11 +26,13 @@ namespace positions {
 					positions::count(config->network.lastSavedEntry) > (config->network.saveThreshold * networkUnavailablePostpone) - (forPrepare ? 1 : 0);
 			}
 
-			bool NetworkPositionsBackup::appendPosition(PositionEntry &entry) {
+			bool NetworkPositionsBackup::appendPosition(PositionEntry &entry, int8_t signalAttenuation = 0) {
 				char buffer[BUFFER_SIZE];
+				if(signalAttenuation == 0) signalAttenuation = hardware::sim808::device.getSignalQuality().attenuation;
+
 				snprintf_P(buffer, BUFFER_SIZE, PSTR("%d,%d,%d,%d,%d,%d,%d,%s"),
 					mainunit::freeRam(),
-					hardware::sim808::device.getSignalQuality().attenuation,
+					signalAttenuation,
 					entry.metadata.batteryLevel,
 					entry.metadata.batteryVoltage,
 					entry.metadata.temperature,
@@ -75,10 +77,11 @@ namespace positions {
 					networkUnavailableInARow = 0;
 					networkUnavailablePostpone = 1;
 
+					int8_t signalAttenuation = hardware::sim808::device.getSignalQuality().attenuation;
 					hardware::i2c::powerOn();
 					do {
 						if (!positions::get(currentEntryIndex, currentEntry)) break;
-						if (!appendPosition(currentEntry)) break;
+						if (!appendPosition(currentEntry, signalAttenuation)) break;
 
 						config::main::value.network.lastSavedEntry = currentEntryIndex;
 						config::main::save();

@@ -10,7 +10,7 @@ namespace positions {
 			class NetworkPositionsBackup : public PositionsBackup {
 			private:
 				bool isBackupNeeded(bool forPrepare);
-				bool appendPosition(PositionEntry &entry);
+				bool appendPosition(PositionEntry &entry, int8_t signalAttenuation = 0);
 				void appendPositions();
 
 			public:
