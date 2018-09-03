@@ -35,7 +35,7 @@ namespace gps {
 		SIM808_GPS_STATUS currentStatus = SIM808_GPS_STATUS::OFF;
 
 		do {
-			currentStatus = hardware::sim808::device.getGpsStatus();
+			currentStatus = hardware::sim808::device.getGpsStatus(lastPosition);
 			if (currentStatus > SIM808_GPS_STATUS::FIX) break; //if we have an accurate fix, break right now
 
 			NOTICE_FORMAT("acquireCurrentPosition", "%d", currentStatus);
@@ -45,7 +45,6 @@ namespace gps {
 
 		if (currentStatus > SIM808_GPS_STATUS::NO_FIX) {
 			lastStatus = currentStatus;
-			hardware::sim808::device.getGpsPosition(lastPosition);
 		}
 
 		NOTICE_FORMAT("acquireCurrentPosition", "%d", currentStatus);
