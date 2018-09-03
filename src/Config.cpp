@@ -51,7 +51,11 @@ namespace config {
 
 		void setup() {
 			details::read();
-			//details::write();
+
+			if(strcasecmp_P(value.version, PSTR(VERSION))) {
+				strcpy_P(value.version, PSTR(VERSION));
+				details::write();
+			}
 		}
 
 		void save() {
