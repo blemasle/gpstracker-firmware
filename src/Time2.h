@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
-#include <uDS3231.h>
+#include "RtcAbstraction.h"
 
 namespace utils {
 	namespace time {
