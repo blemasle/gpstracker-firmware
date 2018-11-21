@@ -36,9 +36,9 @@ namespace network {
 		do {
 			if (isAvailable(currentStatus.stat)) break;
 
-			NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
+			NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.rssi, report.attenuation);
 
-			if (report.ssri < NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD) noReliableNetwork++;
+			if (report.rssi < NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD) noReliableNetwork++;
 			else noReliableNetwork = 0;
 			if (noReliableNetwork > NETWORK_DEFAULT_NO_NETWORK_TRIES) {
 				NOTICE_MSG("waitForRegistered", "No reliable signal");
@@ -52,7 +52,7 @@ namespace network {
 			report = hardware::sim808::device.getSignalQuality();
 		} while (timeout > 1);
 
-		NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.ssri, report.attenuation);
+		NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.rssi, report.attenuation);
 		return currentStatus;
 	}
 

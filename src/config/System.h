@@ -20,7 +20,7 @@
  \def VERSION
  Version string, only used for indicative purpose
  */
-#define VERSION "1.21"
+#define VERSION "1.22"
 
 
 /**
