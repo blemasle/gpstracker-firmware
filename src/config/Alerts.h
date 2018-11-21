@@ -18,15 +18,16 @@
 
 
 /**
- \def ALERTS_ON_SERIAL_IF_AVAILABLE
+ \def ALERTS_ON_SERIAL
  Display alerts on serial when connected rather than sending an SMS.
  Useful for debugging purpose and avoid costs related to SMS sending.
 */
-#define ALERTS_ON_SERIAL_IF_AVAILABLE					1
+#define ALERTS_ON_SERIAL _DEBUG
+
 /**
  \def ALERT_SUSPICIOUS_RTC_TEMPERATURE
  Temperature at which to consider the RTC module as failling.
  When the backup battery is dead or nearly dead, the reading
  of the temperature fails and returns 0.
 */
-#define ALERT_SUSPICIOUS_RTC_TEMPERATURE				0
+#define ALERT_SUSPICIOUS_RTC_TEMPERATURE	0
