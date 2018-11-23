@@ -20,7 +20,7 @@ namespace mainunit {
 		void wokeUp() {
 			tmElements_t wokeUpTime;
 			rtc::getTime(wokeUpTime);
-			VERBOSE_FORMAT("wokeUp", "%d:%d:%d", wokeUpTime.Hour, wokeUpTime.Minute, wokeUpTime.Second);
+			VERBOSE_FORMAT("wokeUp", "%d:%d:%d", wokeUpTime.hour, wokeUpTime.minute, wokeUpTime.second);
 
 			hardware::sim808::simSerial.listen();
 		}

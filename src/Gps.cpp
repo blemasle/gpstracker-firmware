@@ -105,13 +105,13 @@ namespace gps {
 
 		VERBOSE_FORMAT("getTime", "%s", timeStr);
 
-		time.Year = CalendarYrToTm(details::parseSubstring(buffer, timeStr + TIME_YEAR_OFFSET, 4));
-		time.Month = details::parseSubstring(buffer, timeStr + TIME_MONTH_OFFSET, 2);
-		time.Day = details::parseSubstring(buffer, timeStr + TIME_DAY_OFFSET, 2);
-		time.Hour = details::parseSubstring(buffer, timeStr + TIME_HOUR_OFFSET, 2);
-		time.Minute = details::parseSubstring(buffer, timeStr + TIME_MINUTE_OFFSET, 2);
-		time.Second = details::parseSubstring(buffer, timeStr + TIME_SECOND_OFFSET, 2);
+		time.year = calendarYrToTm(details::parseSubstring(buffer, timeStr + TIME_YEAR_OFFSET, 4));
+		time.month = details::parseSubstring(buffer, timeStr + TIME_MONTH_OFFSET, 2);
+		time.day = details::parseSubstring(buffer, timeStr + TIME_DAY_OFFSET, 2);
+		time.hour = details::parseSubstring(buffer, timeStr + TIME_HOUR_OFFSET, 2);
+		time.minute = details::parseSubstring(buffer, timeStr + TIME_MINUTE_OFFSET, 2);
+		time.second = details::parseSubstring(buffer, timeStr + TIME_SECOND_OFFSET, 2);
 
-		NOTICE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.Year), time.Month, time.Day, time.Hour, time.Minute, time.Second);
+		NOTICE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", tmYearToCalendar(time.year), time.month, time.day, time.hour, time.minute, time.second);
 	}
 }

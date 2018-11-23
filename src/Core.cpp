@@ -139,7 +139,7 @@ namespace core {
 			tmElements_t time;
 			rtc::getTime(time);
 
-			currentTime = SLEEP_TIMING_TIME(time.Hour, time.Minute);
+			currentTime = SLEEP_TIMING_TIME(time.hour, time.minute);
 		}
 
 		for (uint8_t i = flash::getArraySize(config::defaultSleepTimings); i--;) {
