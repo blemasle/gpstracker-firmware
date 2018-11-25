@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include "RtcAbstraction.h"
 
+typedef unsigned long timestamp_t;
+
 namespace utils {
 	namespace time {
 
