@@ -19,9 +19,9 @@
 namespace gps {
 
 	namespace details {
-		uint8_t parseSubstring(char *buffer, char *start, uint8_t size) {
+		uint16_t parseSubstring(char *buffer, char *start, uint8_t size) {
 			strlcpy(buffer, start, size + 1);
-			return static_cast<uint8_t>(strtoul(buffer, NULL, 10));
+			return static_cast<uint16_t>(strtoul(buffer, NULL, 10));
 		}
 
 	}
