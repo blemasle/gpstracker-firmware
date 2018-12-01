@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
-#include <SIM808_Types.h>
+#include <SIM808.Types.h>
 
 #define POSITION_SIZE 115
 

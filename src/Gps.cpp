@@ -35,7 +35,7 @@ namespace gps {
 		SIM808_GPS_STATUS currentStatus = SIM808_GPS_STATUS::OFF;
 
 		do {
-			currentStatus = hardware::sim808::device.getGpsStatus(lastPosition);
+			currentStatus = hardware::sim808::device.getGpsStatus(lastPosition, GPS_POSITION_SIZE);
 			if (currentStatus > SIM808_GPS_STATUS::FIX) break; //if we have an accurate fix, break right now
 
 			NOTICE_FORMAT("acquireCurrentPosition", "%d", currentStatus);
@@ -90,7 +90,7 @@ namespace gps {
 	}
 
 	uint8_t getVelocity() {
-		uint8_t velocity;
+		int16_t velocity;
 		if (!hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::SPEED, &velocity)) velocity = 0;
 
 		VERBOSE_FORMAT("getVelocity", "%d", velocity);

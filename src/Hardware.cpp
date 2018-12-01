@@ -59,7 +59,7 @@ namespace hardware {
 				//SIM808 turns phone on by default but we don't need it for gps only
 				device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
 			}
-			device.enableGps();
+			device.powerOnOffGps(true);
 		}
 
 		void gpsPowerOff() {
@@ -74,7 +74,7 @@ namespace hardware {
 			}
 
 			VERBOSE("gpsPowerOff");
-			device.disableGps();
+			device.powerOnOffGps(false);
 			powerOffIfUnused();
 		}
 

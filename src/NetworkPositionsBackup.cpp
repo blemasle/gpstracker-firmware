@@ -57,7 +57,7 @@ namespace positions {
 			void NetworkPositionsBackup::appendPositions() {
 				uint16_t currentEntryIndex = config::main::value.network.lastSavedEntry + 1;
 				PositionEntry currentEntry;
-				SIM808RegistrationStatus networkStatus;
+				SIM808_NETWORK_REGISTRATION_STATE networkStatus;
 
 				//avoid edge case where if 0, whole set of positions will be sent again
 				if (!positions::count(config::main::value.network.lastSavedEntry)) return;
@@ -65,7 +65,7 @@ namespace positions {
 				network::powerOn();
 				networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
 
-				if (!network::isAvailable(networkStatus.stat) || !network::enableGprs()) {
+				if (!network::isAvailable(networkStatus) || !network::enableGprs()) {
 					networkUnavailableInARow = min(networkUnavailableInARow + 1, POSITIONS_CONFIG_NET_DEFAULT_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD + 1); //avoid increment overflow
 					NOTICE_MSG("appendPositions", "network or gprs unavailable");
 

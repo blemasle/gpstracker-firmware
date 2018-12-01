@@ -22,9 +22,9 @@ namespace network {
 	}
 
 	__attribute__((__optimize__("O2")))
-	SIM808RegistrationStatus waitForRegistered(uint32_t timeout, bool relativeToPowerOnTime = true) {
+	SIM808_NETWORK_REGISTRATION_STATE waitForRegistered(uint32_t timeout, bool relativeToPowerOnTime = true) {
 
-		SIM808RegistrationStatus currentStatus;
+		SIM808_NETWORK_REGISTRATION_STATE currentStatus;
 		SIM808SignalQualityReport report;
 		uint8_t noReliableNetwork = 0;
 
@@ -34,9 +34,9 @@ namespace network {
 		report = hardware::sim808::device.getSignalQuality();
 
 		do {
-			if (isAvailable(currentStatus.stat)) break;
+			if (isAvailable(currentStatus)) break;
 
-			NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.rssi, report.attenuation);
+			NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus, report.rssi, report.attenuation);
 
 			if (report.rssi < NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD) noReliableNetwork++;
 			else noReliableNetwork = 0;
@@ -52,7 +52,7 @@ namespace network {
 			report = hardware::sim808::device.getSignalQuality();
 		} while (timeout > 1);
 
-		NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.rssi, report.attenuation);
+		NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus, report.rssi, report.attenuation);
 		return currentStatus;
 	}
 
