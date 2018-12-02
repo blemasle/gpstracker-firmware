@@ -67,7 +67,7 @@ namespace gps {
 		if(!hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::LATITUDE, &lat2)) return 0;
 		if(!hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::LONGITUDE, &lng2)) return 0;
 
-		VERBOSE_FORMAT("distanceFromPrevious", "%s, %f, %f, %f, %f", lastPosition, previousLat, previousLng, lat2, lng2);
+		VERBOSE_FORMAT("distanceFromPrevious", "%s, %F, %F, %F, %F", lastPosition, previousLat, previousLng, lat2, lng2);
 
 		lat1 = radians(previousLat);
 		lng1 = radians(previousLng);
@@ -85,7 +85,7 @@ namespace gps {
 
 		a = EARTH_RADIUS * (2 * atan2(sqrt(a), sqrt(1 - a))); //kilometers
 
-		NOTICE_FORMAT("distanceFromPrevious", "%fkm", a);
+		NOTICE_FORMAT("distanceFromPrevious", "%Fkm", a);
 		return a;
 	}
 
