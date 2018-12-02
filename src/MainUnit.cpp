@@ -4,11 +4,11 @@
 #include "config/Pins.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "MainUnit"
 
 extern int __heap_start, *__brkval;
 
 namespace mainunit {
+	#define CURRENT_LOGGER "mainunit"
 
 	namespace details {
 
@@ -18,9 +18,11 @@ namespace mainunit {
 		}
 
 		void wokeUp() {
+			#define CURRENT_LOGGER_FUNCTION "wokeUp"
+
 			tmElements_t wokeUpTime;
 			rtc::getTime(wokeUpTime);
-			VERBOSE_FORMAT("wokeUp", "%d:%d:%d", wokeUpTime.hour, wokeUpTime.minute, wokeUpTime.second);
+			VERBOSE_FORMAT("%d:%d:%d", wokeUpTime.hour, wokeUpTime.minute, wokeUpTime.second);
 
 			hardware::sim808::simSerial.listen();
 		}
@@ -39,7 +41,9 @@ namespace mainunit {
 	}
 
 	void deepSleep(uint16_t seconds) {
-		NOTICE_FORMAT("deepSleep", "%d seconds", seconds);
+		#define CURRENT_LOGGER_FUNCTION "deepSleep"
+		NOTICE_FORMAT("%d seconds", seconds);
+
 		interruptIn(seconds);
 		details::prepareSleep();
 		LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);

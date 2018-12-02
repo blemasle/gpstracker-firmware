@@ -2,33 +2,43 @@
 
 //#define DISABLE_LOGGING 1
 #include <ArduinoLog.h>
+#include <SIMComAT.Common.h> //reusing flash string utilities
 #include "Config.h"
 
 #define LOG_SERIAL_SPEED 115200
 #if _DEBUG
-#define LOG_LEVEL LOG_LEVEL_VERBOSE
+	#define LOG_LEVEL LOG_LEVEL_VERBOSE
+	#define LOG_LEVEL_VERBOSE_ENABLED
+	#define LOG_LEVEL_NOTICE_ENABLED
 #else
-#define LOG_LEVEL LOG_LEVEL_NOTICE
+	#define LOG_LEVEL LOG_LEVEL_NOTICE
+	#define LOG_LEVEL_NOTICE_ENABLED
 #endif
 
-#define LOG(level, f) Log.level(F("[" LOGGER_NAME "::" f "]\n"))
-#define LOG_MSG(level, f, msg) Log.level(F("[" LOGGER_NAME "::" f "] " msg "\n"))
-#define LOG_FORMAT(level, f, msg, ...) Log.level(F("[" LOGGER_NAME "::" f "] " msg "\n"), __VA_ARGS__)
+#define NL 						"\n"
+#define LOG(level) 					LOG_MSG(level, "")
+#define LOG_MSG(level, msg) 		Log.level(F("[" CURRENT_LOGGER "::" CURRENT_LOGGER_FUNCTION "]" msg NL))
+#define LOG_FORMAT(level, msg, ...) Log.level(F("[" CURRENT_LOGGER "::" CURRENT_LOGGER_FUNCTION "]" msg NL), __VA_ARGS__)
 
-#if _DEBUG
-#define VERBOSE(f) LOG(verbose, f)
-#define VERBOSE_MSG(f, msg) LOG_MSG(verbose, f, msg)
-#define VERBOSE_FORMAT(f, msg, ...) LOG_FORMAT(verbose, f, msg, __VA_ARGS__)
+#if defined(LOG_LEVEL_VERBOSE_ENABLED)
+	#define VERBOSE LOG(verbose)
+	#define VERBOSE_MSG(msg) LOG_MSG(verbose, msg)
+	#define VERBOSE_FORMAT(msg, ...) LOG_FORMAT(verbose, msg, __VA_ARGS__)
 #else
-#define VERBOSE(f)
-#define VERBOSE_MSG(f, msg)
-#define VERBOSE_FORMAT(f, msg, ...)
+	#define VERBOSE
+	#define VERBOSE_MSG(msg)
+	#define VERBOSE_FORMAT(msg, ...)
 #endif
 
-#define NOTICE(f) LOG(notice, f)
-#define NOTICE_MSG(f, msg) LOG_MSG(notice, f, msg)
-#define NOTICE_FORMAT(f, msg, ...) LOG_FORMAT(notice, f, msg, __VA_ARGS__)
-
+#if defined(LOG_LEVEL_NOTICE_ENABLED)
+	#define NOTICE LOG(notice)
+	#define NOTICE_MSG(msg) LOG_MSG(notice, msg)
+	#define NOTICE_FORMAT(msg, ...) LOG_FORMAT(notice, msg, __VA_ARGS__)
+#else
+	#define NOTICE
+	#define NOTICE_MSG(msg)
+	#define NOTICE_FORMAT(msg, ...)
+#endif
 
 namespace logging {
 	void setup();

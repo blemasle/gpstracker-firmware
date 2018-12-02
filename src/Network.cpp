@@ -5,10 +5,8 @@
 #include "Config.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "Network"
-
 namespace network {
-
+	#define CURRENT_LOGGER "network"
 	timestamp_t _poweredOnTime;
 
 	void powerOn() {
@@ -23,6 +21,7 @@ namespace network {
 
 	__attribute__((__optimize__("O2")))
 	SIM808_NETWORK_REGISTRATION_STATE waitForRegistered(uint32_t timeout, bool relativeToPowerOnTime = true) {
+		#define CURRENT_LOGGER_FUNCTION "waitForRegistered"
 
 		SIM808_NETWORK_REGISTRATION_STATE currentStatus;
 		SIM808SignalQualityReport report;
@@ -36,12 +35,12 @@ namespace network {
 		do {
 			if (isAvailable(currentStatus)) break;
 
-			NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus, report.rssi, report.attenuation);
+			NOTICE_FORMAT("%d, [%d %ddBm]", currentStatus, report.rssi, report.attenuation);
 
 			if (report.rssi < NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD) noReliableNetwork++;
 			else noReliableNetwork = 0;
 			if (noReliableNetwork > NETWORK_DEFAULT_NO_NETWORK_TRIES) {
-				NOTICE_MSG("waitForRegistered", "No reliable signal");
+				NOTICE_MSG("No reliable signal");
 				break; //after a while, no network really means no network. Bailing out
 			}
 
@@ -52,7 +51,7 @@ namespace network {
 			report = hardware::sim808::device.getSignalQuality();
 		} while (timeout > 1);
 
-		NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus, report.rssi, report.attenuation);
+		NOTICE_FORMAT("%d, [%d %ddBm]", currentStatus, report.rssi, report.attenuation);
 		return currentStatus;
 	}
 
@@ -69,9 +68,10 @@ namespace network {
 #endif
 
 	bool sendSms(const char * msg) {
+		#define CURRENT_LOGGER_FUNCTION "sendSms"
 		const char * phoneNumber = config::main::value.contactPhone;
 
-		NOTICE_FORMAT("sendSms", "%s, %s", phoneNumber, msg);
+		NOTICE_FORMAT("%s, %s", phoneNumber, msg);
 		return hardware::sim808::device.sendSms(phoneNumber, msg);
 	}
 }

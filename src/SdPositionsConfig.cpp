@@ -2,10 +2,11 @@
 #include "SdCard.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "Config::backup::sd"
 
 #if BACKUP_ENABLE_SDCARD
 namespace config {
+	#define CURRENT_LOGGER "config::backup::sd"
+
 	namespace backup {
 		namespace sd {
 
@@ -24,14 +25,18 @@ namespace config {
 					}
 
 					void read() {
-						VERBOSE("read");
+						#define CURRENT_LOGGER_FUNCTION "read"
+						VERBOSE;
+
 						ensureOpened();
 						configFile.read((void*)&value, sizeof(value));
 						if (value.seed != POSITIONS_CONFIG_SEED) reset();
 					}
 
 					void write() {
-						VERBOSE("write");
+						#define CURRENT_LOGGER_FUNCTION "write"
+						VERBOSE;
+
 						ensureOpened();
 						configFile.write((void*)&value, sizeof(value));
 					}
@@ -50,7 +55,9 @@ namespace config {
 				}
 
 				void reset() {
-					VERBOSE("reset");
+					#define CURRENT_LOGGER_FUNCTION "reset"
+					VERBOSE;
+
 					SdPositionConfig_t config = {
 						POSITIONS_CONFIG_SEED,
 						POSITIONS_CONFIG_DEFAULT_SAVE_THRESHOLD,

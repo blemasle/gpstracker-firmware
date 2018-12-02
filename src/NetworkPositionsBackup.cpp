@@ -9,11 +9,12 @@
 #include "Network.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "Positions::backup::network"
-
 #define BUFFER_SIZE 170
 
+
 namespace positions {
+	#define CURRENT_LOGGER "Positions::backup::network"
+
 	namespace backup {
 		namespace net {
 
@@ -27,6 +28,8 @@ namespace positions {
 			}
 
 			bool NetworkPositionsBackup::appendPosition(PositionEntry &entry, int8_t signalAttenuation = 0) {
+				#define CURRENT_LOGGER_FUNCTION "appendPosition"
+
 				char buffer[BUFFER_SIZE];
 				if(signalAttenuation == 0) signalAttenuation = hardware::sim808::device.getSignalQuality().attenuation;
 
@@ -40,7 +43,7 @@ namespace positions {
 					entry.metadata.timeToFix,
 					entry.position);
 
-				NOTICE_FORMAT("appendPosition", "Sending : %s", buffer);
+				NOTICE_FORMAT("Sending : %s", buffer);
 				uint16_t responseCode = hardware::sim808::device.httpPost(
 					config::main::value.network.url,
 					F("text/gpstracker"),
@@ -49,12 +52,14 @@ namespace positions {
 					BUFFER_SIZE
 				);
 
-				NOTICE_FORMAT("appendPosition", "Response : %d", responseCode);
+				NOTICE_FORMAT("Response : %d", responseCode);
 				return responseCode == POSITIONS_CONFIG_NET_DEFAULT_EXPECTED_RESPONSE;
 			}
 
 			//__attribute__((__optimize__("O2")))
 			void NetworkPositionsBackup::appendPositions() {
+				#define CURRENT_LOGGER_FUNCTION "appendPositions"
+
 				uint16_t currentEntryIndex = config::main::value.network.lastSavedEntry + 1;
 				PositionEntry currentEntry;
 				SIM808_NETWORK_REGISTRATION_STATE networkStatus;
@@ -67,7 +72,7 @@ namespace positions {
 
 				if (!network::isAvailable(networkStatus) || !network::enableGprs()) {
 					networkUnavailableInARow = min(networkUnavailableInARow + 1, POSITIONS_CONFIG_NET_DEFAULT_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD + 1); //avoid increment overflow
-					NOTICE_MSG("appendPositions", "network or gprs unavailable");
+					NOTICE_MSG("network or gprs unavailable");
 
 					if (networkUnavailableInARow > POSITIONS_CONFIG_NET_DEFAULT_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD) {
 						networkUnavailablePostpone++;
@@ -96,14 +101,16 @@ namespace positions {
 			void NetworkPositionsBackup::setup() {}
 
 			void NetworkPositionsBackup::prepare() {
-				NOTICE("prepare");
+				#define CURRENT_LOGGER_FUNCTION "prepare"
+				NOTICE;
 
 				if (!isBackupNeeded(true)) return;
 				network::powerOn();
 			}
 
 			void NetworkPositionsBackup::backup(bool force) {
-				NOTICE("backup");
+				#define CURRENT_LOGGER_FUNCTION "backup"
+				NOTICE;
 
 				if (force || isBackupNeeded(false)) {
 					appendPositions();

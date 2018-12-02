@@ -10,7 +10,7 @@
 #include "Positions.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "GpsTracker"
+#define CURRENT_LOGGER "GpsTracker"
 
 bool bypassMenu = false;
 uint16_t menuTimeout = MENU_TIMEOUT;
@@ -26,6 +26,7 @@ void setup() {
 }
 
 void loop() {
+	#define CURRENT_LOGGER_FUNCTION "loop"
 
 	debug::GPSTRACKER_DEBUG_COMMAND command = debug::GPSTRACKER_DEBUG_COMMAND::RUN;
 	if (Serial && !bypassMenu) command = debug::menu(menuTimeout);
@@ -95,6 +96,6 @@ void loop() {
 			mainunit::deepSleep(10);
 			break;
 		default:
-			NOTICE_MSG("loop", "Unsupported");
+			NOTICE_MSG("Unsupported");
 	}
 }

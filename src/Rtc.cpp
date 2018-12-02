@@ -5,15 +5,17 @@
 
 #include <Wire.h>
 
-#define LOGGER_NAME "Rtc"
 
 using namespace utils;
 
 namespace rtc {
+	#define CURRENT_LOGGER "rtc"
 	RTC_A_CLASS RTC_A;
 
 	void setup() {
-		VERBOSE("setup");
+		#define CURRENT_LOGGER_FUNCTION "setup"
+		VERBOSE;
+
 		hardware::i2c::powerOn();
 		RTC_A.control(DS3231_12H, DS3231_OFF); //24 hours clock
 		RTC_A.control(DS3231_A1_INT_ENABLE, DS3231_OFF); //Alarm 1 OFF
@@ -44,15 +46,18 @@ namespace rtc {
 	}
 
 	void getTime(tmElements_t &time) {
+		#define CURRENT_LOGGER_FUNCTION "getTime"
+
 		hardware::i2c::powerOn();
 		RTC_A.readTime(time);
 		hardware::i2c::powerOff();
 
-		VERBOSE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", time.year, time.month, time.day, time.hour, time.minute, time.second);
+		VERBOSE_FORMAT("%d/%d/%d %d:%d:%d", time.year, time.month, time.day, time.hour, time.minute, time.second);
 	}
 
 	void setTime(const tmElements_t &time) {
-		VERBOSE_FORMAT("setTime", "%d/%d/%d %d:%d:%d", time.year, time.month, time.day, time.hour, time.minute, time.second);
+		#define CURRENT_LOGGER_FUNCTION "setTime"
+		VERBOSE_FORMAT("%d/%d/%d %d:%d:%d", time.year, time.month, time.day, time.hour, time.minute, time.second);
 
 		hardware::i2c::powerOn();
 		RTC_A.writeTime(time);
@@ -71,6 +76,8 @@ namespace rtc {
 	}
 
 	void setAlarm(const tmElements_t &time) {
+		#define CURRENT_LOGGER_FUNCTION "setAlarm"
+
 		hardware::i2c::powerOn();
 		WRITE_ALARM_1(time);
 
@@ -78,7 +85,7 @@ namespace rtc {
 		RTC_A.control(DS3231_A1_INT_ENABLE, DS3231_ON); //Alarm 1 ON
 		RTC_A.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN ON
 
-		NOTICE_FORMAT("setAlarm", "Next alarm : %d:%d:%d", time.hour, time.minute, time.second);
+		NOTICE_FORMAT("Next alarm : %d:%d:%d", time.hour, time.minute, time.second);
 
 		hardware::i2c::powerOff();
 	}

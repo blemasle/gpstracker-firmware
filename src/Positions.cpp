@@ -16,12 +16,12 @@
 #include "NetworkPositionsBackup.h"
 #endif
 
-#define LOGGER_NAME "Positions"
-
 #define ENTRY_RESERVED_SIZE	128
 #define ENTRIES_ADDR		CONFIG_RESERVED_SIZE
 
 namespace positions {
+	#define CURRENT_LOGGER "positions"
+
 #if BACKUPS_ENABLED > 1
 	backup::PositionsBackup **_backups;
 #elif BACKUPS_ENABLED == 1
@@ -73,7 +73,8 @@ namespace positions {
 	}
 
 	bool acquire(PositionEntryMetadata &metadata) {
-		NOTICE("acquire");
+		#define CURRENT_LOGGER_FUNCTION "acquire"
+		NOTICE;
 
 		timestamp_t before;
 
@@ -85,7 +86,7 @@ namespace positions {
 		gps::powerOff();
 
 		bool acquired = gpsStatus >= SIM808_GPS_STATUS::FIX; //prety useless wins 14 bytes on the hex size rather than return gpStatus >= ...
-		NOTICE_FORMAT("acquire", "Status : %d", gpsStatus);
+		NOTICE_FORMAT("Status : %d", gpsStatus);
 
 		metadata = {
 			battery.level,
@@ -99,7 +100,8 @@ namespace positions {
 	}
 
 	void appendLast(const PositionEntryMetadata &metadata) {
-		VERBOSE("appendLast");
+		#define CURRENT_LOGGER_FUNCTION "appendLast"
+		VERBOSE;
 
 		uint16_t entryIndex;
 		uint16_t entryAddress;
@@ -114,7 +116,7 @@ namespace positions {
 		hardware::i2c::powerOn();
 		hardware::i2c::eeprom.writeBlock(entryAddress, entry);
 
-		NOTICE_FORMAT("appendLast", "Saved @ %X : %d,%d,%d,%d,%d,%s",
+		NOTICE_FORMAT("Saved @ %X : %d,%d,%d,%d,%d,%s",
 			entryAddress,
 			entry.metadata.batteryLevel,
 			entry.metadata.batteryVoltage,
@@ -133,18 +135,19 @@ namespace positions {
 	}
 
 	bool get(uint16_t index, PositionEntry &entry) {
-		VERBOSE("get");
+		#define CURRENT_LOGGER_FUNCTION "get"
+		VERBOSE;
 
 		uint16_t entryAddress = details::getEntryAddress(index);
 		if (entryAddress == -1) return false;
 
-		VERBOSE_FORMAT("get", "Reading entry %d @ %X", index, entryAddress);
+		VERBOSE_FORMAT("Reading entry %d @ %X", index, entryAddress);
 
 		hardware::i2c::powerOn();
 		hardware::i2c::eeprom.readBlock(entryAddress, entry);
 		hardware::i2c::powerOff();
 
-		NOTICE_FORMAT("get", "Read from EEPROM @ %X : %d,%d,%d,%d,%d,%s",
+		NOTICE_FORMAT("Read from EEPROM @ %X : %d,%d,%d,%d,%d,%s",
 			entryAddress,
 			entry.metadata.batteryLevel,
 			entry.metadata.batteryVoltage,

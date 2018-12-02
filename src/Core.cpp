@@ -8,13 +8,13 @@
 #include "Alerts.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "Core"
 #define SMS_BUFFER_SIZE		140
 #define NO_ALERTS_NOTIFIED	0
 
 using namespace utils;
 
 namespace core {
+	#define CURRENT_LOGGER "core"
 
 	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;
 	uint8_t stoppedInARow = SLEEP_DEFAULT_STOPPED_THRESHOLD - 1;
@@ -61,6 +61,8 @@ namespace core {
 	}
 
 	uint8_t notifyFailures(PositionEntryMetadata &metadata) {
+		#define CURRENT_LOGGER_FUNCTION "notifyFailures"
+
 		SIM808_NETWORK_REGISTRATION_STATE networkStatus;
 		char buffer[SMS_BUFFER_SIZE];
 		const __FlashStringHelper * backupFailureString = F(" Backup battery failure ?");
@@ -69,7 +71,7 @@ namespace core {
 		uint8_t triggered = alerts::getTriggered(metadata);
 		if (!triggered) return NO_ALERTS_NOTIFIED;
 
-		NOTICE_FORMAT("notifyFailures", "triggered : %B", triggered);
+		NOTICE_FORMAT("triggered : %B", triggered);
 
 		network::powerOn();
 		networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
@@ -89,12 +91,12 @@ namespace core {
 			}
 
 #if ALERTS_ON_SERIAL
-			NOTICE_FORMAT("notifyFailure", "%s", buffer);
+			NOTICE_FORMAT("%s", buffer);
 			notified = true;
 #else
 			notified = network::sendSms(buffer);
 #endif
-			if (!notified) NOTICE_MSG("notifyFailure", "SMS not sent !");
+			if (!notified) NOTICE_MSG("SMS not sent !");
 		}
 
 		network::powerOff();
@@ -108,6 +110,8 @@ namespace core {
 	}
 
 	TRACKER_MOVING_STATE updateSleepTime() {
+		#define CURRENT_LOGGER_FUNCTION "updateSleepTime"
+
 		TRACKER_MOVING_STATE state = TRACKER_MOVING_STATE::MOVING;
 		uint8_t velocity = gps::getVelocity();
 
@@ -127,11 +131,13 @@ namespace core {
 		}
 		else stoppedInARow = 0;
 
-		NOTICE_FORMAT("updateSleepTime", "%dkmh => %d seconds", velocity, sleepTime);
+		NOTICE_FORMAT("%dkmh => %d seconds", velocity, sleepTime);
 		return state;
 	}
 
 	uint16_t mapSleepTime(uint8_t velocity) {
+		#define CURRENT_LOGGER_FUNCTION "mapSleepTime"
+
 		uint16_t result;
 		uint16_t currentTime = 0xFFFF;
 
@@ -154,7 +160,7 @@ namespace core {
 
 		}
 
-		VERBOSE_FORMAT("mapSleepTime", "%d,%d", velocity, result);
+		VERBOSE_FORMAT("%d,%d", velocity, result);
 		return result;
 	}
 }
