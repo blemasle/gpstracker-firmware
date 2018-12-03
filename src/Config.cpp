@@ -5,6 +5,7 @@
 
 namespace config {
 	#define CURRENT_LOGGER "config"
+	const char VERSION_STRING[] PROGMEM = VERSION;
 
 	namespace main {
 
@@ -30,7 +31,7 @@ namespace config {
 				//};
 				//value.network = c;
 #endif
-				/*strcpy_P(value.version, PSTR(VERSION));
+				/*strcpy_P(value.version, VERSION_STRING);
 				value.alertBatteryLevel1 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1;
 				value.alertBatteryLevel2 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2;
 				value.alertBatteryLevelClear = CONFIG_DEFAULT_BATTERY_ALERT_CLEAR;
@@ -52,8 +53,8 @@ namespace config {
 		void setup() {
 			details::read();
 
-			if(strcasecmp_P(value.version, PSTR(VERSION))) {
-				strcpy_P(value.version, PSTR(VERSION));
+			if(strcasecmp_P(value.version, VERSION_STRING)) {
+				strcpy_P(value.version, VERSION_STRING);
 				details::write();
 			}
 		}
@@ -68,7 +69,7 @@ namespace config {
 
 			config_t config = {};
 			config.seed = CONFIG_SEED;
-			strcpy_P(config.version, PSTR(VERSION));
+			strcpy_P(config.version, VERSION_STRING);
 			config.firstEntry = config.lastEntry = 0xFFFF;
 			config.alertBatteryLevel1 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1;
 			config.alertBatteryLevel2 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2;
