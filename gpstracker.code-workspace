@@ -7,9 +7,6 @@
 			"path": "../libraries/SIM808"
 		},
 		{
-			"path": "../libraries/uDS3231"
-		},
-		{
 			"path": "../libraries/E24"
 		},
 		{
@@ -17,6 +14,12 @@
 		},
 		{
 			"path": "../libraries/ArduinoLog"
+		},
+		{
+			"path": "C:/Users/bertr/Documents/Projects/Development/Arduino/libraries/MD_DS3231"
+		},
+		{
+			"path": "C:/Users/bertr/Documents/Projects/Development/Arduino/libraries/uDS3231"
 		}
 	],
 	"settings": {

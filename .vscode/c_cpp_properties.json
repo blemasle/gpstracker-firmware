@@ -5,6 +5,7 @@
             "includePath": [
 				"${workspaceFolder}/src/**",
 				"${workspaceFolder}/../libraries/SIM808",
+				"${workspaceFolder}/../libraries/MD_DS3231",
 				"${workspaceFolder}/../libraries/uDS3231",
 				"${workspaceFolder}/../libraries/E24",
 				"${workspaceFolder}/../libraries/Low-Power",
@@ -12,7 +13,7 @@
 				"${config:arduino.path}/tools/**",
 				"${config:arduino.path}/hardware/arduino/avr/**",
 				"${config:arduino.path}/hardware/tools/avr/avr/include/**"
-            ],
+			],
             "intelliSenseMode": "clang-x64",
             "cStandard": "c11",
             "cppStandard": "c++11"

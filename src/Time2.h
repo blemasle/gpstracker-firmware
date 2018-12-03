@@ -1,7 +1,9 @@
 #pragma once
 
 #include <Arduino.h>
-#include <uDS3231.h>
+#include "RtcAbstraction.h"
+
+typedef unsigned long timestamp_t;
 
 namespace utils {
 	namespace time {

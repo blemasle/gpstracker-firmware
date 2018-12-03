@@ -20,27 +20,27 @@ namespace utils {
 			timestamp_t makeTimestamp(const tmElements_t &time) {
 			timestamp_t timestamp;
 
-			timestamp += (time.Day - 1) * SECS_PER_DAY;
-			timestamp += time.Hour * SECS_PER_HOUR;
-			timestamp += time.Minute * SECS_PER_MIN;
-			timestamp += time.Second;
+			timestamp += (time.day - 1) * SECS_PER_DAY;
+			timestamp += time.hour * SECS_PER_HOUR;
+			timestamp += time.minute * SECS_PER_MIN;
+			timestamp += time.second;
 
 			return timestamp;
 		}
 
 		__attribute__((__optimize__("O2")))
 			void breakTime(timestamp_t timestamp, tmElements_t &time) {
-			time.Year = 0;
-			time.Month = 0;
+			time.year = 0;
+			time.month = 0;
 
-			time.Day = 0;
-			time.Second = timestamp % 60;
+			time.day = 0;
+			time.second = timestamp % 60;
 			timestamp /= 60; // now it is minutes
-			time.Minute = timestamp % 60;
+			time.minute = timestamp % 60;
 			timestamp /= 60; // now it is hours
-			time.Hour = timestamp % 24;
+			time.hour = timestamp % 24;
 			timestamp /= 24; // now it is days
-			time.Day = timestamp; //this is purely for indication / computation only as it might get over the number of days in a month
+			time.day = timestamp; //this is purely for indication / computation only as it might get over the number of days in a month
 		}
 
 	}
