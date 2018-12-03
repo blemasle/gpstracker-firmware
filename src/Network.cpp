@@ -27,7 +27,6 @@ namespace network {
 		_poweredOnTime = 0;
 	}
 
-	__attribute__((__optimize__("O2")))
 	SIM808_NETWORK_REGISTRATION_STATE waitForRegistered(uint32_t timeout, bool relativeToPowerOnTime = true) {
 		#define CURRENT_LOGGER_FUNCTION "waitForRegistered"
 		NOTICE;

@@ -56,7 +56,6 @@ namespace positions {
 				return responseCode == POSITIONS_CONFIG_NET_DEFAULT_EXPECTED_RESPONSE;
 			}
 
-			//__attribute__((__optimize__("O2")))
 			void NetworkPositionsBackup::appendPositions() {
 				#define CURRENT_LOGGER_FUNCTION "appendPositions"
 
