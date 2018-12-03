@@ -29,5 +29,7 @@ namespace config {
 		void save();
 
 		void reset();
+
+		void print();
 	}
 }
