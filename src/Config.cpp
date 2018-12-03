@@ -65,7 +65,7 @@ namespace config {
 
 		void reset() {
 			#define CURRENT_LOGGER_FUNCTION "reset"
-			VERBOSE;
+			NOTICE;
 
 			config_t config = {};
 			config.seed = CONFIG_SEED;

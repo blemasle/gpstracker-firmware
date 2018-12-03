@@ -17,8 +17,8 @@
 
 #define NL 						"\n"
 #define LOG(level) 					LOG_MSG(level, "")
-#define LOG_MSG(level, msg) 		Log.level(F("[" CURRENT_LOGGER "::" CURRENT_LOGGER_FUNCTION "]" msg NL))
-#define LOG_FORMAT(level, msg, ...) Log.level(F("[" CURRENT_LOGGER "::" CURRENT_LOGGER_FUNCTION "]" msg NL), __VA_ARGS__)
+#define LOG_MSG(level, msg) 		Log.level(F("[" CURRENT_LOGGER "::" CURRENT_LOGGER_FUNCTION "] " msg NL))
+#define LOG_FORMAT(level, msg, ...) Log.level(F("[" CURRENT_LOGGER "::" CURRENT_LOGGER_FUNCTION "] " msg NL), __VA_ARGS__)
 
 #if defined(LOG_LEVEL_VERBOSE_ENABLED)
 	#define VERBOSE LOG(verbose)

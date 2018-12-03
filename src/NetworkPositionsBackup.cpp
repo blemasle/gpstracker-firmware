@@ -102,7 +102,7 @@ namespace positions {
 
 			void NetworkPositionsBackup::prepare() {
 				#define CURRENT_LOGGER_FUNCTION "prepare"
-				NOTICE;
+				VERBOSE;
 
 				if (!isBackupNeeded(true)) return;
 				network::powerOn();

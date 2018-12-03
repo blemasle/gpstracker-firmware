@@ -46,7 +46,7 @@ namespace hardware {
 
 		void setup() {
 			#define CURRENT_LOGGER_FUNCTION "setup"
-			NOTICE;
+			VERBOSE;
 
 			simSerial.begin(SIM808_BAUDRATE);
 			device.begin(simSerial);

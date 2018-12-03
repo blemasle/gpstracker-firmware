@@ -9,6 +9,14 @@ namespace network {
 	#define CURRENT_LOGGER "network"
 	timestamp_t _poweredOnTime;
 
+	namespace details {
+
+		void print(SIM808_NETWORK_REGISTRATION_STATE state, SIM808SignalQualityReport &report) {
+			#define CURRENT_LOGGER_FUNCTION "print"
+			NOTICE_FORMAT("%d, [%d %ddBm]", state, report.rssi, report.attenuation);
+		}
+
+	}
 	void powerOn() {
 		hardware::sim808::networkPowerOn();
 		_poweredOnTime = rtc::getTime();
@@ -22,6 +30,7 @@ namespace network {
 	__attribute__((__optimize__("O2")))
 	SIM808_NETWORK_REGISTRATION_STATE waitForRegistered(uint32_t timeout, bool relativeToPowerOnTime = true) {
 		#define CURRENT_LOGGER_FUNCTION "waitForRegistered"
+		NOTICE;
 
 		SIM808_NETWORK_REGISTRATION_STATE currentStatus;
 		SIM808SignalQualityReport report;
@@ -34,8 +43,7 @@ namespace network {
 
 		do {
 			if (isAvailable(currentStatus)) break;
-
-			NOTICE_FORMAT("%d, [%d %ddBm]", currentStatus, report.rssi, report.attenuation);
+			details::print(currentStatus, report);
 
 			if (report.rssi < NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD) noReliableNetwork++;
 			else noReliableNetwork = 0;
@@ -51,7 +59,7 @@ namespace network {
 			report = hardware::sim808::device.getSignalQuality();
 		} while (timeout > 1);
 
-		NOTICE_FORMAT("%d, [%d %ddBm]", currentStatus, report.rssi, report.attenuation);
+		details::print(currentStatus, report);
 		return currentStatus;
 	}
 
