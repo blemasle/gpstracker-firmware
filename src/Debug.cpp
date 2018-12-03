@@ -116,19 +116,6 @@ using namespace utils;
 namespace debug {
 	#define CURRENT_LOGGER "debug"
 
-	namespace details {
-		inline void displayPosition(PositionEntry entry) {
-			#define CURRENT_LOGGER_FUNCTION "displayPosition"
-			NOTICE_FORMAT("%d,%d,%d,%d,%d,%s",
-				entry.metadata.batteryLevel,
-				entry.metadata.batteryVoltage,
-				entry.metadata.temperature,
-				static_cast<uint8_t>(entry.metadata.status),
-				entry.metadata.timeToFix,
-				entry.position);
-		}
-	}
-
 	void displayFreeRam() {
 		#define CURRENT_LOGGER_FUNCTION "displayFreeRam"
 		NOTICE_FORMAT("%d", mainunit::freeRam());
@@ -249,25 +236,16 @@ namespace debug {
 		NOTICE_MSG("Done");
 	}
 
-	void getAndDisplayEepromPositions() {
-		uint16_t currentEntryIndex = config::main::value.firstEntry;
+	void getAndDisplayEepromPositions(uint16_t firstIndex) {
+		uint16_t currentEntryIndex = firstIndex;
 		PositionEntry currentEntry;
 
 		hardware::i2c::powerOn();
 		do {
 			if (!positions::get(currentEntryIndex, currentEntry)) break;
-			details::displayPosition(currentEntry);
-		} while (positions::moveNext(currentEntryIndex));
+			positions::print(currentEntryIndex, currentEntry);
+		} while(positions::moveNext(currentEntryIndex));
 		hardware::i2c::powerOff();
-	}
-
-	void getAndDisplayEepromLastPosition() {
-		#define CURRENT_LOGGER_FUNCTION "getAndDisplayEepromLastPosition"
-		uint16_t lastEntryIndex = config::main::value.lastEntry;
-		PositionEntry lastEntry;
-
-		if(positions::get(lastEntryIndex, lastEntry)) details::displayPosition(lastEntry);
-		else NOTICE_MSG("No position recorded");
 	}
 
 	void addLastPositionToEeprom() {

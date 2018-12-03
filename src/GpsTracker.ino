@@ -75,10 +75,10 @@ void loop() {
 			debug::getAndDisplayEepromContent();
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_ENTRIES:
-			debug::getAndDisplayEepromPositions();
+			debug::getAndDisplayEepromPositions(config::main::value.firstEntry);
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_GET_LAST_ENTRY:
-			debug::getAndDisplayEepromLastPosition();
+			debug::getAndDisplayEepromPositions(config::main::value.lastEntry);
 			break;
 		case debug::GPSTRACKER_DEBUG_COMMAND::EEPROM_ADD_ENTRY:
 			debug::addLastPositionToEeprom();

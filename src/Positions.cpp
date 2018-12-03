@@ -116,14 +116,8 @@ namespace positions {
 		hardware::i2c::powerOn();
 		hardware::i2c::eeprom.writeBlock(entryAddress, entry);
 
-		NOTICE_FORMAT("Saved @ %X : %d,%d,%d,%d,%d,%s",
-			entryAddress,
-			entry.metadata.batteryLevel,
-			entry.metadata.batteryVoltage,
-			entry.metadata.temperature,
-			static_cast<uint8_t>(entry.metadata.status),
-			entry.metadata.timeToFix,
-			entry.position);
+		NOTICE_MSG("Saved");
+		print(entryIndex, entry);
 
 		config->lastEntry++;
 		if (config->lastEntry > details::maxEntryIndex) config->lastEntry = 0;
@@ -147,15 +141,7 @@ namespace positions {
 		hardware::i2c::eeprom.readBlock(entryAddress, entry);
 		hardware::i2c::powerOff();
 
-		NOTICE_FORMAT("Read from EEPROM @ %X : %d,%d,%d,%d,%d,%s",
-			entryAddress,
-			entry.metadata.batteryLevel,
-			entry.metadata.batteryVoltage,
-			entry.metadata.temperature,
-			static_cast<uint8_t>(entry.metadata.status),
-			entry.metadata.timeToFix,
-			entry.position);
-
+		print(index, entry);
 		return true;
 	}
 
@@ -195,5 +181,19 @@ namespace positions {
 #elif BACKUPS_ENABLED == 1
 		_backup->backup(force);
 #endif
+	}
+
+	void print(uint16_t index, PositionEntry &entry) {
+		#define CURRENT_LOGGER_FUNCTION "print"
+
+		uint16_t address = details::getEntryAddress(index);
+		NOTICE_FORMAT("%X : %d,%d,%d,%d,%d,%s",
+			address,
+			entry.metadata.batteryLevel,
+			entry.metadata.batteryVoltage,
+			entry.metadata.temperature,
+			static_cast<uint8_t>(entry.metadata.status),
+			entry.metadata.timeToFix,
+			entry.position);
 	}
 }

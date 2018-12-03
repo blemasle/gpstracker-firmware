@@ -30,4 +30,6 @@ namespace positions {
 
 	void prepareBackup();
 	void doBackup(bool force);
+
+	void print(uint16_t index, PositionEntry &entry);
 }
