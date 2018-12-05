@@ -69,7 +69,8 @@ namespace positions {
 				network::powerOn();
 				networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
 
-				if (!network::isAvailable(networkStatus) || !network::enableGprs()) {
+				if (networkStatus == SIM808_NETWORK_REGISTRATION_STATE::ERROR ||
+					(!network::isAvailable(networkStatus) || !network::enableGprs())) {
 					networkUnavailableInARow = min(networkUnavailableInARow + 1, POSITIONS_CONFIG_NET_DEFAULT_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD + 1); //avoid increment overflow
 					NOTICE_MSG("network or gprs unavailable");
 
