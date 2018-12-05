@@ -102,20 +102,20 @@ namespace positions {
 
 			void NetworkPositionsBackup::prepare(bool force) {
 				#define CURRENT_LOGGER_FUNCTION "prepare"
-				VERBOSE;
 
-				if (force || !isBackupNeeded(true)) return;
+				if (!(force || isBackupNeeded(true))) return;
+
+				NOTICE;
 				network::powerOn();
 			}
 
 			void NetworkPositionsBackup::backup(bool force) {
 				#define CURRENT_LOGGER_FUNCTION "backup"
+
+				if (!(force || isBackupNeeded(false))) return;
+
 				NOTICE;
-
-				if (force || isBackupNeeded(false)) {
-					appendPositions();
-				}
-
+				appendPositions();
 				network::powerOff();
 			}
 		}
