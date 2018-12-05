@@ -99,11 +99,11 @@ namespace positions {
 
 			void NetworkPositionsBackup::setup() {}
 
-			void NetworkPositionsBackup::prepare() {
+			void NetworkPositionsBackup::prepare(bool force) {
 				#define CURRENT_LOGGER_FUNCTION "prepare"
 				VERBOSE;
 
-				if (!isBackupNeeded(true)) return;
+				if (force || !isBackupNeeded(true)) return;
 				network::powerOn();
 			}
 

@@ -8,7 +8,7 @@ namespace positions {
 			~PositionsBackup();
 			virtual void setup() = 0;
 
-			virtual void prepare() = 0;
+			virtual void prepare(bool force) = 0;
 			virtual void backup(bool force) = 0;
 		};
 

@@ -97,7 +97,7 @@ namespace positions {
 				}
 			}
 
-			void SdPositionsBackup::setup() {
+			void SdPositionsBackup::setup(bool force) {
 				hardware::sdcard::setup();
 			}
 

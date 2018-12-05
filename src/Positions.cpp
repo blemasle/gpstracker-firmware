@@ -163,13 +163,13 @@ namespace positions {
 		return lastEntry - fromIndex;
 	}
 
-	void prepareBackup() {
+	void prepareBackup(bool force) {
 #if BACKUPS_ENABLED > 1
 		for (int i = 0; i < BACKUPS_ENABLED; i++) {
-			_backups[i]->prepare();
+			_backups[i]->prepare(force);
 		}
 #elif BACKUPS_ENABLED == 1
-		_backup->prepare();
+		_backup->prepare(force);
 #endif
 	}
 
