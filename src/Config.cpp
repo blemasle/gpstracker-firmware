@@ -19,6 +19,7 @@ namespace config {
 
 				hardware::i2c::powerOn();
 				hardware::i2c::eeprom.readBlock(CONFIG_ADDR, value);
+				print();
 				if (CONFIG_SEED != value.seed) reset(); //todo : reset network if seed for network is not right
 				hardware::i2c::powerOff();
 

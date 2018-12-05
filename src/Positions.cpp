@@ -112,12 +112,12 @@ namespace positions {
 		entryIndex = config->lastEntry + 1;
 
 		entryAddress = details::getEntryAddress(entryIndex);
+		print(entryIndex, entry);
 
 		hardware::i2c::powerOn();
 		hardware::i2c::eeprom.writeBlock(entryAddress, entry);
 
 		NOTICE_MSG("Saved");
-		print(entryIndex, entry);
 
 		config->lastEntry++;
 		if (config->lastEntry > details::maxEntryIndex) config->lastEntry = 0;

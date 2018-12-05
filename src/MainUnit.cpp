@@ -42,7 +42,7 @@ namespace mainunit {
 
 	void deepSleep(uint16_t seconds) {
 		#define CURRENT_LOGGER_FUNCTION "deepSleep"
-		NOTICE_FORMAT("%d seconds", seconds);
+		NOTICE_FORMAT("%ds", seconds);
 
 		interruptIn(seconds);
 		details::prepareSleep();
