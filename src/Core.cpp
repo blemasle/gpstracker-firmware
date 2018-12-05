@@ -39,7 +39,11 @@ namespace core {
 		bool acquired = false;
 		PositionEntryMetadata metadata;
 
-		if(movingState >= TRACKER_MOVING_STATE::STOPPED) positions::prepareBackup();
+		if(movingState >= TRACKER_MOVING_STATE::ABOUT_TO_STOP) {
+			//forcing when the tracker is about to stop (which should result in STOPPED a few lines below)
+			positions::prepareBackup(movingState == TRACKER_MOVING_STATE::ABOUT_TO_STOP);
+		}
+
 		acquired = positions::acquire(metadata);
 
 		if (acquired) {
@@ -53,7 +57,7 @@ namespace core {
 		alerts::add(notifyFailures(metadata));
 
 		if(movingState >= TRACKER_MOVING_STATE::STOPPED) {
-			positions::doBackup(movingState == TRACKER_MOVING_STATE::STOPPED); //do not force on STATIC
+			positions::doBackup(movingState == TRACKER_MOVING_STATE::STOPPED); //forcing at the moment the tracker stop
 		}
 
 		if (acquired) updateRtcTime();
@@ -124,14 +128,16 @@ namespace core {
 
 			if (stoppedInARow < SLEEP_DEFAULT_STOPPED_THRESHOLD) {
 				sleepTime = SLEEP_DEFAULT_PAUSING_TIME_SECONDS;
-				state = TRACKER_MOVING_STATE::PAUSED;
+				state = stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD - 1 ?
+					TRACKER_MOVING_STATE::ABOUT_TO_STOP :
+					TRACKER_MOVING_STATE::PAUSED;
 			}
 			else if (stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD) state = TRACKER_MOVING_STATE::STOPPED;
 			else state = TRACKER_MOVING_STATE::STATIC;
 		}
 		else stoppedInARow = 0;
 
-		NOTICE_FORMAT("%dkmh => %d seconds", velocity, sleepTime);
+		NOTICE_FORMAT("stop %d, state %d, %dkmh => %ds", stoppedInARow, state, velocity, sleepTime);
 		return state;
 	}
 
