@@ -69,10 +69,12 @@ namespace rtc {
 		tmElements_t currentTime;
 		tmElements_t alarmTime;
 
+		hardware::i2c::powerOn();
 		getTime(currentTime);
 		time::breakTime(time::makeTimestamp(currentTime) + seconds, alarmTime);
 
 		setAlarm(alarmTime);
+		hardware::i2c::powerOff();
 	}
 
 	void setAlarm(const tmElements_t &time) {
@@ -85,7 +87,9 @@ namespace rtc {
 		RTC_A.control(DS3231_A1_INT_ENABLE, DS3231_ON); //Alarm 1 ON
 		RTC_A.control(DS3231_INT_ENABLE, DS3231_ON); //INTCN ON
 
-		NOTICE_FORMAT("Next alarm : %d:%d:%d", time.hour, time.minute, time.second);
+		tmElements_t alarmTime;
+		READ_ALARM_1(alarmTime);
+		NOTICE_FORMAT("Next alarm : %d:%d:%d", alarmTime.hour, alarmTime.minute, alarmTime.second);
 
 		hardware::i2c::powerOff();
 	}
