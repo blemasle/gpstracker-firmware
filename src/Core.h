@@ -6,8 +6,9 @@
 enum class TRACKER_MOVING_STATE : uint8_t {
 	MOVING = 0,
 	PAUSED = 1,
-	STOPPED = 2,
-	STATIC = 3
+	ABOUT_TO_STOP = 2,
+	STOPPED = 3,
+	STATIC = 4
 };
 
 namespace core {

@@ -2,9 +2,11 @@
 #include "Hardware.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "Config"
 
 namespace config {
+	#define CURRENT_LOGGER "config"
+	const char VERSION_STRING[] PROGMEM = VERSION;
+
 	namespace main {
 
 		config_t value;
@@ -12,16 +14,16 @@ namespace config {
 		namespace details {
 
 			void read() {
-				VERBOSE("read");
+				#define CURRENT_LOGGER_FUNCTION "read"
+				NOTICE;
 
 				hardware::i2c::powerOn();
 				hardware::i2c::eeprom.readBlock(CONFIG_ADDR, value);
+				print();
 				if (CONFIG_SEED != value.seed) reset(); //todo : reset network if seed for network is not right
 				hardware::i2c::powerOff();
 
-				NOTICE_FORMAT("read", "%d, %s, %d, %d, %d, %d, %d, %B, %s", value.seed, value.version, value.firstEntry, value.lastEntry, value.alertBatteryLevel1, value.alertBatteryLevel2, value.alertBatteryLevelClear, value.activeAlerts, value.contactPhone);
 #if BACKUP_ENABLE_NETWORK
-				NOTICE_FORMAT("read", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
 				//networkConfig_t c = {
 				//	POSITIONS_CONFIG_NET_DEFAULT_SAVE_THRESHOLD,
 				//	0xFFFF,
@@ -30,7 +32,7 @@ namespace config {
 				//};
 				//value.network = c;
 #endif
-				/*strcpy_P(value.version, PSTR(VERSION));
+				/*strcpy_P(value.version, VERSION_STRING);
 				value.alertBatteryLevel1 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1;
 				value.alertBatteryLevel2 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2;
 				value.alertBatteryLevelClear = CONFIG_DEFAULT_BATTERY_ALERT_CLEAR;
@@ -39,10 +41,10 @@ namespace config {
 			}
 
 			void write() {
-				NOTICE_FORMAT("write", "%d, %s, %d, %d, %d, %d, %d, %B, %s", value.seed, value.version, value.firstEntry, value.lastEntry, value.alertBatteryLevel1, value.alertBatteryLevel2, value.alertBatteryLevelClear, value.activeAlerts, value.contactPhone);
-#if BACKUP_ENABLE_NETWORK
-				NOTICE_FORMAT("write", "%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
-#endif
+				#define CURRENT_LOGGER_FUNCTION "write"
+				NOTICE;
+
+				print();
 				hardware::i2c::powerOn();
 				int written = hardware::i2c::eeprom.writeBlock(CONFIG_ADDR, value);
 				hardware::i2c::powerOff();
@@ -52,8 +54,8 @@ namespace config {
 		void setup() {
 			details::read();
 
-			if(strcasecmp_P(value.version, PSTR(VERSION))) {
-				strcpy_P(value.version, PSTR(VERSION));
+			if(strcasecmp_P(value.version, VERSION_STRING)) {
+				strcpy_P(value.version, VERSION_STRING);
 				details::write();
 			}
 		}
@@ -63,11 +65,12 @@ namespace config {
 		}
 
 		void reset() {
-			VERBOSE("reset");
+			#define CURRENT_LOGGER_FUNCTION "reset"
+			NOTICE;
 
 			config_t config = {};
 			config.seed = CONFIG_SEED;
-			strcpy_P(config.version, PSTR(VERSION));
+			strcpy_P(config.version, VERSION_STRING);
 			config.firstEntry = config.lastEntry = 0xFFFF;
 			config.alertBatteryLevel1 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1;
 			config.alertBatteryLevel2 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2;
@@ -84,6 +87,15 @@ namespace config {
 
 			value = config;
 			save();
+		}
+
+		void print() {
+			#define CURRENT_LOGGER_FUNCTION "print"
+
+			NOTICE_FORMAT("%d, %s, %d, %d, %d, %d, %d, %B, %s", value.seed, value.version, value.firstEntry, value.lastEntry, value.alertBatteryLevel1, value.alertBatteryLevel2, value.alertBatteryLevelClear, value.activeAlerts, value.contactPhone);
+#if BACKUP_ENABLE_NETWORK
+			NOTICE_FORMAT("%d, %d, %s, %s", value.network.saveThreshold, value.network.lastSavedEntry, value.network.apn, value.network.url);
+#endif
 		}
 
 	}

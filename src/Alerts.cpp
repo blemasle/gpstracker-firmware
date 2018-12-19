@@ -5,9 +5,8 @@
 #include "Rtc.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "Alerts"
-
 namespace alerts {
+	#define CURRENT_LOGGER "alerts"
 
 	uint8_t getTriggered(PositionEntryMetadata &metadata) {
 		config_t* config = &config::main::value;

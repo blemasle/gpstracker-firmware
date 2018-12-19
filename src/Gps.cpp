@@ -5,8 +5,6 @@
 #include "MainUnit.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "Gps"
-
 #define TIME_YEAR_OFFSET	0
 #define TIME_MONTH_OFFSET	4
 #define TIME_DAY_OFFSET		6
@@ -16,7 +14,9 @@
 
 #define EARTH_RADIUS 6371 //kilometers
 
+
 namespace gps {
+	#define CURRENT_LOGGER "gps"
 
 	namespace details {
 		uint16_t parseSubstring(char *buffer, char *start, uint8_t size) {
@@ -25,6 +25,7 @@ namespace gps {
 		}
 
 	}
+
 	char lastPosition[GPS_POSITION_SIZE];
 	SIM808_GPS_STATUS lastStatus;
 
@@ -32,13 +33,15 @@ namespace gps {
 	float previousLng = 0;
 
 	SIM808_GPS_STATUS acquireCurrentPosition(int32_t timeout) {
+		#define CURRENT_LOGGER_FUNCTION "acquireCurrentPosition"
+
 		SIM808_GPS_STATUS currentStatus = SIM808_GPS_STATUS::OFF;
 
 		do {
-			currentStatus = hardware::sim808::device.getGpsStatus(lastPosition);
+			currentStatus = hardware::sim808::device.getGpsStatus(lastPosition, GPS_POSITION_SIZE);
 			if (currentStatus > SIM808_GPS_STATUS::FIX) break; //if we have an accurate fix, break right now
 
-			NOTICE_FORMAT("acquireCurrentPosition", "%d", currentStatus);
+			NOTICE_FORMAT("%d", currentStatus);
 			mainunit::deepSleep(GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS / 1000);
 			timeout -= GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
 		} while (timeout > 1);
@@ -47,7 +50,7 @@ namespace gps {
 			lastStatus = currentStatus;
 		}
 
-		NOTICE_FORMAT("acquireCurrentPosition", "%d", currentStatus);
+		NOTICE_FORMAT("%d", currentStatus);
 		return currentStatus;
 	}
 
@@ -62,12 +65,14 @@ namespace gps {
 	}
 
 	float getDistanceFromPrevious() {
+		#define CURRENT_LOGGER_FUNCTION "getDistanceFromPrevious"
+
 		float lat1, lng1, lat2, lng2;
 
 		if(!hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::LATITUDE, &lat2)) return 0;
 		if(!hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::LONGITUDE, &lng2)) return 0;
 
-		VERBOSE_FORMAT("distanceFromPrevious", "%s, %f, %f, %f, %f", lastPosition, previousLat, previousLng, lat2, lng2);
+		VERBOSE_FORMAT("%s, %F, %F, %F, %F", lastPosition, previousLat, previousLng, lat2, lng2);
 
 		lat1 = radians(previousLat);
 		lng1 = radians(previousLng);
@@ -85,25 +90,29 @@ namespace gps {
 
 		a = EARTH_RADIUS * (2 * atan2(sqrt(a), sqrt(1 - a))); //kilometers
 
-		NOTICE_FORMAT("distanceFromPrevious", "%fkm", a);
+		NOTICE_FORMAT("%Fkm", a);
 		return a;
 	}
 
 	uint8_t getVelocity() {
-		uint8_t velocity;
+		#define CURRENT_LOGGER_FUNCTION "getVelocity"
+
+		int16_t velocity;
 		if (!hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::SPEED, &velocity)) velocity = 0;
 
-		VERBOSE_FORMAT("getVelocity", "%d", velocity);
+		VERBOSE_FORMAT("%d", velocity);
 
 		return velocity;
 	}
 
 	void getTime(tmElements_t &time) {
+		#define CURRENT_LOGGER_FUNCTION "getTime"
+
 		char *timeStr;
 		char buffer[5];
 		hardware::sim808::device.getGpsField(lastPosition, SIM808_GPS_FIELD::UTC, &timeStr);
 
-		VERBOSE_FORMAT("getTime", "%s", timeStr);
+		VERBOSE_FORMAT("%s", timeStr);
 
 		time.year = details::parseSubstring(buffer, timeStr + TIME_YEAR_OFFSET, 4);
 		time.month = details::parseSubstring(buffer, timeStr + TIME_MONTH_OFFSET, 2);
@@ -112,6 +121,6 @@ namespace gps {
 		time.minute = details::parseSubstring(buffer, timeStr + TIME_MINUTE_OFFSET, 2);
 		time.second = details::parseSubstring(buffer, timeStr + TIME_SECOND_OFFSET, 2);
 
-		NOTICE_FORMAT("getTime", "%d/%d/%d %d:%d:%d", time.year, time.month, time.day, time.hour, time.minute, time.second);
+		NOTICE_FORMAT("%d/%d/%d %d:%d:%d", time.year, time.month, time.day, time.hour, time.minute, time.second);
 	}
 }

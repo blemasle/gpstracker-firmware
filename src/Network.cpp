@@ -5,12 +5,18 @@
 #include "Config.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "Network"
-
 namespace network {
-
+	#define CURRENT_LOGGER "network"
 	timestamp_t _poweredOnTime;
 
+	namespace details {
+
+		void print(SIM808_NETWORK_REGISTRATION_STATE state, SIM808SignalQualityReport &report) {
+			#define CURRENT_LOGGER_FUNCTION "print"
+			NOTICE_FORMAT("%d, [%d %ddBm]", state, report.rssi, report.attenuation);
+		}
+
+	}
 	void powerOn() {
 		hardware::sim808::networkPowerOn();
 		_poweredOnTime = rtc::getTime();
@@ -21,10 +27,11 @@ namespace network {
 		_poweredOnTime = 0;
 	}
 
-	__attribute__((__optimize__("O2")))
-	SIM808RegistrationStatus waitForRegistered(uint32_t timeout, bool relativeToPowerOnTime = true) {
+	SIM808_NETWORK_REGISTRATION_STATE waitForRegistered(uint32_t timeout, bool relativeToPowerOnTime = true) {
+		#define CURRENT_LOGGER_FUNCTION "waitForRegistered"
+		NOTICE;
 
-		SIM808RegistrationStatus currentStatus;
+		SIM808_NETWORK_REGISTRATION_STATE currentStatus;
 		SIM808SignalQualityReport report;
 		uint8_t noReliableNetwork = 0;
 
@@ -34,14 +41,13 @@ namespace network {
 		report = hardware::sim808::device.getSignalQuality();
 
 		do {
-			if (isAvailable(currentStatus.stat)) break;
-
-			NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.rssi, report.attenuation);
+			if (isAvailable(currentStatus)) break;
+			details::print(currentStatus, report);
 
 			if (report.rssi < NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD) noReliableNetwork++;
 			else noReliableNetwork = 0;
 			if (noReliableNetwork > NETWORK_DEFAULT_NO_NETWORK_TRIES) {
-				NOTICE_MSG("waitForRegistered", "No reliable signal");
+				NOTICE_MSG("No reliable signal");
 				break; //after a while, no network really means no network. Bailing out
 			}
 
@@ -52,7 +58,7 @@ namespace network {
 			report = hardware::sim808::device.getSignalQuality();
 		} while (timeout > 1);
 
-		NOTICE_FORMAT("waitForRegistered", "%d, [%d %ddBm]", currentStatus.stat, report.rssi, report.attenuation);
+		details::print(currentStatus, report);
 		return currentStatus;
 	}
 
@@ -69,9 +75,10 @@ namespace network {
 #endif
 
 	bool sendSms(const char * msg) {
+		#define CURRENT_LOGGER_FUNCTION "sendSms"
 		const char * phoneNumber = config::main::value.contactPhone;
 
-		NOTICE_FORMAT("sendSms", "%s, %s", phoneNumber, msg);
+		NOTICE_FORMAT("%s, %s", phoneNumber, msg);
 		return hardware::sim808::device.sendSms(phoneNumber, msg);
 	}
 }

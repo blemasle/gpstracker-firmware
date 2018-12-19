@@ -9,8 +9,6 @@
 #include "Alerts.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "Debug"
-
 #define MENU_ENTRY(name, text) const char MENU_##name[] PROGMEM = text
 
 const char FAKE_GPS_ENTRY[] PROGMEM = "1,1,20170924184842.000,49.454862,1.144537,71.900,2.70,172.6,1,,1.3,2.2,1.8,,11,7,,,37,,";
@@ -116,21 +114,11 @@ static const PositionEntryMetadata fakeMetadata PROGMEM = {
 using namespace utils;
 
 namespace debug {
-
-	namespace details {
-		inline void displayPosition(PositionEntry entry) {
-			Log.notice(F("%d,%d,%d,%d,%d,%s"),
-				entry.metadata.batteryLevel,
-				entry.metadata.batteryVoltage,
-				entry.metadata.temperature,
-				static_cast<uint8_t>(entry.metadata.status),
-				entry.metadata.timeToFix,
-				entry.position);
-		}
-	}
+	#define CURRENT_LOGGER "debug"
 
 	void displayFreeRam() {
-		Log.notice(F("RAM: %d\n"), mainunit::freeRam());
+		#define CURRENT_LOGGER_FUNCTION "displayFreeRam"
+		NOTICE_FORMAT("%d", mainunit::freeRam());
 	}
 
 	GPSTRACKER_DEBUG_COMMAND parseCommand(char id) {
@@ -146,6 +134,8 @@ namespace debug {
 	}
 
 	GPSTRACKER_DEBUG_COMMAND menu(uint16_t timeout) {
+		#define CURRENT_LOGGER_FUNCTION "menu"
+
 		GPSTRACKER_DEBUG_COMMAND command;
 		size_t menuSize = flash::getArraySize(MENU_ENTRIES);
 
@@ -159,7 +149,7 @@ namespace debug {
 					delay(MENU_INTERMEDIATE_TIMEOUT);
 					timeout -= MENU_INTERMEDIATE_TIMEOUT;
 					if (timeout <= 0) {
-						NOTICE_MSG("menu", "Timeout expired.");
+						NOTICE_MSG("Timeout expired.");
 						return GPSTRACKER_DEBUG_COMMAND::RUN;
 					}
 				}
@@ -172,32 +162,36 @@ namespace debug {
 	}
 
 	void getAndDisplayGpsPosition() {
+		#define CURRENT_LOGGER_FUNCTION "getAndDisplayGpsPosition"
 		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
 
-		NOTICE_FORMAT("getAndDisplayGpsPosition", "%d %s", gpsStatus, gps::lastPosition);
+		NOTICE_FORMAT("%d %s", gpsStatus, gps::lastPosition);
 	}
 
 	void setFakeGpsPosition() {
+		#define CURRENT_LOGGER_FUNCTION "setFakeGpsPosition"
 		strlcpy_P(gps::lastPosition, FAKE_GPS_ENTRY, GPS_POSITION_SIZE);
 
-		NOTICE_FORMAT("setFakeGpsPosition", "Last position set to : %s", gps::lastPosition);
-		NOTICE_FORMAT("setFakeGpsPosition", "Speed : %d", gps::getVelocity());
-		NOTICE_FORMAT("setFakeGpsPosition", "Sleep time : %d", core::mapSleepTime(gps::getVelocity()));
+		NOTICE_FORMAT("Last position set to : %s", gps::lastPosition);
+		NOTICE_FORMAT("Speed : %d", gps::getVelocity());
+		NOTICE_FORMAT("Sleep time : %d", core::mapSleepTime(gps::getVelocity()));
 	}
 
 	void getAndDisplayBattery() {
+		#define CURRENT_LOGGER_FUNCTION "getAndDisplayBattery"
 		hardware::sim808::powerOn();
 		SIM808ChargingStatus status = hardware::sim808::device.getChargingState();
 		hardware::sim808::powerOff();
 
-		NOTICE_FORMAT("getAndDisplayBattery", "%d %d%% %dmV", status.state, status.level, status.voltage);
+		NOTICE_FORMAT("%d %d%% %dmV", status.state, status.level, status.voltage);
 	}
 
 	void getAndDisplayRtcTime() {
+		#define CURRENT_LOGGER_FUNCTION "getAndDisplayRtcTime"
 		tmElements_t time;
 		rtc::getTime(time);
 
-		NOTICE_FORMAT("getAndDisplayRtcTime", "%d/%d/%d %d:%d:%d %t %d", time.year, time.month, time.day, time.hour, time.minute, time.second, rtc::isAccurate(), rtc::getTemperature());
+		NOTICE_FORMAT("%d/%d/%d %d:%d:%d %t %d", time.year, time.month, time.day, time.hour, time.minute, time.second, rtc::isAccurate(), rtc::getTemperature());
 	}
 
 	void setRtcTime() {
@@ -207,6 +201,8 @@ namespace debug {
 	}
 
 	void getAndDisplaySleepTimes() {
+		#define CURRENT_LOGGER_FUNCTION "getAndDisplaySleepTimes"
+
 		size_t arraySize = flash::getArraySize(config::defaultSleepTimings);
 		sleepTimings_t maxSpeedTiming;
 		utils::flash::read(&config::defaultSleepTimings[arraySize - 1], maxSpeedTiming);
@@ -215,7 +211,7 @@ namespace debug {
 			core::mapSleepTime(i);
 		}
 
-		NOTICE_MSG("getAndDisplaySleepTimes", "Done");
+		NOTICE_MSG("Done");
 	}
 
 	void getAndDisplayEepromConfig() {
@@ -223,6 +219,8 @@ namespace debug {
 	}
 
 	void getAndDisplayEepromContent() {
+		#define CURRENT_LOGGER_FUNCTION "getAndDisplayEepromContent"
+
 		char buffer[128];
 		hardware::i2c::powerOn();
 
@@ -235,27 +233,19 @@ namespace debug {
 		Serial.println();
 		hardware::i2c::powerOff();
 
-		NOTICE_MSG("getAndDisplayEepromContent", "Done");
+		NOTICE_MSG("Done");
 	}
 
-	void getAndDisplayEepromPositions() {
-		uint16_t currentEntryIndex = config::main::value.firstEntry;
+	void getAndDisplayEepromPositions(uint16_t firstIndex) {
+		uint16_t currentEntryIndex = firstIndex;
 		PositionEntry currentEntry;
 
 		hardware::i2c::powerOn();
 		do {
 			if (!positions::get(currentEntryIndex, currentEntry)) break;
-			details::displayPosition(currentEntry);
-		} while (positions::moveNext(currentEntryIndex));
+			positions::print(currentEntryIndex, currentEntry);
+		} while(positions::moveNext(currentEntryIndex));
 		hardware::i2c::powerOff();
-	}
-
-	void getAndDisplayEepromLastPosition() {
-		uint16_t lastEntryIndex = config::main::value.lastEntry;
-		PositionEntry lastEntry;
-
-		if(positions::get(lastEntryIndex, lastEntry)) details::displayPosition(lastEntry);
-		else Log.notice(F("No position recorded\n"));
 	}
 
 	void addLastPositionToEeprom() {
@@ -275,13 +265,15 @@ namespace debug {
 	}
 
 	void notifyFailures() {
+		#define CURRENT_LOGGER_FUNCTION "notifyFailures"
+
 		PositionEntryMetadata metadata = {};
 		flash::read(&fakeMetadata, metadata);
 		metadata.batteryLevel = 1;
 		metadata.temperature = ALERT_SUSPICIOUS_RTC_TEMPERATURE;
 
 		uint8_t alerts = core::notifyFailures(metadata);
-		NOTICE_FORMAT("notifyFailures", "result : %B", alerts);
+		NOTICE_FORMAT("result : %B", alerts);
 		alerts::add(alerts);
 	}
 

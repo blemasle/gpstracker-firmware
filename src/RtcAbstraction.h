@@ -12,6 +12,7 @@
 
 	#define RTC_A_CLASS uDS3231
 	#define WRITE_ALARM_1(t) RTC_A.writeAlarm1(DS3231_ALM_HMS, t)
+	#define READ_ALARM_1(t) almType_t almDummy; RTC_A.readAlarm1(almDummy, t)
 #else
 	#include <MD_DS3231.h>
 
@@ -39,4 +40,5 @@
 
 	#define RTC_A_CLASS MD_DS3231_Ext
 	#define WRITE_ALARM_1(t) RTC_A.writeAlarm1(DS3231_ALM_HMS, t)
+	#define READ_ALARM_1(t) almType_t almDummy; RTC_A.readAlarm1(almDummy, t)
 #endif

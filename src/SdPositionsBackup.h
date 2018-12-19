@@ -9,7 +9,7 @@ namespace positions {
 			class SdPositionsBackup : public PositionsBackup {
 			private:
 			public:
-				void setup();
+				void setup(bool force);
 				void backup(bool force);
 			};
 

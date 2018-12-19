@@ -16,8 +16,7 @@
 namespace utils {
 	namespace time {
 
-		__attribute__((__optimize__("O2")))
-			timestamp_t makeTimestamp(const tmElements_t &time) {
+		timestamp_t makeTimestamp(const tmElements_t &time) {
 			timestamp_t timestamp;
 
 			timestamp += (time.day - 1) * SECS_PER_DAY;
@@ -28,8 +27,7 @@ namespace utils {
 			return timestamp;
 		}
 
-		__attribute__((__optimize__("O2")))
-			void breakTime(timestamp_t timestamp, tmElements_t &time) {
+		void breakTime(timestamp_t timestamp, tmElements_t &time) {
 			time.year = 0;
 			time.month = 0;
 

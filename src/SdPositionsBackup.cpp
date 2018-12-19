@@ -6,10 +6,10 @@
 #include "Positions.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "Positions::backup::sd"
-
 #if BACKUP_ENABLE_SDCARD
 namespace positions {
+	#define CURRENT_LOGGER "positions::backup::sd"
+
 	namespace backup {
 		namespace sd {
 
@@ -60,7 +60,8 @@ namespace positions {
 				}
 
 				void appendPosition(File &file, SdPositionConfig_t &sdConfig, PositionEntry &entry) {
-					VERBOSE("appendPosition");
+					#define CURRENT_LOGGER_FUNCTION "appendPosition"
+					VERBOSE;
 
 					const char fieldTerminator = ',';
 
@@ -75,7 +76,8 @@ namespace positions {
 				}
 
 				void appendPositions(SdPositionConfig_t &sdConfig) {
-					VERBOSE("appendPositions");
+					#define CURRENT_LOGGER_FUNCTION "appendPositions"
+					VERBOSE;
 
 					uint16_t currentEntryIndex = sdConfig.lastSavedEntry + 1;
 					PositionEntry currentEntry;
@@ -95,15 +97,16 @@ namespace positions {
 				}
 			}
 
-			void SdPositionsBackup::setup() {
+			void SdPositionsBackup::setup(bool force) {
 				hardware::sdcard::setup();
 			}
 
 			void SdPositionsBackup::backup(bool force) {
-				VERBOSE("backup");
+				#define CURRENT_LOGGER_FUNCTION "backup"
+				VERBOSE;
 
 				if (!hardware::sdcard::available) {
-					VERBOSE_MSG("backup", "not available");
+					VERBOSE_MSG("not available");
 					return;
 				}
 

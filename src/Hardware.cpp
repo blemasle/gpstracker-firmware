@@ -5,16 +5,18 @@
 
 namespace hardware {
 
-#define LOGGER_NAME "Hardware::sim808"
-
 	namespace sim808 {
+		#define CURRENT_LOGGER "hardware::sim808"
+
 		SIM_SERIAL_TYPE simSerial = SIM_SERIAL;
 		SIM808 device = SIM808(SIM_RST, SIM_PWR, SIM_STATUS);
 		uint8_t networkPoweredCount = 0;
 		uint8_t gpsPoweredCount = 0;
 
 		void powerOn() {
-			VERBOSE("powerOn");
+			#define CURRENT_LOGGER_FUNCTION "powerOn"
+			VERBOSE;
+
 			bool poweredOn = device.powerOnOff(true);
 			if (!poweredOn) return;
 
@@ -23,7 +25,9 @@ namespace hardware {
 		}
 
 		void powerOff() {
-			VERBOSE("powerOff");
+			#define CURRENT_LOGGER_FUNCTION "powerOff"
+			VERBOSE;
+
 			device.powerOnOff(false);
 			networkPoweredCount = gpsPoweredCount = 0;
 		}
@@ -41,28 +45,35 @@ namespace hardware {
 		}
 
 		void setup() {
-			NOTICE("setup");
+			#define CURRENT_LOGGER_FUNCTION "setup"
+			VERBOSE;
+
 			simSerial.begin(SIM808_BAUDRATE);
 			device.begin(simSerial);
 			powerOff(); //ensure powerOff on start
 		}
 
 		void gpsPowerOn() {
+			#define CURRENT_LOGGER_FUNCTION "gpsPowerOn"
 			if(gpsPoweredCount) {
 				gpsPoweredCount++;
 				return;
 			}
 
-			VERBOSE("gpsPowerOn");
+			VERBOSE;
 			powerOn();
 			if(!networkPoweredCount) {
 				//SIM808 turns phone on by default but we don't need it for gps only
 				device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
 			}
-			device.enableGps();
+
+			device.powerOnOffGps(true);
+			gpsPoweredCount = 1;
 		}
 
 		void gpsPowerOff() {
+			#define CURRENT_LOGGER_FUNCTION "gpsPowerOff"
+
 			if (!device.powered()) {
 				networkPoweredCount = gpsPoweredCount = 0; //just to be sure counts == 0
 				return;
@@ -73,23 +84,30 @@ namespace hardware {
 				return;
 			}
 
-			VERBOSE("gpsPowerOff");
-			device.disableGps();
+			VERBOSE;
+			device.powerOnOffGps(false);
+			gpsPoweredCount = 0;
+
 			powerOffIfUnused();
 		}
 
 		void networkPowerOn() {
+			#define CURRENT_LOGGER_FUNCTION "networkPowerOn"
+
 			if(networkPoweredCount) {
 				networkPoweredCount++;
 				return;
 			}
 
-			VERBOSE("networkPowerOn");
+			VERBOSE;
 			powerOn();
 			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::FULL);
+			networkPoweredCount = 1;
 		}
 
 		void networkPowerOff() {
+			#define CURRENT_LOGGER_FUNCTION "networkPowerOff"
+
 			if (!device.powered()) {
 				networkPoweredCount = gpsPoweredCount = 0; //just to be sure counts == 0
 				return;
@@ -100,27 +118,30 @@ namespace hardware {
 				return;
 			}
 
-			VERBOSE("networkPowerOff");
+			VERBOSE;
 			device.disableGprs();
 			device.setPhoneFunctionality(SIM808_PHONE_FUNCTIONALITY::MINIMUM);
+			networkPoweredCount = 0;
+
 			powerOffIfUnused();
 		}
 	}
 
-#define LOGGER_NAME "Hardware::i2c"
-
 	namespace i2c {
+		#define CURRENT_LOGGER "hardware::i2c"
 
 		E24 eeprom = E24(E24_SIZE, E24_ADDRESS);
 		uint8_t poweredCount = 0;
 
 		void powerOn() {
+			#define CURRENT_LOGGER_FUNCTION "powerOn"
+
 			if(poweredCount) {
 				poweredCount++;
 				return;
 			}
 
-			VERBOSE("powerOn");
+			VERBOSE;
 			digitalWrite(I2C_PWR, HIGH);
 			pinMode(I2C_PWR, OUTPUT);
 
@@ -129,12 +150,14 @@ namespace hardware {
 		}
 
 		void powerOff(bool forced = false) {
+			#define CURRENT_LOGGER_FUNCTION "powerOff"
+
 			if(poweredCount > 1 && !forced) {
 				poweredCount--;
 				return;
 			}
 
-			VERBOSE("powerOff");
+			VERBOSE;
 			pinMode(I2C_PWR, INPUT);
 			digitalWrite(I2C_PWR, LOW);
 

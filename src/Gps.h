@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
-#include <SIM808_Types.h>
+#include <SIM808.Types.h>
 
 #include "Hardware.h"
 #include "Time2.h"

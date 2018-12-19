@@ -35,6 +35,7 @@ boolean MD_DS3231_Ext::writeTime(const tmElements_t &time) {
 boolean MD_DS3231_Ext::readAlarm1(almType_t &almType, tmElements_t &time) {
 	almType = MD_DS3231::getAlarm1Type();
 	bool result = MD_DS3231::readAlarm1();
+	unpack(time);
 
 	return result;
 }

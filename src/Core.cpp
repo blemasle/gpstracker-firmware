@@ -8,13 +8,13 @@
 #include "Alerts.h"
 #include "Logging.h"
 
-#define LOGGER_NAME "Core"
 #define SMS_BUFFER_SIZE		140
 #define NO_ALERTS_NOTIFIED	0
 
 using namespace utils;
 
 namespace core {
+	#define CURRENT_LOGGER "core"
 
 	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;
 	uint8_t stoppedInARow = SLEEP_DEFAULT_STOPPED_THRESHOLD - 1;
@@ -39,7 +39,11 @@ namespace core {
 		bool acquired = false;
 		PositionEntryMetadata metadata;
 
-		if(movingState >= TRACKER_MOVING_STATE::STOPPED) positions::prepareBackup();
+		if(movingState >= TRACKER_MOVING_STATE::ABOUT_TO_STOP) {
+			//forcing when the tracker is about to stop (which should result in STOPPED a few lines below)
+			positions::prepareBackup(movingState == TRACKER_MOVING_STATE::ABOUT_TO_STOP);
+		}
+
 		acquired = positions::acquire(metadata);
 
 		if (acquired) {
@@ -53,7 +57,7 @@ namespace core {
 		alerts::add(notifyFailures(metadata));
 
 		if(movingState >= TRACKER_MOVING_STATE::STOPPED) {
-			positions::doBackup(movingState == TRACKER_MOVING_STATE::STOPPED); //do not force on STATIC
+			positions::doBackup(movingState == TRACKER_MOVING_STATE::STOPPED); //forcing at the moment the tracker stop
 		}
 
 		if (acquired) updateRtcTime();
@@ -61,20 +65,22 @@ namespace core {
 	}
 
 	uint8_t notifyFailures(PositionEntryMetadata &metadata) {
-		SIM808RegistrationStatus networkStatus;
+		#define CURRENT_LOGGER_FUNCTION "notifyFailures"
+
+		SIM808_NETWORK_REGISTRATION_STATE networkStatus;
 		char buffer[SMS_BUFFER_SIZE];
 		const __FlashStringHelper * backupFailureString = F(" Backup battery failure ?");
 		bool notified = false;
 
 		uint8_t triggered = alerts::getTriggered(metadata);
-		if (!triggered) return NO_ALERTS_NOTIFIED;
+		NOTICE_FORMAT("triggered : %B", triggered);
 
-		NOTICE_FORMAT("notifyFailures", "triggered : %B", triggered);
+		if (!triggered) return NO_ALERTS_NOTIFIED;
 
 		network::powerOn();
 		networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
 
-		if (network::isAvailable(networkStatus.stat)) {
+		if (network::isAvailable(networkStatus)) {
 			strncpy_P(buffer, PSTR("Alerts !"), SMS_BUFFER_SIZE);
 			if (bitRead(triggered, ALERT_BATTERY_LEVEL_1) || bitRead(triggered, ALERT_BATTERY_LEVEL_2)) {
 				details::appendToSmsBuffer(buffer, PSTR("\n- Battery at %d%%."), metadata.batteryLevel);
@@ -89,12 +95,12 @@ namespace core {
 			}
 
 #if ALERTS_ON_SERIAL
-			NOTICE_FORMAT("notifyFailure", "%s", buffer);
+			NOTICE_FORMAT("%s", buffer);
 			notified = true;
 #else
 			notified = network::sendSms(buffer);
 #endif
-			if (!notified) NOTICE_MSG("notifyFailure", "SMS not sent !");
+			if (!notified) NOTICE_MSG("SMS not sent !");
 		}
 
 		network::powerOff();
@@ -108,6 +114,8 @@ namespace core {
 	}
 
 	TRACKER_MOVING_STATE updateSleepTime() {
+		#define CURRENT_LOGGER_FUNCTION "updateSleepTime"
+
 		TRACKER_MOVING_STATE state = TRACKER_MOVING_STATE::MOVING;
 		uint8_t velocity = gps::getVelocity();
 
@@ -120,18 +128,22 @@ namespace core {
 
 			if (stoppedInARow < SLEEP_DEFAULT_STOPPED_THRESHOLD) {
 				sleepTime = SLEEP_DEFAULT_PAUSING_TIME_SECONDS;
-				state = TRACKER_MOVING_STATE::PAUSED;
+				state = stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD - 1 ?
+					TRACKER_MOVING_STATE::ABOUT_TO_STOP :
+					TRACKER_MOVING_STATE::PAUSED;
 			}
 			else if (stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD) state = TRACKER_MOVING_STATE::STOPPED;
 			else state = TRACKER_MOVING_STATE::STATIC;
 		}
 		else stoppedInARow = 0;
 
-		NOTICE_FORMAT("updateSleepTime", "%dkmh => %d seconds", velocity, sleepTime);
+		NOTICE_FORMAT("stop %d, state %d, %dkmh => %ds", stoppedInARow, state, velocity, sleepTime);
 		return state;
 	}
 
 	uint16_t mapSleepTime(uint8_t velocity) {
+		#define CURRENT_LOGGER_FUNCTION "mapSleepTime"
+
 		uint16_t result;
 		uint16_t currentTime = 0xFFFF;
 
@@ -154,7 +166,7 @@ namespace core {
 
 		}
 
-		VERBOSE_FORMAT("mapSleepTime", "%d,%d", velocity, result);
+		VERBOSE_FORMAT("%d,%d", velocity, result);
 		return result;
 	}
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
-#include <SIM808_Types.h>
+#include <SIM808.Types.h>
 
 #define POSITION_SIZE 115
 
@@ -28,6 +28,8 @@ namespace positions {
 	bool moveNext(uint16_t &index);
 	uint16_t count(uint16_t fromIndex);
 
-	void prepareBackup();
+	void prepareBackup(bool force);
 	void doBackup(bool force);
+
+	void print(uint16_t index, PositionEntry &entry);
 }

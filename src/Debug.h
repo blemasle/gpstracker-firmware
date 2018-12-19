@@ -44,8 +44,7 @@ namespace debug {
 
 	void getAndDisplayEepromConfig();
 	void getAndDisplayEepromContent();
-	void getAndDisplayEepromPositions();
-	void getAndDisplayEepromLastPosition();
+	void getAndDisplayEepromPositions(uint16_t firstIndex);
 	void addLastPositionToEeprom();
 
 	void notifyFailures();

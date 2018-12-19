@@ -16,7 +16,7 @@ namespace positions {
 			public:
 				void setup();
 
-				void prepare();
+				void prepare(bool force);
 				void backup(bool force);
 			};
 
