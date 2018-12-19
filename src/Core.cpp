@@ -73,9 +73,9 @@ namespace core {
 		bool notified = false;
 
 		uint8_t triggered = alerts::getTriggered(metadata);
-		if (!triggered) return NO_ALERTS_NOTIFIED;
-
 		NOTICE_FORMAT("triggered : %B", triggered);
+
+		if (!triggered) return NO_ALERTS_NOTIFIED;
 
 		network::powerOn();
 		networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
