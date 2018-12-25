@@ -1,11 +1,31 @@
 #include "Config.h"
 #include "Hardware.h"
 #include "Logging.h"
+#include "Flash.h"
 
+const char VERSION_STRING[] PROGMEM = VERSION;
+const config_t DEFAULT_CONFIG PROGMEM = {
+	CONFIG_SEED,
+	VERSION,
+	0xFFFF,
+	0xFFFF,
+#if BACKUP_ENABLE_NETWORK
+	{
+		POSITIONS_CONFIG_NET_DEFAULT_SAVE_THRESHOLD,
+		0xFFFF,
+		POSITIONS_CONFIG_NET_DEFAULT_APN,
+		POSITIONS_CONFIG_NET_DEFAULT_URL
+	},
+#endif
+	CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1,
+	CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2,
+	CONFIG_DEFAULT_BATTERY_ALERT_CLEAR,
+	CONFIG_DEFAULT_ACTIVE_ALERTS,
+	CONFIG_DEFAULT_CONTACT_PHONE
+};
 
 namespace config {
 	#define CURRENT_LOGGER "config"
-	const char VERSION_STRING[] PROGMEM = VERSION;
 
 	namespace main {
 
@@ -68,24 +88,7 @@ namespace config {
 			#define CURRENT_LOGGER_FUNCTION "reset"
 			NOTICE;
 
-			config_t config = {};
-			config.seed = CONFIG_SEED;
-			strcpy_P(config.version, VERSION_STRING);
-			config.firstEntry = config.lastEntry = 0xFFFF;
-			config.alertBatteryLevel1 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL1;
-			config.alertBatteryLevel2 = CONFIG_DEFAULT_BATTERY_ALERT_LEVEL2;
-			config.alertBatteryLevelClear = CONFIG_DEFAULT_BATTERY_ALERT_CLEAR;
-			config.activeAlerts = CONFIG_DEFAULT_ACTIVE_ALERTS;
-			strcpy_P(config.contactPhone, PSTR(CONFIG_DEFAULT_CONTACT_PHONE));
-
-#if BACKUP_ENABLE_NETWORK
-			config.network.saveThreshold = POSITIONS_CONFIG_NET_DEFAULT_SAVE_THRESHOLD;
-			config.network.lastSavedEntry = 0xFFFF;
-			strcpy_P(config.network.apn, PSTR(POSITIONS_CONFIG_NET_DEFAULT_APN));
-			strcpy_P(config.network.url, PSTR(POSITIONS_CONFIG_NET_DEFAULT_URL));
-#endif
-
-			value = config;
+			utils::flash::read(&DEFAULT_CONFIG, value);
 			save();
 		}
 
