@@ -1,5 +1,7 @@
 #pragma once
 
+#include "User.h"
+
 /**
  * Configure the values used for alerts triggering.
  * Note that the battery level percentage are quite high,
@@ -16,7 +18,6 @@
 #define CONFIG_BATTERY_ALERT_LEVEL2			38				///< Battery percentage at which to trigger the final low battery alert.
 #define CONFIG_BATTERY_ALERT_CLEAR			60				///< Battery percentage at which to clear all battery alerts.
 #define CONFIG_ACTIVE_ALERTS				0				///< Default active alerts
-#define CONFIG_CONTACT_PHONE				"+642568452" 	///< Default phone number to send the alert SMS to.
 
 
 #define ALERT_SUSPICIOUS_RTC_TEMPERATURE	0	///< Temperature at which to consider the RTC module as failling.

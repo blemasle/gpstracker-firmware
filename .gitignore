@@ -3,3 +3,6 @@
 
 #Visual Studio code
 .vscode/
+
+#Unversionned sensitive data configuration file
+/src/config/Sensitive.h
