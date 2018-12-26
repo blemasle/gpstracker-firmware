@@ -11,7 +11,7 @@
  * clearing the levels and retriggering them the next time.
  */
 
-#define ALERTS_ON_SERIAL _DEBUG										///< Display alerts on serial when connected rather than sending an SMS.
+#define ALERTS_ON_SERIAL _DEBUG								///< Display alerts on serial when connected rather than sending an SMS.
 #define CONFIG_BATTERY_ALERT_LEVEL1			45				///< Battery percentage at which to trigger the first low battery alert.
 #define CONFIG_BATTERY_ALERT_LEVEL2			38				///< Battery percentage at which to trigger the final low battery alert.
 #define CONFIG_BATTERY_ALERT_CLEAR			60				///< Battery percentage at which to clear all battery alerts.

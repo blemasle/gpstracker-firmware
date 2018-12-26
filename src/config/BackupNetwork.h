@@ -9,8 +9,8 @@
 #define POSITIONS_CONFIG_NET_URL				"http://yourserver.com/endpoint"	///< URL to which positions data will be send through an HTTP POST request
 #define POSITIONS_CONFIG_NET_EXPECTED_RESPONSE	201									///< Expected response code from the server that indicates that the positions has been successfully backuped.
 #define POSITIONS_CONFIG_NET_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD		5			///< Determines how many times to deal with an unreliable network before postponing the backup.
-																							///< In an area where cell reception isn't good, this avoid to try to backup the positions
-																							///< every single time, which would rapidly consumes all the battery.
+																					///< In an area where cell reception isn't good, this avoid to try to backup the positions
+																					///< every single time, which would rapidly consumes all the battery.
 
 struct networkConfig_t {
 	uint8_t saveThreshold;		//sizeof = 1
