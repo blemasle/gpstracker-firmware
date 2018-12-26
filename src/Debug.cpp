@@ -163,7 +163,7 @@ namespace debug {
 
 	void getAndDisplayGpsPosition() {
 		#define CURRENT_LOGGER_FUNCTION "getAndDisplayGpsPosition"
-		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
+		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_TOTAL_TIMEOUT_MS);
 
 		NOTICE_FORMAT("%d %s", gpsStatus, gps::lastPosition);
 	}

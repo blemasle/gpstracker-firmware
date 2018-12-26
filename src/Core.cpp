@@ -16,8 +16,8 @@ using namespace utils;
 namespace core {
 	#define CURRENT_LOGGER "core"
 
-	uint16_t sleepTime = SLEEP_DEFAULT_TIME_SECONDS;
-	uint8_t stoppedInARow = SLEEP_DEFAULT_STOPPED_THRESHOLD - 1;
+	uint16_t sleepTime = SLEEP_TIME_SECONDS;
+	uint8_t stoppedInARow = SLEEP_STOPPED_THRESHOLD - 1;
 	TRACKER_MOVING_STATE movingState = TRACKER_MOVING_STATE::MOVING;
 
 	namespace details {
@@ -78,7 +78,7 @@ namespace core {
 		if (!triggered) return NO_ALERTS_NOTIFIED;
 
 		network::powerOn();
-		networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
+		networkStatus = network::waitForRegistered(NETWORK_TOTAL_TIMEOUT_MS);
 
 		if (network::isAvailable(networkStatus)) {
 			strncpy_P(buffer, PSTR("Alerts !"), SMS_BUFFER_SIZE);
@@ -123,16 +123,16 @@ namespace core {
 
 		if (velocity < SLEEP_TIMING_MIN_MOVING_VELOCITY) {
 			float distance = gps::getDistanceFromPrevious(); //did we missed positions because we were sleeping ?
-			if (distance > GPS_DEFAULT_MISSED_POSITION_GAP_KM) stoppedInARow = 0;
-			else stoppedInARow = min(stoppedInARow + 1, SLEEP_DEFAULT_STOPPED_THRESHOLD + 1); //avoid overflow on REALLY long stops
+			if (distance > GPS_MISSED_POSITION_GAP_KM) stoppedInARow = 0;
+			else stoppedInARow = min(stoppedInARow + 1, SLEEP_STOPPED_THRESHOLD + 1); //avoid overflow on REALLY long stops
 
-			if (stoppedInARow < SLEEP_DEFAULT_STOPPED_THRESHOLD) {
-				sleepTime = SLEEP_DEFAULT_PAUSING_TIME_SECONDS;
-				state = stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD - 1 ?
+			if (stoppedInARow < SLEEP_STOPPED_THRESHOLD) {
+				sleepTime = SLEEP_PAUSING_TIME_SECONDS;
+				state = stoppedInARow == SLEEP_STOPPED_THRESHOLD - 1 ?
 					TRACKER_MOVING_STATE::ABOUT_TO_STOP :
 					TRACKER_MOVING_STATE::PAUSED;
 			}
-			else if (stoppedInARow == SLEEP_DEFAULT_STOPPED_THRESHOLD) state = TRACKER_MOVING_STATE::STOPPED;
+			else if (stoppedInARow == SLEEP_STOPPED_THRESHOLD) state = TRACKER_MOVING_STATE::STOPPED;
 			else state = TRACKER_MOVING_STATE::STATIC;
 		}
 		else stoppedInARow = 0;
