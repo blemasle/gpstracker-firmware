@@ -44,15 +44,15 @@ namespace network {
 			if (isAvailable(currentStatus)) break;
 			details::print(currentStatus, report);
 
-			if (report.rssi < NETWORK_DEFAULT_NO_NETWORK_QUALITY_THRESHOLD) noReliableNetwork++;
+			if (report.rssi < NETWORK_NO_NETWORK_QUALITY_THRESHOLD) noReliableNetwork++;
 			else noReliableNetwork = 0;
-			if (noReliableNetwork > NETWORK_DEFAULT_NO_NETWORK_TRIES) {
+			if (noReliableNetwork > NETWORK_NO_NETWORK_TRIES) {
 				NOTICE_MSG("No reliable signal");
 				break; //after a while, no network really means no network. Bailing out
 			}
 
-			mainunit::deepSleep(NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS / 1000);
-			timeout -= NETWORK_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
+			mainunit::deepSleep(NETWORK_INTERMEDIATE_TIMEOUT_MS / 1000);
+			timeout -= NETWORK_INTERMEDIATE_TIMEOUT_MS;
 
 			currentStatus = hardware::sim808::device.getNetworkRegistrationStatus();
 			report = hardware::sim808::device.getSignalQuality();

@@ -42,8 +42,8 @@ namespace gps {
 			if (currentStatus > SIM808_GPS_STATUS::FIX) break; //if we have an accurate fix, break right now
 
 			NOTICE_FORMAT("%d", currentStatus);
-			mainunit::deepSleep(GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS / 1000);
-			timeout -= GPS_DEFAULT_INTERMEDIATE_TIMEOUT_MS;
+			mainunit::deepSleep(GPS_INTERMEDIATE_TIMEOUT_MS / 1000);
+			timeout -= GPS_INTERMEDIATE_TIMEOUT_MS;
 		} while (timeout > 1);
 
 		if (currentStatus > SIM808_GPS_STATUS::NO_FIX) {

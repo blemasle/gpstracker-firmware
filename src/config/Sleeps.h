@@ -6,10 +6,10 @@
 
 #define SLEEP_TIMING_TIME(hours, minutes) hours * 60 + minutes
 
-#define SLEEP_DEFAULT_TIME_SECONDS						1800 	///< Default sleep time
+#define SLEEP_TIME_SECONDS						1800 	///< Default sleep time
 #define SLEEP_TIMING_MIN_MOVING_VELOCITY				5		///< Speed under which to consider the tracker as not moving
-#define SLEEP_DEFAULT_PAUSING_TIME_SECONDS				270		///< Sleep time to use when not moving
-#define SLEEP_DEFAULT_STOPPED_THRESHOLD					5		///< Number of successive positions acquired as not moving before considering the tracker as stopped
+#define SLEEP_PAUSING_TIME_SECONDS				270		///< Sleep time to use when not moving
+#define SLEEP_STOPPED_THRESHOLD					5		///< Number of successive positions acquired as not moving before considering the tracker as stopped
 
 #define SLEEP_TIMING_MIN SLEEP_TIMING_TIME(0, 0)
 #define SLEEP_TIMING_MAX SLEEP_TIMING_TIME(23, 59)
@@ -36,8 +36,8 @@ namespace config {
 	static const sleepTimings_t defaultSleepTimings[] PROGMEM = {
 		// Sleep timings when not moving
 		{ 0, SLEEP_TIMING_TIME(16, 00), SLEEP_TIMING_TIME(19, 59), 3600 },				///< 1 hour between 16:00 and 20:00 UTC (04:00 to 08:00 UTC+12)
-		{ 0, SLEEP_TIMING_TIME(20, 00), SLEEP_TIMING_MAX, SLEEP_DEFAULT_TIME_SECONDS },	///< default (30 minutes) between 20:00 and 00:00 UTC (08:00 to 12:00 UTC+12)
-		{ 0, SLEEP_TIMING_MIN, SLEEP_TIMING_TIME(8, 29), SLEEP_DEFAULT_TIME_SECONDS },	///< default (30 minutes) between 00:00 and 8:30 UTC (12:00 to 20:30 UTC+12)
+		{ 0, SLEEP_TIMING_TIME(20, 00), SLEEP_TIMING_MAX, SLEEP_TIME_SECONDS },	///< default (30 minutes) between 20:00 and 00:00 UTC (08:00 to 12:00 UTC+12)
+		{ 0, SLEEP_TIMING_MIN, SLEEP_TIMING_TIME(8, 29), SLEEP_TIME_SECONDS },	///< default (30 minutes) between 00:00 and 8:30 UTC (12:00 to 20:30 UTC+12)
 		{ 0, SLEEP_TIMING_TIME(8, 30), SLEEP_TIMING_TIME(15, 59), 10800 },				///< 3 hours between 20:30 and 16:00 UTC (20:30 to 04:00 UTC+12)
 
 		// Sleep timings while moving

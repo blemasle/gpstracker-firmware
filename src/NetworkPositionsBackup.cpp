@@ -53,7 +53,7 @@ namespace positions {
 				);
 
 				NOTICE_FORMAT("Response : %d", responseCode);
-				return responseCode == POSITIONS_CONFIG_NET_DEFAULT_EXPECTED_RESPONSE;
+				return responseCode == POSITIONS_CONFIG_NET_EXPECTED_RESPONSE;
 			}
 
 			void NetworkPositionsBackup::appendPositions() {
@@ -67,14 +67,14 @@ namespace positions {
 				if (!positions::count(config::main::value.network.lastSavedEntry)) return;
 
 				network::powerOn();
-				networkStatus = network::waitForRegistered(NETWORK_DEFAULT_TOTAL_TIMEOUT_MS);
+				networkStatus = network::waitForRegistered(NETWORK_TOTAL_TIMEOUT_MS);
 
 				if (networkStatus == SIM808_NETWORK_REGISTRATION_STATE::ERROR ||
 					(!network::isAvailable(networkStatus) || !network::enableGprs())) {
-					networkUnavailableInARow = min(networkUnavailableInARow + 1, POSITIONS_CONFIG_NET_DEFAULT_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD + 1); //avoid increment overflow
+					networkUnavailableInARow = min(networkUnavailableInARow + 1, POSITIONS_CONFIG_NET_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD + 1); //avoid increment overflow
 					NOTICE_MSG("network or gprs unavailable");
 
-					if (networkUnavailableInARow > POSITIONS_CONFIG_NET_DEFAULT_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD) {
+					if (networkUnavailableInARow > POSITIONS_CONFIG_NET_UNAVAILABLE_NETWORK_POSTPONE_THRESHOLD) {
 						networkUnavailablePostpone++;
 					}
 				}

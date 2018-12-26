@@ -80,7 +80,7 @@ namespace positions {
 
 		gps::powerOn();
 		before = rtc::getTime();
-		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_DEFAULT_TOTAL_TIMEOUT_MS);
+		SIM808_GPS_STATUS gpsStatus = gps::acquireCurrentPosition(GPS_TOTAL_TIMEOUT_MS);
 		uint16_t timeToFix = rtc::getTime() - before;
 		SIM808ChargingStatus battery = hardware::sim808::device.getChargingState();
 		gps::powerOff();
