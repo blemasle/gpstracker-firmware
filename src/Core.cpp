@@ -61,6 +61,8 @@ namespace core {
 		}
 
 		if (acquired) updateRtcTime();
+
+		hardware::sim808::powerOff(); //forcing power off, regardless of the counts and current use
 		mainunit::deepSleep(sleepTime);
 	}
 
