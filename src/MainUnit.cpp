@@ -13,7 +13,9 @@ namespace mainunit {
 	namespace details {
 
 		void prepareSleep() {
+			hardware::sim808::powerOff(); //forcing power off, regardless of the counts and current use
 			hardware::sim808::simSerial.end(); //avoid woke up by SoftwareSerial interrupt
+
 			delay(5); //ensure log messages have been printed out
 		}
 
@@ -44,8 +46,8 @@ namespace mainunit {
 		#define CURRENT_LOGGER_FUNCTION "deepSleep"
 		NOTICE_FORMAT("%ds", seconds);
 
-		interruptIn(seconds);
 		details::prepareSleep();
+		interruptIn(seconds);
 		LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
 		details::wokeUp();
 	}
