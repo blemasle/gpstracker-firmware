@@ -36,9 +36,10 @@ namespace mainunit {
 	}
 
 	void interruptIn(uint16_t seconds) {
-		rtc::setAlarm(seconds);
-
 		pinMode(RTC_WAKE, INPUT);
+
+		EIFR |= 1 << INTF1; //forcing interrupt clear as sometimes, it does not seems to work (1 second appart positions)
+		rtc::setAlarm(seconds);
 		attachInterrupt(digitalPinToInterrupt(RTC_WAKE), interrupt, FALLING);
 	}
 
