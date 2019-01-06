@@ -20,7 +20,7 @@ before_script:
  - sed -E "s/^#define ENABLE_(12H|DOW|DYNAMIC_CENTURY) 1/#define ENABLE_\\1 0/" -i ~/Arduino/libraries/MD_DS3231/src/MD_DS3231.h # Disabling MD_DS3231 unwanted features
  - "tail --line=+`sed -n '/\\/\\/ #pragma once/=' src/config/User.h` src/config/User.h | sed 's/^\\/\\/ //' > src/config/Sensitive.h" # Using the example configuration file for compilation
 script:
- - arduino --verify --board arduino:avr:uno $PWD/src/GpsTracker.ino
+ - arduino --verify --board arduino:avr:pro:cpu=8MHzatmega328 $PWD/src/GpsTracker.ino
 notifications:
   email:
     on_success: change
