@@ -11,7 +11,7 @@ before_install:
   - sudo mv arduino-$ARDUINO_IDE_VERSION /usr/local/share/arduino
   - sudo ln -s /usr/local/share/arduino/arduino /usr/local/bin/arduino
 install:
- - arduino --install-library "SIM808"
+ - git clone https://github.com/blemasle/arduino-sim808 /usr/local/share/arduino/libraries/SIM808 # Until the lib is published to Arduino Library Manager
  - arduino --install-library "E24"
  - arduino --install-library "Low-Power"
  - arduino --install-library "ArduinoLog"
