@@ -1,0 +1,27 @@
+language: c
+env:
+  global:
+    - ARDUINO_IDE_VERSION="1.8.5"
+before_install:
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
+  - sleep 3
+  - export DISPLAY=:1.0
+  - wget http://downloads.arduino.cc/arduino-$ARDUINO_IDE_VERSION-linux64.tar.xz
+  - tar xf arduino-$ARDUINO_IDE_VERSION-linux64.tar.xz
+  - sudo mv arduino-$ARDUINO_IDE_VERSION /usr/local/share/arduino
+  - sudo ln -s /usr/local/share/arduino/arduino /usr/local/bin/arduino
+install:
+ - git clone https://github.com/blemasle/arduino-sim808 /usr/local/share/arduino/libraries/SIM808 # Until the lib is published to Arduino Library Manager
+ - arduino --install-library "E24"
+ - arduino --install-library "Low-Power"
+ - arduino --install-library "ArduinoLog"
+ - arduino --install-library "MD_DS3231"
+before_script:
+ - sed -E "s/^#define ENABLE_(12H|DOW|DYNAMIC_CENTURY) 1/#define ENABLE_\1 0/" -i /usr/local/share/arduino/libraries/MD_DS3231/src/MD_DS3231.h # Disabling MD_DS3231 unwanted features
+ - "tail --line=+`sed -n '/\/\/ #pragma once/=' src/config/User.h` src/config/User.h | sed 's/^\/\/ //' > src/config/Sensitive.h" # Using the example configuration file for compilation
+script:
+ - arduino --verify --board arduino:avr:uno $PWD/src/GpsTracker.ino
+notifications:
+  email:
+    on_success: change
+    on_failure: change

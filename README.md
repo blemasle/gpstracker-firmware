@@ -1,4 +1,6 @@
 # High autonomy GPS tracker.
+[![Build Status](https://travis-ci.org/blemasle/gpstracker-firmware.svg?branch=master)](https://travis-ci.org/blemasle/gpstracker-firmware)
+[![License](https://img.shields.io/badge/license-MIT%20License-blue.svg)](http://doge.mit-license.org)
 
 This project aims to provides a GPS tracker based on an Arduino Pro mini as the central unit. Battery saving has been incorporated into every step of the design. A custom designed [PCB](https://github.com/blemasle/gpstracker-pcb) is available to avoid using poorly power efficient boards.
 
