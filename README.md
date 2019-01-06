@@ -1,8 +1,9 @@
 # High autonomy GPS tracker.
-This project aims to provides an autonomous GPS tracker based on an Arduino Pro mini as the central unit. Battery saving has been incorporated into every step of the design. A custom designed [circuit board](https://github.com/blemasle/kicad-gpstracker) is available to avoid using poorly power efficient boards.
+
+This project aims to provides a GPS tracker based on an Arduino Pro mini as the central unit. Battery saving has been incorporated into every step of the design. A custom designed [PCB](https://github.com/blemasle/gpstracker-pcb) is available to avoid using poorly power efficient boards.
 
 # Features
- * High autonomy
+ * High autonomy (several weeks with a 1700 mAh battery)
  * Automatic acquisition of GPS position
  * Dynamically adjusted positions acquisition frequency based on speed and time of the day
  * Local buffer of 4095 positions with a 512K EEPROM
@@ -23,7 +24,7 @@ This project can be build using standard Arduino boards and shields. For instanc
 This should only be done for testing and debugging purpose though, as both are not designed with energy saving in mind, and will rapidly consumes all your battery.
 
 ## Using a dedicated board
-For optimum energy management and maximum autonomy, a double-sided, surface mounted [circuit board](https://github.com/blemasle/kicad-gpstracker) has been created. Taking that path requires either using soldering paste or some fine soldering skills : the SIM808 package can be quite hard to solder by hand.
+For optimum energy management and maximum autonomy, a double-sided, surface mounted [PCB](https://github.com/blemasle/gpstracker-pcb) has been created. Taking that path requires either using soldering paste or some fine soldering skills : the SIM808 package can be quite hard to solder by hand.
 
 ## Software
 The project has been build using Arduino 1.8.5. Ditching Arduino IDE in favor of an advanced IDE (VS Code, Visual Micro) is strongly recommended.
