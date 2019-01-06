@@ -26,45 +26,45 @@ This project can be build using standard Arduino boards and shields. For instanc
 This should only be done for testing and debugging purpose though, as both are not designed with energy saving in mind, and will rapidly consumes all your battery.
 
 ## Using a dedicated board
-For optimum energy management and maximum autonomy, a double-sided, surface mounted [PCB](https://github.com/blemasle/gpstracker-pcb) has been created. Taking that path requires either using soldering paste or some fine soldering skills : the SIM808 package can be quite hard to solder by hand.
+For optimum energy management and maximum autonomy, a double-sided, surface mounted [PCB](https://github.com/blemasle/gpstracker-pcb) has been created. Taking that path requires either using soldering paste or some fine soldering skills : the SIM808 IC can be quite hard to solder by hand.
 
 ## Software
 The project has been build using Arduino 1.8.5. Ditching Arduino IDE in favor of an advanced IDE (VS Code, Visual Micro) is strongly recommended.
 
-### Arduino Librairies
- * [SIM808](https://github.com/blemasle/arduino-sim808)
- * [MD_DS3231](https://github.com/MajicDesigns/MD_DS3231)
- * [E24](https://github.com/blemasle/arduino-e24/)
- * [Low-Power](https://github.com/rocketscream/Low-Power)
- * [Arduino-Log](https://github.com/thijse/Arduino-Log/)
-
-All those libraries are available through the Arduino's Library Manager.
-You will need to disable some features in [MD_DS3231.h](https://github.com/MajicDesigns/MD_DS3231/blob/master/src/MD_DS3231.h) for the compilation to succeed. Do to so, run the following script in the MD_DS3231 directory, or change the defines by hand accordingly.
-
+### Arduino libraries
+Install the required libraries through the Arduino's Library Manager UI, or run the following script :
 ```sh
 #!/bin/sh
 
-sed "s/^#define ENABLE_12H 1/#define ENABLE_12H 0/" -i MD_DS3231.h
-sed "s/^#define ENABLE_DOW 1/#define ENABLE_DOW 0/" -i MD_DS3231.h
-sed "s/^#define ENABLE_CENTURY 1/#define ENABLE_CENTURY 0/" -i MD_DS3231.h
+arduino --install-library "E24"
+arduino --install-library "Low-Power"
+arduino --install-library "ArduinoLog"
+arduino --install-library "MD_DS3231"
+arduino --install-library "SIM808"
 ```
 
-## Configuration
+Disable unneeded features of MD_DS3231 for the HEX to fit in the ATMega328p by setting `ENABLE_12H`, `ENABLE_DOW` and `ENABLE_DYNAMIC_CENTURY` to `0` in [MD_DS3231.h](https://github.com/MajicDesigns/MD_DS3231/blob/master/src/MD_DS3231.h) or running `sed -E "s/^#define ENABLE_(12H|DOW|DYNAMIC_CENTURY) 1/#define ENABLE_\1 0/" -i MD_DS3231.h`
+
+### Configuration
 To fully use the project, you will need to adjust some values based on your needs. Each file under [src/config](src/config) can be modified, but the one you'll be most likely interested in are :
  * [User.h](/src/config/User.h) : Dumb, versionned file containing an example of the values in [Sensitive.h](/src/config/Sensitive.h)
- * [Sensitive.h](/src/config/Sensitive.h) : Sensitive data that should *never* be versionned (phone number, web server address)
+ * Sensitive.h : Sensitive data that should *never* be versionned (phone number, web server address)
  * [Alerts.h](/src/config/Alerts.h) : Alerts levels
  * [BackupNetwork.h](/src/config/BackupNetwork.h) : Network backup and configuration
  * [Sleeps.h](/src/config/Pins.h) : Sleeps duration configuration
+
+# Compiling
+If you're using the [custom board](https://github.com/blemasle/gpstracker-pcb), set the board to `Arduino Pro or Pro Mini` and the processor to `ATMega328P (3.3V, 8Mhz)` before hitting `Verify` or `upload`.
+Or simply run `arduino --verify --board arduino:avr:pro:cpu=8MHzatmega328 src/GpsTracker.ino`
 
 # How does it work ?
 Each `loop` execution procedes (roughly) through the following phases :
  * Acquisition of current GPS position
  * Triggering alerts if needed
- * Backuping positions if neede
+ * Backuping positions if needed
  * Deep sleep until the next `loop`
 
-Each one of these phases requires long waits (acquiring GPS signal, registering to the networks, etc). To preserve battery during those waits, all non-essentials devices are turned off, including the main ATMega328p. An interrupt coming from the RTC DS3231 chip (powered by a 3V coin battery) is used to woke up the main unit.
+Each one of these phases requires long waits (acquiring GPS signal, registering to the networks, etc). To preserve battery during those waits, all non-essentials devices are turned off, including the main ATMega328p. An interrupt coming from the RTC DS3231 chip (powered by the 3V coin battery) is used to woke up the main unit.
 
 ## Backuping positions
 As positions backup can take quite some time, they're only backuped in two cases :
@@ -83,7 +83,7 @@ An SD card was first intended to be used for logging, data saving and configurat
 
 ## HTTP
 Sadly, the SIM808 HTTP stack is unable to achieve reliable HTTPS. Currently, the backup is done with HTTP requests and there is no encryption, signature or authentication header (because without HTTPS, authentication header serves almost no purpose).
-Any information on how to achieve proper and reliable HTTPS support or at least request signature (with the limited resource of an ATMega328p) is welcomed.
+Any information on how to achieve proper and reliable HTTPS support or at least request signature (with the limited resource of an ATMega328p of course) is welcomed.
 
 ## Several firmwares
 One possibility to include additional features would be to split the current firmware into several ones. For instance :
@@ -91,4 +91,4 @@ One possibility to include additional features would be to split the current fir
  - one "configuration" firmware to read and write EEPROM configuration rather than hardcoded values into the header files
  - one "debugging" firmware with additional logging and the ability to run specific parts of the main `loop` indepently
 
-As I was using and needed the device *while* developing it, I couldn't take such a big risk that would potentionally break things and miss or list some positions records.
+As I was using and needed the device *while* developing it, I couldn't take such a big risk that would potentionally break things and miss or lost some positions records.
