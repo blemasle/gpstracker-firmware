@@ -1,12 +1,13 @@
+#include "Config.h"
+#if BACKUP_ENABLE_SDCARD
+
 #include "SdPositionsBackup.h"
 #include "SdPositionsConfig.h"
 #include "SdCard.h"
 #include "Hardware.h"
-#include "Config.h"
 #include "Positions.h"
 #include "Logging.h"
 
-#if BACKUP_ENABLE_SDCARD
 namespace positions {
 	#define CURRENT_LOGGER "positions::backup::sd"
 

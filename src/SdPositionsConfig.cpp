@@ -1,9 +1,11 @@
+#include "Config.h"
+
+#if BACKUP_ENABLE_SDCARD
 #include "SdPositionsConfig.h"
 #include "SdCard.h"
 #include "Logging.h"
 
 
-#if BACKUP_ENABLE_SDCARD
 namespace config {
 	#define CURRENT_LOGGER "config::backup::sd"
 
