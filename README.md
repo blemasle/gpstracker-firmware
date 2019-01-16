@@ -1,6 +1,7 @@
-# High autonomy GPS tracker.
 [![Build Status](https://travis-ci.org/blemasle/gpstracker-firmware.svg?branch=master)](https://travis-ci.org/blemasle/gpstracker-firmware)
 [![License](https://img.shields.io/badge/license-MIT%20License-blue.svg)](http://doge.mit-license.org)
+
+# High autonomy GPS tracker.
 
 This project aims to provides a GPS tracker based on an Arduino Pro mini as the central unit. Battery saving has been incorporated into every step of the design. A custom designed [PCB](https://github.com/blemasle/gpstracker-pcb) is available to avoid using poorly power efficient boards.
 
@@ -72,6 +73,20 @@ As positions backup can take quite some time, they're only backuped in two cases
  * When stopped and many positions are not yet backuped
 
 This behaviour prevent the backup from distrupting the rate at which positions will be acquired, and avoid the device to look for the GPRS network while moving, which in some case can be difficult. As a downside, it is obvious that the positions are not backuped in realtime.
+
+For reference, each position is sent in its own request HTTP POST request with a `Content-Type` set to `text/gpstracker` and a csv encoded body.
+
+Field 				| Unit / Expression 	| Notes
+--------------------|----------------------:|-------
+freeRam 			| bytes 				| Read just before sending the position
+signalAttenuation 	| dBm 					| Read once before the backup session
+batteryLevel		| %						|
+batteryVoltage		| mV					|
+temperature			| °c 					| Expressed as `temp*100` as `printf` cannot deal with floats on Arduino
+fixStatus			| `SIM808_GPS_STATUS`	|
+timeToFix			| s						|
+
+The rest of the string is the raw string returned by the [SIM808 `AT+CGNSINF` command](https://simcom.ee/documents/SIM800x/SIM800%20Series_GNSS_Application%20Note%20V1.00.pdf). The `UTC date & time` field can be used as a key for a given tracker.
 
 # Limitations
 
