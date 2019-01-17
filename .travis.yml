@@ -15,7 +15,7 @@ install:
  - arduino --install-library "Low-Power"
  - arduino --install-library "ArduinoLog"
  - arduino --install-library "MD_DS3231"
- - git clone https://github.com/blemasle/arduino-sim808 ~/Arduino/libraries/SIM808 # Until the lib is published to Arduino Library Manager
+ - arduino --install-library "SIM808"
 before_script:
  - sed -E "s/^#define ENABLE_(12H|DOW|DYNAMIC_CENTURY) 1/#define ENABLE_\\1 0/" -i ~/Arduino/libraries/MD_DS3231/src/MD_DS3231.h # Disabling MD_DS3231 unwanted features
  - "tail --line=+`sed -n '/\\/\\/ #pragma once/=' src/config/User.h` src/config/User.h | sed 's/^\\/\\/ //' > src/config/Sensitive.h" # Using the example configuration file for compilation
