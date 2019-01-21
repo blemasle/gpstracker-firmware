@@ -88,6 +88,10 @@ timeToFix			| s						|
 
 The rest of the string is the raw string returned by the [SIM808 `AT+CGNSINF` command](https://simcom.ee/documents/SIM800x/SIM800%20Series_GNSS_Application%20Note%20V1.00.pdf). The `UTC date & time` field can be used as a key for a given tracker.
 
+You can then do whatever you want with the position, like learning Python and building a Google Timeline like website (one day to be published) to track all your comings and goings during your nine months travel accross New-Zealand :sunglasses:.
+
+![Tracker map](../assets/map.png)
+
 # Limitations
 
 ## Adding features
